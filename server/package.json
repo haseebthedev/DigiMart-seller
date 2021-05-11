@@ -1,0 +1,11 @@
+{
+  "name": "digi-mart",
+  "version": "1.0.0",
+  "description": "A server representing backend of Digi-Mart application.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Haseeb Ahmed Saeed",
+  "license": "ISC"
+}
