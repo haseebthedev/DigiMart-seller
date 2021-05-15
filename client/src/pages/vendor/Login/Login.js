@@ -16,7 +16,7 @@ import {
 import { LockOutlined } from "@material-ui/icons/";
 import { makeStyles } from "@material-ui/core/styles";
 
-import leftImage from "../../images/signIn-img1.jpg";
+import leftImage from "../../../assets/images/signIn-img1.jpg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
