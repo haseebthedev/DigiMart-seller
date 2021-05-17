@@ -1,15 +1,14 @@
 {
-  "name": "digi-mart",
+  "name": "server",
   "version": "1.0.0",
-  "description": "A server representing backend of Digi-Mart application.",
-  "main": "index.js",
+  "description": "",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Haseeb Ahmed Saeed",
+  "author": "",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "nodemon": "^2.0.7"
   }
 }
-
