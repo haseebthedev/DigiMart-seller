@@ -1,29 +1,169 @@
 import React from "react";
 
-import {
-  Avatar,
-  Button,
-  CssBaseline,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Paper,
-  Box,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import { LockOutlined } from "@material-ui/icons/";
-import { makeStyles } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Paper from "@material-ui/core/Paper";
+import Stepper from "@material-ui/core/Stepper";
+import Step from "@material-ui/core/Step";
+import StepLabel from "@material-ui/core/StepLabel";
+import Button from "@material-ui/core/Button";
+import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
 
-const Register = () => {
-  //const classes = useStyles();
+import SettingsIcon from "@material-ui/icons/Settings";
+import GroupAddIcon from "@material-ui/icons/GroupAdd";
+import VideoLabelIcon from "@material-ui/icons/VideoLabel";
+
+import clsx from "clsx";
+import PropTypes from "prop-types";
+import {
+  useStyles,
+  ColorlibConnector,
+  useColorlibStepIconStyles,
+} from "./styles";
+
+import AccountForm from "./AccountForm";
+import Store from "./Store";
+import PaymentForm from "./PaymentForm";
+import Finalizing from "./Finalizing";
+
+const steps = ["Account", "Store", "Payment", "Finalizing"];
+
+function getStepContent(step) {
+  switch (step) {
+    case 0:
+      return <AccountForm />;
+    case 1:
+      return <Store />;
+    case 2:
+      return <PaymentForm />;
+    case 3:
+      return <Finalizing />;
+    default:
+      throw new Error("Unknown step");
+  }
+}
+
+function ColorlibStepIcon(props) {
+  const classes = useColorlibStepIconStyles();
+  const { active, completed } = props;
+  const icons = {
+    1: <SettingsIcon />,
+    2: <GroupAddIcon />,
+    3: <VideoLabelIcon />,
+    4: <SettingsIcon />,
+  };
 
   return (
-    <Grid container className={classes.root}>
-      <CssBaseline />
-    </Grid>
+    <div
+      className={clsx(classes.root, {
+        [classes.active]: active,
+        [classes.completed]: completed,
+      })}
+    >
+      {icons[String(props.icon)]}
+    </div>
   );
+}
+
+ColorlibStepIcon.propTypes = {
+  active: PropTypes.bool,
+  completed: PropTypes.bool,
+  icon: PropTypes.node,
 };
 
-export default Register;
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="#">
+        Digi-Mart
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+
+export default function Register() {
+  const classes = useStyles();
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  const handleNext = () => {
+    setActiveStep(activeStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep(activeStep - 1);
+  };
+
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <AppBar position="absolute" color="secondary" className={classes.appBar}>
+        <Toolbar>
+          <Typography variant="h5" color="background" noWrap>
+            Digi-Mart
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <main className={classes.layout}>
+        <Paper className={classes.paper}>
+          <Typography component="h1" variant="h4" align="center" gutterBottom>
+            Registration for Vendor
+          </Typography>
+          <Stepper
+            activeStep={activeStep}
+            className={classes.stepper}
+            connector={<ColorlibConnector />}
+          >
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel StepIconComponent={ColorlibStepIcon}>
+                  <Typography variant="body2" className={classes.stepperLabel}>
+                    {label}
+                  </Typography>
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          <React.Fragment>
+            {activeStep === steps.length ? (
+              <React.Fragment>
+                <Typography variant="h5" gutterBottom align="center">
+                  Thank you for your registration.
+                </Typography>
+                <Typography variant="subtitle1" align="justify">
+                  Your application is being reviewed. We have emailed your
+                  registration confirmation, and will send you an update when
+                  your application gets approval.
+                </Typography>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                {getStepContent(activeStep)}
+                <div className={classes.buttons}>
+                  {activeStep !== 0 && (
+                    <Button onClick={handleBack} className={classes.button}>
+                      Back
+                    </Button>
+                  )}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNext}
+                    className={classes.button}
+                  >
+                    {activeStep === steps.length - 1 ? "Place order" : "Next"}
+                  </Button>
+                </div>
+              </React.Fragment>
+            )}
+          </React.Fragment>
+        </Paper>
+        <Copyright />
+      </main>
+    </React.Fragment>
+  );
+}

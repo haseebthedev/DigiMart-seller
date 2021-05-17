@@ -1,9 +1,11 @@
-import Login from "../pages/vendor/Login/Login";
+// import LoginVendor from "../pages/vendor/Login/Login";
+import SignUpVendor from "../pages/vendor/Register/Register";
 
 function App() {
   return (
     <div>
-      <Login />
+      {/* <LoginVendor /> */}
+      <SignUpVendor />
     </div>
   );
 }

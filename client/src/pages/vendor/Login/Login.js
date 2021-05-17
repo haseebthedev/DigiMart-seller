@@ -29,9 +29,7 @@ export default function Login() {
           <Avatar className={classes.avatar}>
             <LockOutlined />
           </Avatar>
-          <Typography component="h1" variant="h6">
-            Sign in
-          </Typography>
+          <Typography variant="h6">Sign in</Typography>
           <form className={classes.form} noValidate>
             <TextField
               variant="outlined"
