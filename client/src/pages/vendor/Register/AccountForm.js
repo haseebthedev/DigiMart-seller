@@ -83,17 +83,17 @@ export default function AccountForm() {
           <RadioGroup row defaultValue="male">
             <FormControlLabel
               value="male"
-              control={<Radio color="primary" />}
+              control={<Radio color="secondary" />}
               label="Male"
             />
             <FormControlLabel
               value="female"
-              control={<Radio color="primary" />}
+              control={<Radio color="secondary" />}
               label="Female"
             />
             <FormControlLabel
               value="other"
-              control={<Radio color="primary" />}
+              control={<Radio color="secondary" />}
               label="Other"
             />
           </RadioGroup>

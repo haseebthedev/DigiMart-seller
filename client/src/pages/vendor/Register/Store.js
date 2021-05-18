@@ -94,16 +94,15 @@ export default function Store() {
           />
         </Grid>
         <Grid item xs={12}>
-          {/* <FormLabel>Store Type</FormLabel> */}
           <RadioGroup row defaultValue="male">
             <FormControlLabel
               value="individual"
-              control={<Radio color="primary" />}
+              control={<Radio color="secondary" />}
               label="I'm an Individual"
             />
             <FormControlLabel
               value="brand"
-              control={<Radio color="primary" />}
+              control={<Radio color="secondary" />}
               label="We're a Brand"
             />
           </RadioGroup>

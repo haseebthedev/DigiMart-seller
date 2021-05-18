@@ -11,9 +11,10 @@ import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 
-import SettingsIcon from "@material-ui/icons/Settings";
-import GroupAddIcon from "@material-ui/icons/GroupAdd";
-import VideoLabelIcon from "@material-ui/icons/VideoLabel";
+import PersonIcon from "@material-ui/icons/Person";
+import StorefrontIcon from "@material-ui/icons/Storefront";
+import PaymentIcon from "@material-ui/icons/Payment";
+import DoneIcon from "@material-ui/icons/Done";
 
 import clsx from "clsx";
 import PropTypes from "prop-types";
@@ -49,10 +50,10 @@ function ColorlibStepIcon(props) {
   const classes = useColorlibStepIconStyles();
   const { active, completed } = props;
   const icons = {
-    1: <SettingsIcon />,
-    2: <GroupAddIcon />,
-    3: <VideoLabelIcon />,
-    4: <SettingsIcon />,
+    1: <PersonIcon />,
+    2: <StorefrontIcon />,
+    3: <PaymentIcon />,
+    4: <DoneIcon />,
   };
 
   return (
@@ -151,11 +152,11 @@ export default function Register() {
                   )}
                   <Button
                     variant="contained"
-                    color="primary"
+                    color="secondary"
                     onClick={handleNext}
                     className={classes.button}
                   >
-                    {activeStep === steps.length - 1 ? "Place order" : "Next"}
+                    {activeStep === steps.length - 1 ? "Register" : "Next"}
                   </Button>
                 </div>
               </React.Fragment>
