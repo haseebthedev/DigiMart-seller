@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -9,12 +9,18 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 
-export default function Store() {
-  const [age, setAge] = useState("Category");
+export default function Store(props) {
+  // // eslint-disable-next-line
+  // const [category, setcategory] = useState("Category");
+  // const [biography, setBiography] = useState("");
+  // const [warehouseAddress, setWarehouseAddress] = useState("");
+  // const [physicalAddress, setPhysicalAddress] = useState("");
+  // const [city, setCity] = useState("");
+  // const [country, setCountry] = useState("");
+  // const [type, setType] = useState("individual");
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
+  // coming from dashboard page
+  const { values, handleChange } = props;
 
   return (
     <React.Fragment>
@@ -23,24 +29,12 @@ export default function Store() {
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            id="storeName"
-            name="storeName"
-            label="Store Name"
-            fullWidth
-            autoComplete="given-name"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <FormControl>
+          <FormControl fullWidth>
             <InputLabel>Category</InputLabel>
             <Select
               native
-              defaultValue="Generic"
-              value={age}
-              onChange={handleChange}
+              defaultValue={values.category}
+              onChange={handleChange("category")}
             >
               <option value="Electronic">Electronics</option>
               <option value="Health">Health and Beauty</option>
@@ -52,53 +46,68 @@ export default function Store() {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <TextField
             required
-            id=""
             name="storeBio"
             label="Biography"
             fullWidth
-            autoComplete="family-name"
+            defaultValue={values.biography}
+            onChange={handleChange("biography")}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
             required
-            id="physicalAddress"
+            name="warehouseAddress"
+            label="Warehouse Address"
+            fullWidth
+            defaultValue={values.warehouseAddress}
+            onChange={handleChange("warehouseAddress")}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
             name="physicalAddress"
             label="Physical Address"
             fullWidth
-            autoComplete="shipping address-line1"
+            defaultValue={values.physicalAddress}
+            onChange={handleChange("physicalAddress")}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            id="city"
             name="city"
             label="City"
             fullWidth
-            autoComplete="shipping address-level2"
+            defaultValue={values.city}
+            onChange={handleChange("city")}
           />
         </Grid>
 
         <Grid item xs={12} sm={6}>
           <TextField
             required
-            id="country"
             name="country"
             label="Country"
             fullWidth
-            autoComplete="shipping postal-code"
+            defaultValue={values.country}
+            onChange={handleChange("country")}
           />
         </Grid>
         <Grid item xs={12}>
-          <RadioGroup row defaultValue="male">
+          <RadioGroup row value={values.type} onChange={handleChange("type")}>
             <FormControlLabel
               value="individual"
               control={<Radio color="secondary" />}
               label="I'm an Individual"
+            />
+            <FormControlLabel
+              value="shop"
+              control={<Radio color="secondary" />}
+              label="I'm a Shopkepper"
             />
             <FormControlLabel
               value="brand"

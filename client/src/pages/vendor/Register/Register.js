@@ -1,78 +1,24 @@
 import React from "react";
-
-import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Paper from "@material-ui/core/Paper";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Button from "@material-ui/core/Button";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormLabel from "@material-ui/core/FormLabel";
+import axios from "axios";
 
-import PersonIcon from "@material-ui/icons/Person";
-import StorefrontIcon from "@material-ui/icons/Storefront";
-import PaymentIcon from "@material-ui/icons/Payment";
-import DoneIcon from "@material-ui/icons/Done";
+import { withRouter } from "react-router-dom";
+import { useStyles } from "./styles";
+// eslint-disable-next-line
+import { useUserContext, registerUser } from "../../../context/UserContext";
 
-import clsx from "clsx";
-import PropTypes from "prop-types";
-import {
-  useStyles,
-  ColorlibConnector,
-  useColorlibStepIconStyles,
-} from "./styles";
-
-import AccountForm from "./AccountForm";
-import Store from "./Store";
-import PaymentForm from "./PaymentForm";
-import Finalizing from "./Finalizing";
-
-const steps = ["Account", "Store", "Payment", "Finalizing"];
-
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <AccountForm />;
-    case 1:
-      return <Store />;
-    case 2:
-      return <PaymentForm />;
-    case 3:
-      return <Finalizing />;
-    default:
-      throw new Error("Unknown step");
-  }
-}
-
-function ColorlibStepIcon(props) {
-  const classes = useColorlibStepIconStyles();
-  const { active, completed } = props;
-  const icons = {
-    1: <PersonIcon />,
-    2: <StorefrontIcon />,
-    3: <PaymentIcon />,
-    4: <DoneIcon />,
-  };
-
-  return (
-    <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-        [classes.completed]: completed,
-      })}
-    >
-      {icons[String(props.icon)]}
-    </div>
-  );
-}
-
-ColorlibStepIcon.propTypes = {
-  active: PropTypes.bool,
-  completed: PropTypes.bool,
-  icon: PropTypes.node,
-};
+import logo from "../../../assets/images/logo.png";
 
 function Copyright() {
   return (
@@ -87,84 +33,182 @@ function Copyright() {
   );
 }
 
-export default function Register() {
+const Register = () => {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
+  // global
+  // eslint-disable-next-line
+  const { store, dispatch } = useUserContext();
 
-  const handleNext = () => {
-    setActiveStep(activeStep + 1);
-  };
+  const [name, setName] = React.useState("Haseeb Ahmed");
+  const [cnic, setCnic] = React.useState("34601-0385037-7");
+  const [email, setEmail] = React.useState("haseeb@gmail.com");
+  const [birthday, setBirthday] = React.useState("11/06/2003");
+  const [phoneNumber, setPhoneNumber] = React.useState("+923455488213");
+  const [password, setPassword] = React.useState("haseeb123");
+  const [gender, setGender] = React.useState("male");
+  const [storeName, setstoreName] = React.useState("Gucci");
 
-  const handleBack = () => {
-    setActiveStep(activeStep - 1);
+  const handleRegisterVendor = (e) => {
+    e.preventDefault();
+
+    axios
+      .post("http://localhost:8080/seller/register", {
+        name,
+        email,
+        CNIC: cnic,
+        phoneNumber,
+        gender,
+        birthday,
+        password,
+        storeName,
+      })
+      .then((res) =>
+        registerUser(dispatch, res.data.data.vendor, res.data.data.token)
+      )
+      // .then((res) => console.log("DATA", res.data))
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+
+    console.log("STORE: ", store);
   };
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <AppBar position="absolute" color="secondary" className={classes.appBar}>
+      <AppBar position="absolute" className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h5" color="background" noWrap>
-            Digi-Mart
-          </Typography>
+          <img src={logo} alt="Logo" className={classes.logo} />
         </Toolbar>
       </AppBar>
       <main className={classes.layout}>
         <Paper className={classes.paper}>
-          <Typography component="h1" variant="h4" align="center" gutterBottom>
+          <Typography
+            component="h1"
+            variant="h4"
+            align="center"
+            className={classes.headingMargin}
+          >
             Registration for Vendor
           </Typography>
-          <Stepper
-            activeStep={activeStep}
-            className={classes.stepper}
-            connector={<ColorlibConnector />}
-          >
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel StepIconComponent={ColorlibStepIcon}>
-                  <Typography variant="body2" className={classes.stepperLabel}>
-                    {label}
-                  </Typography>
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          <React.Fragment>
-            {activeStep === steps.length ? (
-              <React.Fragment>
-                <Typography variant="h5" gutterBottom align="center">
-                  Thank you for your registration.
-                </Typography>
-                <Typography variant="subtitle1" align="justify">
-                  Your application is being reviewed. We have emailed your
-                  registration confirmation, and will send you an update when
-                  your application gets approval.
-                </Typography>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                {getStepContent(activeStep)}
-                <div className={classes.buttons}>
-                  {activeStep !== 0 && (
-                    <Button onClick={handleBack} className={classes.button}>
-                      Back
-                    </Button>
-                  )}
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleNext}
-                    className={classes.button}
-                  >
-                    {activeStep === steps.length - 1 ? "Register" : "Next"}
-                  </Button>
-                </div>
-              </React.Fragment>
-            )}
-          </React.Fragment>
+          <Typography variant="h6" spacing={3} gutterBottom>
+            Personal Details
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                name="Name"
+                label="Name"
+                autoComplete="name"
+                fullWidth
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                name="cnic"
+                label="Cnic"
+                placeholder="XXXXX-XXXXXXX-X"
+                fullWidth
+                value={cnic}
+                onChange={(e) => setCnic(e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                name="email"
+                label="Email"
+                autoComplete="email"
+                fullWidth
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                name="date"
+                label="Date of Birth"
+                autoComplete="dateofBirth"
+                fullWidth
+                placeholder="dd/MM/yyyy"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                name="phoneNumber"
+                label="Phone Number"
+                fullWidth
+                placeholder="+923XXXXXXXXX"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                name="password"
+                label="Password"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                required
+                name="storeName"
+                label="Store Name"
+                fullWidth
+                value={storeName}
+                onChange={(e) => setstoreName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormLabel>Gender</FormLabel>
+              <RadioGroup
+                row
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <FormControlLabel
+                  value="male"
+                  control={<Radio color="secondary" />}
+                  label="Male"
+                />
+                <FormControlLabel
+                  value="female"
+                  control={<Radio color="secondary" />}
+                  label="Female"
+                />
+                <FormControlLabel
+                  value="other"
+                  control={<Radio color="secondary" />}
+                  label="Other"
+                />
+              </RadioGroup>
+            </Grid>
+            <Grid item xs={12} className={classes.buttons}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleRegisterVendor}
+              >
+                Register
+              </Button>
+            </Grid>
+          </Grid>
         </Paper>
         <Copyright />
       </main>
     </React.Fragment>
   );
-}
+};
+
+export default withRouter(Register);

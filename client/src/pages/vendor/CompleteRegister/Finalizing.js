@@ -4,6 +4,10 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import CheckIcon from "@material-ui/icons/Check";
 
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+
 const useStyles = makeStyles((theme) => ({
   iconMargin: {
     marginTop: theme.spacing(1),
@@ -11,8 +15,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Finalizing() {
+export default function Finalizing(props) {
   const classes = useStyles();
+
+  const { values, handleChange } = props;
 
   return (
     <React.Fragment>
@@ -61,6 +67,19 @@ export default function Finalizing() {
             />
             Sell or otherwise transfer their profile.
           </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={values.checkAgreement}
+                  onChange={handleChange("checkAgreement")}
+                />
+              }
+              label="I accept all terms and conditions mentioned above."
+            />
+          </FormGroup>
         </Grid>
       </Grid>
     </React.Fragment>

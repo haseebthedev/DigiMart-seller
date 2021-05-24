@@ -15,9 +15,11 @@ import {
 } from "@material-ui/core";
 import { LockOutlined } from "@material-ui/icons/";
 
+import { withRouter } from "react-router-dom";
+
 import useStyles from "./styles";
 
-export default function Login() {
+const Login = () => {
   const classes = useStyles();
 
   return (
@@ -68,12 +70,12 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <Link href="/forget-password" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/vendor/register" variant="body2">
                   {"Don't have an account?"}
                 </Link>
               </Grid>
@@ -95,4 +97,6 @@ export default function Login() {
       </Grid>
     </Grid>
   );
-}
+};
+
+export default withRouter(Login);
