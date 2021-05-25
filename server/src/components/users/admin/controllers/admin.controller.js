@@ -1,10 +1,23 @@
 const Admin = require('../models/admin.model')
+const notification = require('../../../notifications/account')
 
 const registerAdmin = async(req, res, next) => {
     const admin = new Admin(req.body)
     try{
         await admin.save()
         const token = await admin.generateAuthToken()
+
+        //send registration mail
+        var adminRoles = ""
+        admin.roles.forEach((element,index) => {
+            adminRoles =  element+", " +adminRoles
+        });
+        const subject = 'Digi-Mart Admin Registration Email'
+        const message = `You have successfully registered your Email ${admin.email} with Digi-Mart as Admin with following roles and authority.
+        <br>Authority:<strong> ${admin.authority} Data</strong>
+        <br>Roles:<strong> ${adminRoles}</strong>
+        <br><br>We Hope you work hard with dedication.`
+        notification.sendRegistrationMail(admin.email,subject,message,admin.name)
         res.status(201).json({
             message:`${admin.name} has been registered successfully as Admin!`,
             data:{

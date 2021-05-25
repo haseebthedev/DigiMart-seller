@@ -26,8 +26,8 @@ export default function PaymentForm(props) {
             required
             label="Bank Holder Name"
             fullWidth
-            defaultValue={values.backHolderName}
-            onChange={handleChange("backHolderName")}
+            defaultValue={values.bankHolderName}
+            onChange={handleChange("bankHolderName")}
           />
         </Grid>
         <Grid item xs={12} md={6}>

@@ -32,6 +32,9 @@ export const useStyles = makeStyles((theme) => ({
   buttons: {
     display: "flex",
     justifyContent: "flex-end",
+    [theme.breakpoints.down(500)]: {
+      justifyContent: "center",
+    },
   },
   button: {
     marginTop: theme.spacing(3),

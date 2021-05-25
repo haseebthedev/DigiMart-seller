@@ -88,20 +88,28 @@ export default function CompleteRegister(props) {
         checkAgreement,
       } = state;
 
+      // SAVING STORE DETAILS INTO DATABASE
       const storeURL = "http://localhost:8080/store/register";
       axios
-        .post(storeURL, {
-          category,
-          biography,
-          warehouseAddress,
-          physicalAddress,
-          city,
-          country,
-          type,
-        })
+        .post(
+          storeURL,
+          {
+            category,
+            biography,
+            warehouseAddress,
+            physicalAddress,
+            city,
+            country,
+            type,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
         .then((res) => console.log("Store Saved. RES: ", res))
         .catch((error) => console.log("Error: " + error));
 
+      // SAVING PAYMENT DETAILS INTO DATABASE
       const paymentURL =
         "http://localhost:8080/seller/addBankDetailsAndRegisterStore";
       axios

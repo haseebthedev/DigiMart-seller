@@ -1,17 +1,14 @@
 import React from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -33,89 +30,29 @@ import AssistantPhotoIcon from "@material-ui/icons/AssistantPhoto";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
 import Button from "@material-ui/core/Button";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Collapse from "@material-ui/core/Collapse";
+import DashboardIcon from "@material-ui/icons/Dashboard";
+import ProductIcon from "@material-ui/icons/Ballot";
+import SalesIcon from "@material-ui/icons/MonetizationOn";
+import ChatIcon from "@material-ui/icons/Chat";
+import PaymentIcon from "@material-ui/icons/Payment";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import TuneIcon from "@material-ui/icons/Tune";
+import AssistantIcon from "@material-ui/icons/Assistant";
+import SaveAltIcon from "@material-ui/icons/SaveAlt";
+import EditIcon from "@material-ui/icons/Edit";
+import BlockIcon from "@material-ui/icons/Block";
 
 import logo from "../../../assets/images/logo.png";
 import CompleteRegister from "../CompleteRegister/CompleteRegister";
 import { useUserContext, logoutUser } from "../../../context/UserContext";
+import useStyles from "./styles";
 
-const drawerWidth = 240;
-const useStyles = makeStyles((theme) => ({
-  appbarRight: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  logo: {
-    width: "120px",
-    marginLeft: theme.spacing(1),
-  },
-  root: {
-    display: "flex",
-  },
-  appBar: {
-    background: "#FFF",
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {},
-  hide: {
-    display: "none",
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    background: "linear-gradient(130deg, rgba(9,0,113,1) 30%, #EF233C 80%)",
-    color: "#FFF",
-    width: drawerWidth,
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end",
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(5),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: -drawerWidth,
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  },
-  listItemIcon: {
-    minWidth: "40px",
-  },
-  iconColor: {
-    color: "#FFF",
-  },
-}));
 
 export default function VendorCenter() {
   const classes = useStyles();
-  const theme = useTheme();
 
   // context
   const { store, dispatch } = useUserContext();
@@ -149,6 +86,12 @@ export default function VendorCenter() {
     logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
   };
 
+  const [openDropdown, setopenDropdown] = React.useState(false);
+
+  const handleDropDown = () => {
+    setopenDropdown(!openDropdown);
+  };
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -173,23 +116,17 @@ export default function VendorCenter() {
               <img src={logo} alt="Logo" className={classes.logo} />
             </div>
             <div>
-              <IconButton aria-label="show 4 new mails">
+              <IconButton>
                 <Badge badgeContent={3} color="secondary">
                   <MailIcon fontSize="small" />
                 </Badge>
               </IconButton>
-              <IconButton aria-label="show 17 new notifications">
+              <IconButton>
                 <Badge badgeContent={9} color="secondary">
                   <NotificationsIcon fontSize="small" />
                 </Badge>
               </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-              >
+              <IconButton edge="end" aria-haspopup="true" onClick={handleMenu}>
                 <AccountCircle fontSize="large" />
               </IconButton>
               <Menu
@@ -265,42 +202,97 @@ export default function VendorCenter() {
           paper: classes.drawerPaper,
         }}
       >
+        {/* Drawer Open/Close Button */}
         <div className={classes.drawerHeader}>
           <IconButton
             onClick={handleDrawerClose}
-            style={{ background: "#ffffff0d" }}
+            style={{ background: "rgba(50, 255, 250, 0.1)" }}
           >
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon style={{ color: "#FFF" }} />
-            ) : (
-              <ChevronRightIcon />
-            )}
+            <ChevronLeftIcon style={{ color: "#FFF" }} />
           </IconButton>
         </div>
-        <Divider />
+
+        {/* Drawer Menu List */}
         <List>
-          {[
-            "Dashboard",
-            "Products",
-            "Sales",
-            "Orders",
-            "Messages",
-            "Payments",
-            "Business Analytics",
-            "Settings",
-            "Promotions",
-          ].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? (
-                  <InboxIcon className={classes.iconColor} />
-                ) : (
-                  <MailIcon className={classes.iconColor} />
-                )}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button component="a" href="/vendor/dashboard">
+            <ListItemIcon>
+              <DashboardIcon className={classes.iconColor} />
+              {/* <MailIcon className={classes.iconColor} /> */}
+            </ListItemIcon>
+            <ListItemText primary={"Dashboard"} />
+          </ListItem>
+          <ListItem button onClick={handleDropDown}>
+            <ListItemIcon>
+              <ProductIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Products" />
+            {openDropdown ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={openDropdown} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem button className={classes.dropdown}>
+                <ListItemIcon>
+                  <SaveAltIcon className={classes.iconColor} />
+                </ListItemIcon>
+                <ListItemText primary="Add Product" />
+              </ListItem>
+              <ListItem button className={classes.dropdown}>
+                <ListItemIcon>
+                  <EditIcon className={classes.iconColor} />
+                </ListItemIcon>
+                <ListItemText primary="Edit Product" />
+              </ListItem>
+              <ListItem button className={classes.dropdown}>
+                <ListItemIcon>
+                  <BlockIcon className={classes.iconColor} />
+                </ListItemIcon>
+                <ListItemText primary="Blocked Products" />
+              </ListItem>
+            </List>
+          </Collapse>
+
+          <ListItem button>
+            <ListItemIcon>
+              <SalesIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Sales" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <InboxIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Orders" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <ChatIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Messages" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <PaymentIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Payments" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <AssessmentIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Business Analytics" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <TuneIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <AssistantIcon className={classes.iconColor} />
+            </ListItemIcon>
+            <ListItemText primary="Promotions" />
+          </ListItem>
         </List>
       </Drawer>
       <main
@@ -310,6 +302,7 @@ export default function VendorCenter() {
       >
         <div className={classes.drawerHeader} />
 
+        {/* BREADCRUMBS */}
         <Breadcrumbs aria-label="breadcrumb">
           <Link color="inherit" href="/">
             Vendor

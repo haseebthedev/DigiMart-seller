@@ -9,5 +9,6 @@ router.post('/buyer/logout', buyerAuth ,buyerController.logoutBuyer)
 router.post('/buyer/activateAccount', buyerAuth ,buyerController.activateMyAccount)
 router.post('/buyer/deActivateAccount', buyerAuth ,buyerController.deActivateMyAccount)
 router.delete('/buyer/me', buyerAuth, buyerController.deleteMyAccount)
+router.post('/buyer/forgetPassword', buyerAuth, buyerController.forgetAccountPassword)
 
 module.exports = router 

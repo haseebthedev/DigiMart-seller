@@ -1,10 +1,18 @@
 const Vendor = require("../models/vendor.model");
+const passwordGenerator = require("generate-password");
+const notification = require("../../../notifications/account");
 
 const registerVendor = async (req, res, next) => {
   const vendor = new Vendor(req.body);
   try {
     await vendor.save();
     const token = await vendor.generateAuthToken();
+    //send registration mail
+    // const subject = 'Digi-Mart Seller Registration Email'
+    // const message = `You have successfully registered your Email ${vendor.email} with Digi-Mart.
+    // To sell products and make money, register your store '${vendor.storeName}' on Digi-Mart by providing necessary details and be part of Digi-Mart seller family.
+    // <br><strong>Thank you for your time.</strong>`
+    // notification.sendRegistrationMail(vendor.email,subject,message,vendor.name)
     res.status(201).json({
       message: `${vendor.name} your request for registration has been sent successfully!`,
       data: {
@@ -141,6 +149,52 @@ const addBankDetails = async (req, res, next) => {
   }
 };
 
+const updateAccountPassword = async (req, res, next) => {
+  try {
+    const user = req.body.password;
+    user["password"] = password;
+    await user.save();
+    //send new password email to user
+    //userEmail.sendForgetPasswordMail(user.email,password)
+    return res.status(200).json({
+      message: `User Password have been updated successfully.`,
+      data: {
+        email: req.user.email,
+        pass: password,
+      },
+    });
+  } catch (e) {
+    e.status = 404;
+    next(e);
+  }
+};
+
+const forgetAccountPassword = async (req, res, next) => {
+  try {
+    const password = passwordGenerator.generate({
+      length: 8,
+      numbers: true,
+    });
+    const email = req.body.email;
+    const user = await Vendor.findOne({ email: email });
+    user["password"] = password;
+    await user.save();
+    //send new password email to user
+    // notification.sendForgetPasswordMail(user.email, user.name, password);
+    return res.status(200).json({
+      message: `User Password have been updated successfully.`,
+      data: {
+        email: email,
+        name: user.name,
+      },
+    });
+  } catch (e) {
+    e.status = 404;
+    e.message = "No user with this email exists! Please enter valid email.";
+    next(e);
+  }
+};
+
 module.exports = {
   registerVendor,
   loginVendor,
@@ -149,4 +203,5 @@ module.exports = {
   deActivateMyAccount,
   activateMyAccount,
   addBankDetails,
+  forgetAccountPassword,
 };

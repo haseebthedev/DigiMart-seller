@@ -1,0 +1,82 @@
+import { makeStyles } from "@material-ui/core/styles";
+
+const drawerWidth = 280;
+const useStyles = makeStyles((theme) => ({
+  appbarRight: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  logo: {
+    width: "120px",
+    marginLeft: theme.spacing(1),
+  },
+  root: {
+    display: "flex",
+  },
+  appBar: {
+    background: "#FFF",
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  menuButton: {},
+  hide: {
+    display: "none",
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    background: "linear-gradient(130deg, rgba(9,0,113,1) 30%, #EF233C 80%)",
+    color: "#FFF",
+    width: drawerWidth,
+    paddingLeft: theme.spacing(1),
+  },
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(5),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: -drawerWidth,
+  },
+  contentShift: {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 0,
+  },
+  listItemIcon: {
+    minWidth: "40px",
+  },
+  iconColor: {
+    color: "#FFF",
+  },
+  dropdown: {
+    paddingLeft: theme.spacing(4),
+  },
+}));
+
+export default useStyles;
