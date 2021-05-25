@@ -3,21 +3,21 @@ import * as React from "react";
 const UserContext = React.createContext();
 
 function userReducer(store = [], action) {
-  // console.log("INSIDE REDUCER FUNCTION");
   switch (action.type) {
     case "REGISTER":
       return {
-        ...store,
         isAuthenticated: true,
-        data: action.data,
-        token: action.token,
+        data: { data: action.data, token: action.token },
+      };
+    case "COMPLETE_REGISTRATION":
+      return {
+        isAuthenticated: true,
+        data: { data: action.data, token: action.token },
       };
     case "LOGIN_SUCCESS":
       return { ...store, isAuthenticated: true };
     case "SIGN_OUT":
       return { ...store, isAuthenticated: false };
-    case "ADD_DATA":
-      return { ...store };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -25,8 +25,10 @@ function userReducer(store = [], action) {
 
 function UserProvider({ children }) {
   const [store, dispatch] = React.useReducer(userReducer, {
-    isAuthenticated: !!localStorage.getItem("id_token"),
+    isAuthenticated: !!JSON.parse(localStorage.getItem("USER_DATA")),
+    data: JSON.parse(localStorage.getItem("USER_DATA")),
   });
+
   const value = { store, dispatch };
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
@@ -41,7 +43,7 @@ function useUserContext() {
 
 const registerUser = async (dispatch, data, token) => {
   try {
-    localStorage.setItem("id_token", token);
+    localStorage.setItem("USER_DATA", JSON.stringify({ data, token }));
     await dispatch({ type: "REGISTER", data, token });
   } catch (e) {
     console.log(e);
@@ -51,24 +53,25 @@ const registerUser = async (dispatch, data, token) => {
 function loginUser(dispatch, email, password, token) {
   if (!!email && !!password) {
     setTimeout(() => {
-      localStorage.setItem("id_token", token);
       dispatch({ type: "LOGIN_SUCCESS" });
     }, 2000);
   }
 }
 
-function logoutUser(dispatch, email, password, token) {
+function logoutUser(dispatch, email, password) {
   if (!!email && !!password) {
     setTimeout(() => {
-      localStorage.removeItem("id_token");
+      localStorage.removeItem("USER_DATA");
       dispatch({ type: "SIGN_OUT" });
     }, 2000);
   }
 }
 
-const addDataToStore = async (dispatch, data) => {
+const completeRegistration = async (dispatch, data, token) => {
   try {
-    await dispatch({ type: "ADD_DATA", payload: data });
+    localStorage.removeItem("USER_DATA");
+    localStorage.setItem("USER_DATA", JSON.stringify({ data, token }));
+    await dispatch({ type: "COMPLETE_REGISTRATION", data, token });
   } catch (e) {
     console.log(e);
   }
@@ -80,5 +83,5 @@ export {
   registerUser,
   loginUser,
   logoutUser,
-  addDataToStore,
+  completeRegistration,
 };

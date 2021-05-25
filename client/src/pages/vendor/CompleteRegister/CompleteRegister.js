@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Paper from "@material-ui/core/Paper";
 import Stepper from "@material-ui/core/Stepper";
@@ -26,16 +25,20 @@ import PaymentForm from "./PaymentForm";
 import Finalizing from "./Finalizing";
 import axios from "axios";
 
-import { useUserContext } from "../../../context/UserContext";
+import {
+  useUserContext,
+  completeRegistration,
+} from "../../../context/UserContext";
 
-export default function CompleteRegister() {
+export default function CompleteRegister(props) {
   const classes = useStyles();
   const steps = ["Account", "Store", "Payment", "Finalizing"];
   const [activeStep, setActiveStep] = useState(1);
 
-  // eslint-disable-next-line
+  // context
   const { store, dispatch } = useUserContext();
 
+  // states
   const [state, setState] = useState({
     category: "sports",
     biography: "A place to have trust.",
@@ -44,7 +47,7 @@ export default function CompleteRegister() {
     city: "Islamabad",
     country: "Pakistan",
     type: "individual",
-    backHolderName: "Haseeb Ahmed",
+    bankHolderName: "Haseeb Ahmed",
     bankName: "Meezan Bank Ltd.",
     accountNumber: "213213123612312",
     routingNumber: "21312312",
@@ -54,7 +57,6 @@ export default function CompleteRegister() {
   const handleChange = (input) => (e) => {
     setState({ ...state, [input]: e.target.value });
   };
-
   const handleFinalize = (input) => (e) => {
     setState({ ...state, [input]: e.target.checked });
   };
@@ -62,10 +64,14 @@ export default function CompleteRegister() {
   const handleNext = () => {
     setActiveStep(activeStep + 1);
 
-    console.log("STORE: ", store);
-
+    // Saving Store/Payment data to Server
     if (activeStep === steps.length - 1) {
-      console.log("Send data to server...");
+      const isStoreRegistered = true;
+      const vendorData = { ...store.data.data, isStoreRegistered };
+      const token = store.data.token;
+
+      completeRegistration(dispatch, vendorData, token);
+      props.setCompleteRegis(false);
 
       const {
         category,
@@ -75,7 +81,7 @@ export default function CompleteRegister() {
         city,
         country,
         type,
-        backHolderName,
+        bankHolderName,
         bankName,
         accountNumber,
         routingNumber,
@@ -96,22 +102,27 @@ export default function CompleteRegister() {
         .then((res) => console.log("Store Saved. RES: ", res))
         .catch((error) => console.log("Error: " + error));
 
-      // console.log("TOKEN: " + localStorage.getItem("id_token"));
-      axios.defaults.headers.common = {
-        Authorization: localStorage.getItem("id_token"),
-      };
       const paymentURL =
         "http://localhost:8080/seller/addBankDetailsAndRegisterStore";
       axios
-        .post(paymentURL, {
-          backHolderName,
-          bankName,
-          accountNumber,
-          routingNumber,
-          isStoreRegistered: checkAgreement,
-        })
-        .then((res) => console.log("Payment Saved"))
+        .post(
+          paymentURL,
+          {
+            // change this name
+            bankHolderName,
+            bankName,
+            accountNumber,
+            routingNumber,
+            isStoreRegistered: checkAgreement,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then((res) => console.log("Payment Saved", res))
         .catch((error) => console.log("Error: " + error));
+
+      console.log("Registration has been completed...");
     }
   };
 

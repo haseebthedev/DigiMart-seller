@@ -36,11 +36,9 @@ import Button from "@material-ui/core/Button";
 
 import logo from "../../../assets/images/logo.png";
 import CompleteRegister from "../CompleteRegister/CompleteRegister";
-
-import { useUserContext } from "../../../context/UserContext";
+import { useUserContext, logoutUser } from "../../../context/UserContext";
 
 const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   appbarRight: {
     width: "100%",
@@ -119,9 +117,13 @@ export default function VendorCenter() {
   const classes = useStyles();
   const theme = useTheme();
 
-  // eslint-disable-next-line
+  // context
   const { store, dispatch } = useUserContext();
 
+  // states
+  const [showCompleteRegis, setCompleteRegis] = React.useState(
+    store.data.data.isStoreRegistered
+  );
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
@@ -141,6 +143,10 @@ export default function VendorCenter() {
 
   const printStore = () => {
     console.log("STORE: ", store);
+  };
+
+  const logoutHandler = () => {
+    logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
   };
 
   return (
@@ -311,8 +317,13 @@ export default function VendorCenter() {
           <Typography color="textPrimary">Dashboard</Typography>
         </Breadcrumbs>
 
-        <CompleteRegister />
-        <Divider />
+        {/* COMPLETE STORE REGISTRATION FORM */}
+        {!showCompleteRegis ? (
+          <CompleteRegister setCompleteRegis={setCompleteRegis} />
+        ) : (
+          ""
+        )}
+
         <div style={{ margin: "20px 0" }}>
           <Typography paragraph>
             Consequat mauris nunc congue nisi vitae suscipit. Fringilla est
@@ -331,6 +342,7 @@ export default function VendorCenter() {
           </Typography>
         </div>
         <Button onClick={printStore}>SHOW STORE</Button>
+        <Button onClick={logoutHandler}>Log Out</Button>
         <Copyright />
       </main>
     </div>

@@ -69,7 +69,9 @@ const Register = () => {
       .catch((error) =>
         console.log("ERROR: " + JSON.stringify(error.response.data.error))
       );
+  };
 
+  const printStore = () => {
     console.log("STORE: ", store);
   };
 
@@ -201,6 +203,13 @@ const Register = () => {
                 onClick={handleRegisterVendor}
               >
                 Register
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={printStore}
+              >
+                PRINT STORE
               </Button>
             </Grid>
           </Grid>
