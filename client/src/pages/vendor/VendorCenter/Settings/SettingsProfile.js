@@ -52,10 +52,10 @@ import FileBase64 from "react-file-base64";
 import Avatar from "@material-ui/core/Avatar";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
-import logo from "../../../assets/images/logo.png";
-import useStyles from "./styles";
+import logo from "../../../../assets/images/logo.png";
+import useStyles from "../styles";
 import axios from "axios";
-import { useUserContext } from "../../../context/UserContext";
+import { useUserContext } from "../../../../context/UserContext";
 
 export default function VendorCenter() {
   const classes = useStyles();

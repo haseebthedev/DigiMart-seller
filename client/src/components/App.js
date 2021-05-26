@@ -3,8 +3,8 @@ import LoginVendor from "../pages/vendor/Login/Login";
 import SignUpVendor from "../pages/vendor/Register/Register";
 import ForgetPassword from "../pages/vendor/ForgetPassword/ForgetPassword";
 import VendorCenter from "../pages/vendor/VendorCenter/VendorCenter";
-import SettingsProfile from "../pages/vendor/VendorCenter/SettingsProfile";
-import SettingsStore from "../pages/vendor/VendorCenter/SettingsStore";
+import SettingsProfile from "../pages/vendor/VendorCenter/Settings/SettingsProfile";
+import SettingsStore from "../pages/vendor/VendorCenter/Settings/SettingsStore";
 
 import React from "react";
 import {
@@ -30,7 +30,7 @@ export default function App() {
         <Route path="/vendor/login">
           <LoginVendor />
         </Route>
-        <Route path="/forget-password">
+        <Route path="/vendor/forget-password">
           <ForgetPassword />
         </Route>
         <Route exact path="/vendor/register">
@@ -57,25 +57,25 @@ export default function App() {
     </Router>
   );
 
-  // function PrivateRoute({ children, ...rest }) {
-  //   return (
-  //     <Route
-  //       {...rest}
-  //       render={(props) =>
-  //         isAuthenticated ? (
-  //           children
-  //         ) : (
-  //           <Redirect
-  //             to={{
-  //               pathname: "/vendor/login",
-  //               state: { from: props.location },
-  //             }}
-  //           />
-  //         )
-  //       }
-  //     />
-  //   );
-  // }
+  function PrivateRoute({ children, ...rest }) {
+    return (
+      <Route
+        {...rest}
+        render={(props) =>
+          isAuthenticated ? (
+            children
+          ) : (
+            <Redirect
+              to={{
+                pathname: "/vendor/login",
+                state: { from: props.location },
+              }}
+            />
+          )
+        }
+      />
+    );
+  }
 }
 
 // ############################################################

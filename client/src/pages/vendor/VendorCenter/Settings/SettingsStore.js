@@ -56,9 +56,9 @@ import FormControl from "@material-ui/core/FormControl";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 
-import logo from "../../../assets/images/logo.png";
+import logo from "../../../../assets/images/logo.png";
 // import { useUserContext, logoutUser } from "../../../context/UserContext";
-import useStyles from "./styles";
+import useStyles from "../styles";
 
 export default function VendorCenter() {
   const classes = useStyles();
