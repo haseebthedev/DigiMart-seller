@@ -80,12 +80,23 @@ const buyerSchema=new mongoose.Schema({
             }
         }
     },
-    subscribedStores:{
+    isAccountActive:{
+        type:Boolean
+    },
+    subscribedStores:[{
         type: [mongoose.Schema.Types.ObjectId],
         ref:'Store'
-    },
+    }],
     profilePic:{
-        type: Buffer
+        type: String
+    },
+    isNotificationsEnabled:{
+        type: Boolean,
+        default: true
+    },
+    isDarkModeEnabled:{
+        type:Boolean,
+        default:false
     },
     //i commented it to use later when its schemas are created
     // orders:{

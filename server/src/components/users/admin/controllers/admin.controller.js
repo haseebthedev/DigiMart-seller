@@ -142,6 +142,33 @@ const deleteMyAccount = async(req, res, next) => {
     }
 }
 
+const updateProfile = async(req, res, next) => {
+    try{
+        const updates=Object.keys(req.body)
+        const allowedUpdated=['name','email','password','gender','phoneNumber','profilePic',
+        'isNotificationsEnabled','isDarkModeEnabled']
+        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        if(!isValidOperation || updates.length == 0){
+            throw new Error('Invalid Keys! Please enter valid keys.')
+        }
+        const user = req.user
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`User Profile has been updated successfully.`,
+            data:{
+                user: req.user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
 module.exports = {
     registerAdmin,
     getMyDetails,
@@ -149,5 +176,6 @@ module.exports = {
     logoutAdmin,
     deActivateMyAccount,
     activateMyAccount,
-    deleteMyAccount
+    deleteMyAccount,
+    updateProfile
 }

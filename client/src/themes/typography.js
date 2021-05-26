@@ -38,6 +38,18 @@ const typo = {
         "@font-face": [poppins],
       },
     },
+    MuiListItem: {
+      root: {
+        "&$selected": {
+          // color: colors.blue[500],
+          backgroundColor: "rgba(248, 248, 248, .3)",
+        },
+        // "&$hover": {
+        //   // color: colors.blue[500],
+        //   backgroundColor: "rgba(248, 248, 248, .3)",
+        // },
+      },
+    },
   },
 };
 

@@ -43,28 +43,66 @@ import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import BlockIcon from "@material-ui/icons/Block";
-
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import Switch from "@material-ui/core/Switch";
+import FileBase64 from "react-file-base64";
+import Avatar from "@material-ui/core/Avatar";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
-
 import logo from "../../../assets/images/logo.png";
-import CompleteRegister from "../CompleteRegister/CompleteRegister";
-import { useUserContext, logoutUser } from "../../../context/UserContext";
 import useStyles from "./styles";
+import axios from "axios";
+import { useUserContext } from "../../../context/UserContext";
 
 export default function VendorCenter() {
   const classes = useStyles();
-
-  // context
+  // eslint-disable-next-line
   const { store, dispatch } = useUserContext();
 
-  // states
-  const [showCompleteRegis, setCompleteRegis] = React.useState(
-    store.data.data.isStoreRegistered
-  );
+  const token = store.data.token;
+
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
+
+  const [profileData, setProfileData] = React.useState({
+    profilePic: "",
+    name: "Haseeb Ahmed",
+    email: "haseeb@gmail.com",
+    phoneNumber: "+923455488210",
+    isDarkModeEnabled: false,
+    isNotificationsEnabled: true,
+  });
+
+  const onProfileChange = (files) => {
+    setProfileData({ ...profileData, profilePic: files.base64 });
+  };
+  const handleChange = (input) => (e) => {
+    setProfileData({ ...profileData, [input]: e.target.value });
+  };
+  const handleChangeSwitch = (input) => (e) => {
+    setProfileData({ ...profileData, [input]: e.target.checked });
+  };
+
+  const handleSubmitUpdate = () => {
+    const storeURL = "http://localhost:8080/seller/me";
+    // console.log("TOKEN: ", token);
+    axios
+      .patch(
+        storeURL,
+        {
+          ...profileData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((res) => console.log("Profile Updated. RES: ", res))
+      .catch((error) => console.log("Error: " + error));
+  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -79,16 +117,16 @@ export default function VendorCenter() {
     setOpen(false);
   };
 
-  const printStore = () => {
-    console.log("STORE: ", store);
-  };
+  //   const printStore = () => {
+  //     console.log("STORE: ", store);
+  //   };
 
-  const logoutHandler = () => {
-    logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
-  };
+  //   const logoutHandler = () => {
+  //     logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
+  //   };
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
-  const [openDDSettings, setOpenDDSettings] = React.useState(false);
+  const [openDDSettings, setOpenDDSettings] = React.useState(true);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
@@ -220,19 +258,12 @@ export default function VendorCenter() {
 
         {/* Drawer Menu List */}
         <List>
-          <ListItem
-            button
-            component="a"
-            href="/vendor/dashboard"
-            selected={true}
-          >
+          <ListItem button component="a" href="/vendor/dashboard">
             <ListItemIcon>
               <DashboardIcon className={classes.iconColor} />
-              {/* <MailIcon className={classes.iconColor} /> */}
             </ListItemIcon>
             <ListItemText primary={"Dashboard"} />
           </ListItem>
-
           <ListItem button onClick={handleDDProduct}>
             <ListItemIcon>
               <ProductIcon className={classes.iconColor} />
@@ -295,12 +326,12 @@ export default function VendorCenter() {
             <ListItemText primary="Settings" />
             {openDDSettings ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
-
           <Collapse in={openDDSettings} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <ListItem
                 button
                 className={classes.dropdown}
+                selected={true}
                 component="a"
                 href="/vendor/settings/profile"
               >
@@ -340,38 +371,123 @@ export default function VendorCenter() {
 
         {/* BREADCRUMBS */}
         <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
-            Vendor
+          <Link color="inherit" href="/vendor/dashboard">
+            Dashboard
           </Link>
-          <Typography color="textPrimary">Dashboard</Typography>
+          <Typography color="textPrimary">Settings</Typography>
         </Breadcrumbs>
 
         <div style={{ margin: "20px 0" }}>
-          <Typography variant="h4">Vendor Center</Typography>
+          <Typography variant="h4">Profile Settings</Typography>
+          <Container component="div" maxWidth="xs">
+            <div className={classes.paper}>
+              <Grid className={classes.settingsSpacing}>
+                <form className={classes.form}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <Avatar
+                      alt="profile photo"
+                      src={profileData.profilePic}
+                      className={classes.avatarInProfileSetting}
+                    ></Avatar>
+                    <FileBase64
+                      size="60"
+                      multiple={false}
+                      onDone={onProfileChange}
+                    />
+                  </div>
+
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="name"
+                    label="Username"
+                    name="username"
+                    defaultValue={profileData.name}
+                    onChange={handleChange("name")}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    defaultValue={profileData.email}
+                    onChange={handleChange("email")}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="phone"
+                    label="Phone No."
+                    name="phoneNumber"
+                    defaultValue={profileData.phoneNumber}
+                    onChange={handleChange("phoneNumber")}
+                  />
+                  {/* <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="address"
+                    label="Address"
+                    name="address"
+                    defaultValue={profileData.address}
+                    onChange={handleChange("address")}
+                  /> */}
+
+                  <FormControlLabel
+                    margin="normal"
+                    control={
+                      <Switch
+                        color="secondary"
+                        checked={profileData.isDarkModeEnabled}
+                        onChange={handleChangeSwitch("isDarkModeEnabled")}
+                      />
+                    }
+                    label="Dark Mode"
+                    labelPlacement="start"
+                    className={classes.switch}
+                  />
+                  <FormControlLabel
+                    margin="normal"
+                    control={
+                      <Switch
+                        color="secondary"
+                        checked={profileData.isNotificationsEnabled}
+                        onChange={handleChangeSwitch("isNotificationsEnabled")}
+                      />
+                    }
+                    label="Receive system Notifications"
+                    labelPlacement="start"
+                    className={classes.switch}
+                  />
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                    onClick={handleSubmitUpdate}
+                  >
+                    SAVE CHANGES
+                  </Button>
+                </form>
+              </Grid>
+            </div>
+          </Container>
         </div>
 
-        {/* COMPLETE STORE REGISTRATION FORM */}
-        {!showCompleteRegis ? (
-          <CompleteRegister setCompleteRegis={setCompleteRegis} />
-        ) : (
-          ""
-        )}
-
-        <div style={{ margin: "20px 0" }}>
-          <Typography paragraph>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
-        </div>
-        <Button onClick={printStore}>SHOW STORE</Button>
-        <Button onClick={logoutHandler}>Log Out</Button>
+        {/* <Button onClick={printStore}>SHOW STORE</Button>
+        <Button onClick={logoutHandler}>Log Out</Button> */}
         <Copyright />
       </main>
     </div>

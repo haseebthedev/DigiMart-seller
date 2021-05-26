@@ -122,18 +122,24 @@ const activateMyAccount = async(req, res, next) => {
     }
 }
 
-const updateAccountPassword = async(req, res, next) => {
+const updateProfile = async(req, res, next) => {
     try{
+        const updates=Object.keys(req.body)
+        console.log(updates.length)
+        const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
+        'accountNumber','profilePic','isNotificationsEnabled','isDarkModeEnabled']
+        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        if(!isValidOperation || updates.length == 0){
+            throw new Error('Invalid Keys! Please enter valid keys.')
+        }
         const user = req.user
-        user['password'] = req.body.password
+        updates.forEach((update) => user[update] = req.body[update])
         await user.save()
-        //send new password email to user
-        //userEmail.sendForgetPasswordMail(user.email,password)
+        //send email here
         return res.status(200).json({
-            message:`User Password have been updated successfully.`,
+            message:`User Profile has been updated successfully.`,
             data:{
-                email: req.user.email,
-                pass: password
+                user: req.user
             }
         })
     }
@@ -177,5 +183,6 @@ module.exports = {
     activateMyAccount,
     deActivateMyAccount,
     deleteMyAccount,
-    forgetAccountPassword
+    forgetAccountPassword,
+    updateProfile
 }

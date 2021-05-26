@@ -44,24 +44,28 @@ import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import BlockIcon from "@material-ui/icons/Block";
 
+import TextField from "@material-ui/core/TextField";
+import Container from "@material-ui/core/Container";
+import Grid from "@material-ui/core/Grid";
+import FileBase64 from "react-file-base64";
+import Avatar from "@material-ui/core/Avatar";
+
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 
 import logo from "../../../assets/images/logo.png";
-import CompleteRegister from "../CompleteRegister/CompleteRegister";
-import { useUserContext, logoutUser } from "../../../context/UserContext";
+// import { useUserContext, logoutUser } from "../../../context/UserContext";
 import useStyles from "./styles";
 
 export default function VendorCenter() {
   const classes = useStyles();
 
   // context
-  const { store, dispatch } = useUserContext();
+  // const { store, dispatch } = useUserContext();
 
-  // states
-  const [showCompleteRegis, setCompleteRegis] = React.useState(
-    store.data.data.isStoreRegistered
-  );
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
@@ -79,21 +83,35 @@ export default function VendorCenter() {
     setOpen(false);
   };
 
-  const printStore = () => {
-    console.log("STORE: ", store);
-  };
+  // const printStore = () => {
+  //   console.log("STORE: ", store);
+  // };
 
-  const logoutHandler = () => {
-    logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
+  // const logoutHandler = () => {
+  //   logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
+  // };
+
+  const [storeData, setStoreData] = React.useState({
+    storeLogo: "",
+    name: "Haseeb Ahmed",
+    biography: "We fu*king sell products online",
+    category: "Electronic",
+    address: "Street # 213, Block-F, Satellite Town",
+  });
+
+  const onStoreLogo = (files) => {
+    setStoreData({ ...storeData, storeLogo: files.base64 });
+  };
+  const handleChange = (input) => (e) => {
+    setStoreData({ ...storeData, [input]: e.target.value });
   };
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
-  const [openDDSettings, setOpenDDSettings] = React.useState(false);
+  const [openDDSettings, setOpenDDSettings] = React.useState(true);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
   };
-
   const handleDDSettings = () => {
     setOpenDDSettings(!openDDSettings);
   };
@@ -220,19 +238,13 @@ export default function VendorCenter() {
 
         {/* Drawer Menu List */}
         <List>
-          <ListItem
-            button
-            component="a"
-            href="/vendor/dashboard"
-            selected={true}
-          >
+          <ListItem button component="a" href="/vendor/dashboard">
             <ListItemIcon>
               <DashboardIcon className={classes.iconColor} />
               {/* <MailIcon className={classes.iconColor} /> */}
             </ListItemIcon>
             <ListItemText primary={"Dashboard"} />
           </ListItem>
-
           <ListItem button onClick={handleDDProduct}>
             <ListItemIcon>
               <ProductIcon className={classes.iconColor} />
@@ -256,7 +268,6 @@ export default function VendorCenter() {
               </ListItem>
             </List>
           </Collapse>
-
           <ListItem button>
             <ListItemIcon>
               <SalesIcon className={classes.iconColor} />
@@ -314,6 +325,7 @@ export default function VendorCenter() {
                 className={classes.dropdown}
                 component="a"
                 href="/vendor/settings/store"
+                selected={true}
               >
                 <ListItemIcon>
                   <LocalConvenienceStoreIcon className={classes.iconColor} />
@@ -340,38 +352,110 @@ export default function VendorCenter() {
 
         {/* BREADCRUMBS */}
         <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
-            Vendor
+          <Link color="inherit" href="/vendor/dashboard">
+            Dashboard
           </Link>
-          <Typography color="textPrimary">Dashboard</Typography>
+          <Typography color="textPrimary">Settings</Typography>
         </Breadcrumbs>
 
         <div style={{ margin: "20px 0" }}>
-          <Typography variant="h4">Vendor Center</Typography>
-        </div>
+          <Typography variant="h4">Store Settings</Typography>
+          <Container component="div" maxWidth="xs">
+            <div className={classes.paper}>
+              <Grid className={classes.settingsSpacing}>
+                <form className={classes.form}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <Avatar
+                      alt="profile photo"
+                      src={storeData.storeLogo}
+                      className={classes.avatarInProfileSetting}
+                    >
+                      {"LOGO HERE"}
+                    </Avatar>
+                    <FileBase64
+                      size="60"
+                      multiple={false}
+                      onDone={onStoreLogo}
+                    />
+                  </div>
 
-        {/* COMPLETE STORE REGISTRATION FORM */}
-        {!showCompleteRegis ? (
-          <CompleteRegister setCompleteRegis={setCompleteRegis} />
-        ) : (
-          ""
-        )}
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="name"
+                    label="Store Name"
+                    name="storeName"
+                    defaultValue={storeData.name}
+                    onChange={handleChange("name")}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="biography"
+                    label="Biography"
+                    name="biography"
+                    defaultValue={storeData.biography}
+                    onChange={handleChange("biography")}
+                  />
 
-        <div style={{ margin: "20px 0" }}>
-          <Typography paragraph>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
+                  <FormControl fullWidth>
+                    <InputLabel style={{ marginLeft: "10px" }}>
+                      Category
+                    </InputLabel>
+                    <Select
+                      variant="outlined"
+                      defaultValue={storeData.category}
+                      onChange={handleChange("category")}
+                      style={{ marginTop: "20px" }}
+                    >
+                      <option value="Electronic">Electronics</option>
+                      <option value="Health">Health and Beauty</option>
+                      <option value="Groceries">Groceries & Pets</option>
+                      <option value="Lifestyle">Home & Lifestyle</option>
+                      <option value="fashion">Fashion & Clothing</option>
+                      <option value="sports">Sports</option>
+                      <option value="automotive">Automotive and Bikes</option>
+                    </Select>
+                  </FormControl>
+
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    id="address"
+                    label="Warehouse Address"
+                    name="address"
+                    defaultValue={storeData.address}
+                    onChange={handleChange("address")}
+                  />
+
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    className={classes.submit}
+                    onClick={() =>
+                      console.log("Saving updated profile data...", storeData)
+                    }
+                  >
+                    SAVE CHANGES
+                  </Button>
+                </form>
+              </Grid>
+            </div>
+          </Container>
         </div>
-        <Button onClick={printStore}>SHOW STORE</Button>
-        <Button onClick={logoutHandler}>Log Out</Button>
+        {/* <Button onClick={printStore}>SHOW STORE</Button> */}
+        {/* <Button onClick={logoutHandler}>Log Out</Button> */}
         <Copyright />
       </main>
     </div>

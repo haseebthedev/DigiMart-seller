@@ -7,8 +7,8 @@ router.post('/admin/register', adminController.registerAdmin)
 router.post('/admin/login', adminController.loginAdmin)
 router.get('/admin/me', adminAuth ,adminController.getMyDetails)
 router.post('/admin/logout', adminAuth , adminController.logoutAdmin)
-router.post('/admin/activateMyAccount', adminAuth ,adminController.activateMyAccount)
-router.post('/admin/deActivateMyAccount', adminAuth , adminController.deActivateMyAccount)
+router.patch('/admin/activateMyAccount', adminAuth ,adminController.activateMyAccount)
+router.patch('/admin/deActivateMyAccount', adminAuth , adminController.deActivateMyAccount)
 router.delete('/admin/me', adminAuth, adminController.deleteMyAccount)
-
+router.patch('/admin/me', adminAuth, adminController.updateProfile)
 module.exports = router

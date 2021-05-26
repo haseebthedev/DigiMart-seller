@@ -91,7 +91,7 @@ export default function CompleteRegister(props) {
       // SAVING STORE DETAILS INTO DATABASE
       const storeURL = "http://localhost:8080/store/register";
       axios
-        .post(
+        .patch(
           storeURL,
           {
             category,

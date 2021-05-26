@@ -10,6 +10,9 @@ const pal = {
   //     main: primary,
   //   },
   // },
+  // palette: {
+  //   type: "dark",
+  // },
 };
 
 export default pal;

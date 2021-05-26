@@ -1,7 +1,10 @@
+// VENDOR LINKS
 import LoginVendor from "../pages/vendor/Login/Login";
 import SignUpVendor from "../pages/vendor/Register/Register";
 import ForgetPassword from "../pages/vendor/ForgetPassword/ForgetPassword";
 import VendorCenter from "../pages/vendor/VendorCenter/VendorCenter";
+import SettingsProfile from "../pages/vendor/VendorCenter/SettingsProfile";
+import SettingsStore from "../pages/vendor/VendorCenter/SettingsStore";
 
 import React from "react";
 import {
@@ -30,11 +33,17 @@ export default function App() {
         <Route path="/forget-password">
           <ForgetPassword />
         </Route>
-        <Route path="/vendor/register">
+        <Route exact path="/vendor/register">
           <SignUpVendor />
         </Route>
-        <Route path="/vendor/dashboard">
+        <Route exact path="/vendor/dashboard">
           <VendorCenter />
+        </Route>
+        <Route exact path="/vendor/Settings/Profile">
+          <SettingsProfile />
+        </Route>
+        <Route exact path="/vendor/Settings/Store">
+          <SettingsStore />
         </Route>
         {/* <PrivateRoute path="/vendor/dashboard">
           <VendorDashboard />

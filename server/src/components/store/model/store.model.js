@@ -5,6 +5,7 @@ var uniqueValidator = require('mongoose-unique-validator');
 const storeSchema = new mongoose.Schema({
     name:{
         type: String,
+        unique:[true,'Store Name already exist.']
     },
     //e.g electronics, etc.
     category:{
@@ -39,7 +40,7 @@ const storeSchema = new mongoose.Schema({
         default: false
     },
     logo:{
-        type: Buffer
+        type: String
     },
     activityStatus:{
         type: String,

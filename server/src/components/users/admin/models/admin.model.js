@@ -64,7 +64,7 @@ const adminSchema = new mongoose.Schema({
         }
     },
     profilePic:{
-        type: Buffer
+        type: String
     },
     isAccountActive: {
         type: Boolean,
@@ -89,6 +89,14 @@ const adminSchema = new mongoose.Schema({
     roles:{
         type: [String],
         required: [true,'Please select roles you want to assign to Admin!']
+    },
+    isNotificationsEnabled:{
+        type: Boolean,
+        default: true
+    },
+    isDarkModeEnabled:{
+        type:Boolean,
+        default:false
     },
     tokens:[{
         token:{

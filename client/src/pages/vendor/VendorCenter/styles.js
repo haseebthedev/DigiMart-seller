@@ -77,6 +77,35 @@ const useStyles = makeStyles((theme) => ({
   dropdown: {
     paddingLeft: theme.spacing(4),
   },
+  paper: {
+    // marginTop: theme.spacing(8),
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: "100%", // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  switch: {
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(2, 0, 2),
+  },
+  avatarInProfileSetting: {
+    height: "120px",
+    width: "120px",
+    backgroundColor: theme.palette.secondary.main,
+    [theme.breakpoints.down(700)]: {
+      height: "60px",
+      width: "60px",
+    },
+  },
 }));
 
 export default useStyles;

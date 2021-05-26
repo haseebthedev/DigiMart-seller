@@ -116,11 +116,19 @@ const vendorSchema=new mongoose.Schema({
     //     ref:'Store',
     // },
     profilePic:{
-        type: Buffer
+        type: String
     },
     isAccountActive:{
         type: Boolean,
         default: true
+    },
+    isNotificationsEnabled:{
+        type: Boolean,
+        default: true
+    },
+    isDarkModeEnabled:{
+        type:Boolean,
+        default:false
     },
     tokens:[{
         token:{
@@ -168,7 +176,7 @@ vendorSchema.methods.toJSON=function(){
     delete userObject.routingNumber
     delete userObject.bankHolderName
     delete userObject.bankName
-    delete userObject.CNIC
+    //delete userObject.CNIC
     //we delete img to display to user bcz it takes much time to fetch binary data of img
     //delete userObject.profilePic
     return userObject

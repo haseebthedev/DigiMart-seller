@@ -1,29 +1,23 @@
-const express = require("express");
-const router = express.Router();
-const vendorController = require("../controllers/vendor.controller");
-const vendorAuth = require("../middlewares/vendorAuth");
+const express = require('express')
+const router = express.Router()
+const vendorController = require('../controllers/vendor.controller')
+const vendorAuth = require('../middlewares/vendorAuth')
 
-router.post("/seller/register", vendorController.registerVendor);
-router.post("/seller/login", vendorController.loginVendor);
-router.post("/seller/logout", vendorAuth, vendorController.logoutVendor);
+//registration
+router.post('/seller/register', vendorController.registerVendor)
+router.post('/seller/login', vendorController.loginVendor)
+router.post('/seller/logout', vendorAuth ,vendorController.logoutVendor)
 //when vendor activates account after deactivating so we call this route
-router.post(
-  "/seller/activateAccount",
-  vendorAuth,
-  vendorController.activateMyAccount
-);
-router.post(
-  "/seller/deActivateAccount",
-  vendorAuth,
-  vendorController.deActivateMyAccount
-);
+router.patch('/seller/activateAccount', vendorAuth, vendorController.activateMyAccount)
+router.patch('/seller/deActivateAccount', vendorAuth, vendorController.deActivateMyAccount)
 //for ading bank details after vendor registration
-router.post(
-  "/seller/addBankDetailsAndRegisterStore",
-  vendorAuth,
-  vendorController.addBankDetails
-);
-router.delete("/seller/me", vendorAuth, vendorController.deleteMyAccount);
+router.patch('/seller/addBankDetailsAndRegisterStore', vendorAuth ,vendorController.addBankDetails)
+router.delete('/seller/me', vendorAuth, vendorController.deleteMyAccount)
 //forget Password
-router.post("/seller/forgetPassword", vendorController.forgetAccountPassword);
-module.exports = router;
+router.patch('/seller/forgetPassword' , vendorController.forgetAccountPassword)
+//update profile
+router.patch('/seller/me', vendorAuth ,vendorController.updateProfile)
+//get private details(for getting bank details etc. when required)
+router.get('/seller/personalDetails', vendorAuth, vendorController.getPersonalDetails)
+
+module.exports = router
