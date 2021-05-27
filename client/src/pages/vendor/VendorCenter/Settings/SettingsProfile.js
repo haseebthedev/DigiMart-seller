@@ -151,7 +151,7 @@ export default function VendorCenter() {
         }
       )
       .then(function (res) {
-        setTimeout(() => setIsLoggedOut(true), [500]);
+        setIsLoggedOut(true);
         return logoutUser(dispatch);
       })
       .catch((error) =>

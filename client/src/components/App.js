@@ -19,10 +19,8 @@ import { useUserContext } from "../context/UserContext";
 
 export default function App() {
   // global
-  var {
-    // eslint-disable-next-line
-    store: { isAuthenticated, data },
-  } = useUserContext();
+  // eslint-disable-next-line
+  const { store, dispatch } = useUserContext();
 
   return (
     <Router>
@@ -36,46 +34,38 @@ export default function App() {
         <Route exact path="/vendor/register">
           <SignUpVendor />
         </Route>
-        <Route exact path="/vendor/dashboard">
+        {/* <Route exact path="/vendor/dashboard">
           <VendorCenter />
-        </Route>
+        </Route> */}
         <Route exact path="/vendor/Settings/Profile">
           <SettingsProfile />
         </Route>
         <Route exact path="/vendor/Settings/Store">
           <SettingsStore />
         </Route>
-        {/* <PrivateRoute path="/vendor/dashboard">
-          <VendorDashboard />
-        </PrivateRoute> */}
-        <Route
+        <PrivateRoute exact path="/vendor/dashboard">
+          <VendorCenter />
+        </PrivateRoute>
+        {/* <Route
           exact
           path="/"
           render={() => <Redirect to="/vendor/dashboard" />}
-        />
+        /> */}
       </Switch>
     </Router>
   );
 
-  // function PrivateRoute({ children, ...rest }) {
-  //   return (
-  //     <Route
-  //       {...rest}
-  //       render={(props) =>
-  //         isAuthenticated ? (
-  //           children
-  //         ) : (
-  //           <Redirect
-  //             to={{
-  //               pathname: "/vendor/login",
-  //               state: { from: props.location },
-  //             }}
-  //           />
-  //         )
-  //       }
-  //     />
-  //   );
-  // }
+  // HOC for Auth routes
+  function PrivateRoute({ children, ...rest }) {
+    return (
+      <Route
+        {...rest}
+        render={() =>
+          store.isAuthenticated ? children : <Redirect to="/vendor/login" />
+        }
+      />
+    );
+  }
 }
 
 // ############################################################

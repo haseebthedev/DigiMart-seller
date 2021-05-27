@@ -52,7 +52,7 @@ const ForgetPassword = () => {
   const getPassword = () => {
     const URL = "http://localhost:8080/seller/forgetPassword";
     axios
-      .post(URL, { email: userEmail })
+      .patch(URL, { email: userEmail })
       .then((res) => console.log("Send Mail", res))
       .catch((error) => console.log());
 

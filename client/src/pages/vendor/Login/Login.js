@@ -106,7 +106,11 @@ const Login = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="/forget-password" variant="body2" color="secondary">
+                <Link
+                  href="/vendor/forget-password"
+                  variant="body2"
+                  color="secondary"
+                >
                   Forgot password?
                 </Link>
               </Grid>
