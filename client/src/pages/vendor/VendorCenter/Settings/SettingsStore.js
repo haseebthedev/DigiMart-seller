@@ -60,7 +60,8 @@ import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore"
 import logo from "../../../../assets/images/logo.png";
 import useStyles from "../styles";
 
-import { useUserContext } from "../../../../context/UserContext";
+import { useUserContext, logoutUser } from "../../../../context/UserContext";
+import { Redirect } from "react-router-dom";
 
 export default function VendorCenter() {
   const classes = useStyles();
@@ -101,6 +102,7 @@ export default function VendorCenter() {
     category: "Electronic",
     warehouseAddress: "Street # 213, Block-F, Satellite Town",
   });
+  const [isLoggedOut, setIsLoggedOut] = React.useState(false);
 
   const onSelectlogo = (files) => {
     setStoreData({ ...storeData, logo: files.base64 });
@@ -111,7 +113,7 @@ export default function VendorCenter() {
 
   // UPDATE REQUEST SENDING HERE
   const handleSubmitUpdate = () => {
-    const storeURL = "http://localhost:8080/store/me";
+    const storeURL = "http://localhost:8080/seller/store/me";
     axios
       .patch(
         storeURL,
@@ -136,8 +138,29 @@ export default function VendorCenter() {
     setOpenDDSettings(!openDDSettings);
   };
 
+  const logoutHandler = (e) => {
+    e.preventDefault();
+
+    axios
+      .post(
+        "http://localhost:8080/seller/logout",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(function (res) {
+        setTimeout(() => setIsLoggedOut(true), [500]);
+        return logoutUser(dispatch);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
+
   return (
     <div className={classes.root}>
+      {isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -226,7 +249,7 @@ export default function VendorCenter() {
                   </ListItemIcon>
                   <ListItemText primary="Settings and Config" />
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={logoutHandler}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <ExitToAppIcon fontSize="small" />
                   </ListItemIcon>

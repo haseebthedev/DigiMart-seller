@@ -11,4 +11,5 @@ router.patch('/admin/activateMyAccount', adminAuth ,adminController.activateMyAc
 router.patch('/admin/deActivateMyAccount', adminAuth , adminController.deActivateMyAccount)
 router.delete('/admin/me', adminAuth, adminController.deleteMyAccount)
 router.patch('/admin/me', adminAuth, adminController.updateProfile)
+router.patch('/admin/updatePassword', adminAuth, adminController.changePassword)
 module.exports = router

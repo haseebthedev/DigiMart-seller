@@ -55,7 +55,8 @@ import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore"
 import logo from "../../../../assets/images/logo.png";
 import useStyles from "../styles";
 import axios from "axios";
-import { useUserContext } from "../../../../context/UserContext";
+import { Redirect } from "react-router-dom";
+import { useUserContext, logoutUser } from "../../../../context/UserContext";
 
 export default function VendorCenter() {
   const classes = useStyles();
@@ -76,6 +77,7 @@ export default function VendorCenter() {
     isDarkModeEnabled: false,
     isNotificationsEnabled: true,
   });
+  const [isLoggedOut, setIsLoggedOut] = React.useState(false);
 
   const onProfileChange = (files) => {
     setProfileData({ ...profileData, profilePic: files.base64 });
@@ -137,8 +139,29 @@ export default function VendorCenter() {
     setOpenDDSettings(!openDDSettings);
   };
 
+  const logoutHandler = (e) => {
+    e.preventDefault();
+
+    axios
+      .post(
+        "http://localhost:8080/seller/logout",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(function (res) {
+        setTimeout(() => setIsLoggedOut(true), [500]);
+        return logoutUser(dispatch);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
+
   return (
     <div className={classes.root}>
+      {isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -227,7 +250,7 @@ export default function VendorCenter() {
                   </ListItemIcon>
                   <ListItemText primary="Settings and Config" />
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={logoutHandler}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <ExitToAppIcon fontSize="small" />
                   </ListItemIcon>

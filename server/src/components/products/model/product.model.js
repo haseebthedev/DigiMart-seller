@@ -53,15 +53,21 @@ const productSchema = new mongoose.Schema({
     colors:{
         type: [String],
     },
-    //refrences
-    storeName:{
-        type: String,
-        unique:false
-    },
     isVisibilityEnabled:{
         type: Boolean,
         default: true
+    },
+    //refrences
+    storeID:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Store',
+        required: true
+    },
+    storeName:{
+        type: String,
+        required: true
     }
+
     //to be used in future
     // reviews:[{
     //     type: Schema.Types.ObjectId,
@@ -73,8 +79,6 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 })
 
-//crating index on name of store
-productSchema.index({storeName: 1},{unique: true, name:'IDX_STORE_NAME'})
 
 productSchema.plugin(uniqueValidator, { message: '{PATH} already exists!' });
 const Product = mongoose.model('Product',productSchema)

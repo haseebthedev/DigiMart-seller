@@ -2,13 +2,15 @@ const Product = require('../model/product.model')
 
 const addProduct = async(req, res, next) => {
 
+    //FOR AUTHENTICATED VENDOR
     try{
         //check if product name added before in this store DB
-        const isProductNamePresent = await Product.findOne({name:req.body.name,storeName:req.user.storeName})
+        const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:req.store._id})
         if(isProductNamePresent){
             throw new Error('Product with this name already added before.')
         }
-        req.body['storeName'] = req.user.storeName
+        req.body['storeID'] = req.store._id
+        req.body['storeName'] = req.store.name
         const product = new Product(req.body)
         await product.save()
         res.status(201).json({
@@ -34,7 +36,9 @@ const updateProduct = async(req, res, next) => {
             throw new Error('Invalid Keys! Please enter valid keys.')
         }
         const productID = req.params.id
-        const product = await Product.findOne({_id:productID,storeName:req.user.storeName})
+        const storeID = req.store._id
+        
+        const product = await Product.findOne({_id:productID,storeID:storeID})
         //console.log(product)
         updates.forEach((update) => product[update] = req.body[update])
         await product.save()
@@ -54,7 +58,8 @@ const updateProduct = async(req, res, next) => {
 const deleteProduct = async(req, res, next) => {
     try{
         const _id = req.params.id
-        const product = await Product.findOneAndDelete({_id:_id , storeName:req.user.storeName})
+        const storeID = req.store._id
+        const product = await Product.findOneAndDelete({_id:_id , storeID:storeID})
         if(!product){
             throw new Error('Product not found!')
         }
@@ -70,8 +75,117 @@ const deleteProduct = async(req, res, next) => {
         next(err)
     }
 }
+
+const viewMyStoreProducts = async(req, res, next) => {
+    try{
+        const storeID = req.store._id
+        const products = await Product.find({storeID: storeID})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Store products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewMyStoreProduct = async(req, res, next) => {
+    try{
+        const storeID = req.store._id
+        const productID = req.params.id
+        const product = await Product.findOne({storeID: storeID, _id: productID})
+        if(!product){
+            throw new Error('Product not found!')
+        }
+        res.status(200).json({
+            message:`Product fetched successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+//FOR ADMIN 
+
+const viewAllProductsInAllStores = async(req, res, next) => {
+    try{
+        const products = await Product.find({})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewProductDetails = async(req, res, next) => {
+    try{
+        const productID = req.params.id
+        const product = await Product.findOne({ _id: productID})
+        if(!product){
+            throw new Error('Product not found!')
+        }
+        res.status(200).json({
+            message:`Product fetched successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewProductsOfStore = async(req, res, next) => {
+    try{
+        const storeID = req.params.id
+        const product = await Product.findOne({storeID: storeID})
+        if(!product){
+            throw new Error('Store not found!')
+        }
+        res.status(200).json({
+            message:`Store products fetched successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
 module.exports = {
+    //VENDOR
     addProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    viewMyStoreProducts,
+    viewMyStoreProduct,
+    //ADMIN
+    viewAllProductsInAllStores,
+    viewProductDetails,
+    viewProductsOfStore
 }

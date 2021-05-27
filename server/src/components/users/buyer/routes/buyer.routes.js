@@ -11,5 +11,6 @@ router.patch('/buyer/deActivateAccount', buyerAuth ,buyerController.deActivateMy
 router.delete('/buyer/me', buyerAuth, buyerController.deleteMyAccount)
 router.patch('/buyer/forgetPassword' , buyerController.forgetAccountPassword)
 router.patch('/buyer/me', buyerAuth ,buyerController.updateProfile)
+router.patch('/buyer/updatePassword', buyerAuth ,buyerController.changePassword)
 
 module.exports = router 

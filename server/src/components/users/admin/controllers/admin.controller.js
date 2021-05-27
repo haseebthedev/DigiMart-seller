@@ -1,4 +1,5 @@
 const Admin = require('../models/admin.model')
+const bcrypt=require('bcryptjs')
 const notification = require('../../../notifications/account')
 
 const registerAdmin = async(req, res, next) => {
@@ -168,6 +169,32 @@ const updateProfile = async(req, res, next) => {
     }
 }
 
+const changePassword = async(req, res, next) => {
+    try{
+        const user = req.user
+        const oldPassword = req.body.oldPassword
+        const newPassword = req.body.newPassword
+        const isMatch= await bcrypt.compare(oldPassword,user.password)
+        if(!isMatch || !oldPassword || !newPassword){
+        throw new Error('Invalid password Entered!')
+        }
+        //update password
+        user['password'] = newPassword
+        await user.save()
+        //send change password mail here
+        return res.status(200).json({
+            message:`User Password has been updated successfully.`,
+            data:{
+                user: req.user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 module.exports = {
     registerAdmin,
@@ -177,5 +204,6 @@ module.exports = {
     deActivateMyAccount,
     activateMyAccount,
     deleteMyAccount,
-    updateProfile
+    updateProfile,
+    changePassword
 }

@@ -1,6 +1,7 @@
 const Buyer = require('../models/buyer.model')
 const passwordGenerator = require('generate-password');
 const userEmail = require('../../../notifications/account')
+const bcrypt=require('bcryptjs')
 const notification = require('../../../notifications/account')
 
 const registerBuyer = async (req,res,next) => {
@@ -176,6 +177,32 @@ const forgetAccountPassword = async(req, res, next) => {
     }
 }
 
+const changePassword = async(req, res, next) => {
+    try{
+        const user = req.user
+        const oldPassword = req.body.oldPassword
+        const newPassword = req.body.newPassword
+        const isMatch= await bcrypt.compare(oldPassword,user.password)
+        if(!isMatch || !oldPassword || !newPassword){
+        throw new Error('Invalid password Entered!')
+        }
+        //update password
+        user['password'] = newPassword
+        await user.save()
+        //send change password mail here
+        return res.status(200).json({
+            message:`User Password has been updated successfully.`,
+            data:{
+                user: req.user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports = {
     registerBuyer,
     loginBuyer,
@@ -184,5 +211,6 @@ module.exports = {
     deActivateMyAccount,
     deleteMyAccount,
     forgetAccountPassword,
-    updateProfile
+    updateProfile,
+    changePassword
 }

@@ -1,5 +1,6 @@
 const Vendor = require('../models/vendor.model')
 const passwordGenerator = require('generate-password');
+const bcrypt=require('bcryptjs')
 const notification = require('../../../notifications/account')
 
 const registerVendor = async(req, res, next) => {
@@ -70,6 +71,8 @@ const logoutVendor = async(req, res, next) => {
 const deleteMyAccount = async(req, res, next) => {
     try{  
         await req.user.remove()
+        //later add this
+        //if vendor delete .. delete its store, products, reviews etc.
         res.status(200).json({
             message:`Account has been Deleted successfully.`,
             data:{
@@ -197,7 +200,7 @@ const updateProfile = async(req, res, next) => {
     try{
         const updates=Object.keys(req.body)
         const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
-        'accountNumber','routingNumber','bankHolderName','bankName','CNIC','storeName',
+        'accountNumber','routingNumber','bankHolderName','bankName','CNIC',
         'isStoreRegistered','profilePic','isNotificationsEnabled','isDarkModeEnabled']
         const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
         if(!isValidOperation || updates.length == 0){
@@ -245,6 +248,32 @@ const getPersonalDetails = async(req, res, next) => {
     }
 }
 
+const changePassword = async(req, res, next) => {
+    try{
+        const user = req.user
+        const oldPassword = req.body.oldPassword
+        const newPassword = req.body.newPassword
+        const isMatch= await bcrypt.compare(oldPassword,user.password)
+        if(!isMatch || !oldPassword || !newPassword){
+        throw new Error('Invalid password Entered!')
+        }
+        //update password
+        user['password'] = newPassword
+        await user.save()
+        //send change password mail here
+        return res.status(200).json({
+            message:`User Password has been updated successfully.`,
+            data:{
+                user: req.user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports={
     registerVendor,
     loginVendor,
@@ -255,5 +284,6 @@ module.exports={
     addBankDetails,
     forgetAccountPassword,
     updateProfile,
-    getPersonalDetails
+    getPersonalDetails,
+    changePassword
 }

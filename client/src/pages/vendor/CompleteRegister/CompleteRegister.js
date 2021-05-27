@@ -89,7 +89,7 @@ export default function CompleteRegister(props) {
       } = state;
 
       // SAVING STORE DETAILS INTO DATABASE
-      const storeURL = "http://localhost:8080/store/register";
+      const storeURL = "http://localhost:8080/seller/store/register";
       axios
         .post(
           storeURL,
