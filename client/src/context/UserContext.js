@@ -15,9 +15,15 @@ function userReducer(store = [], action) {
         data: { data: action.data, token: action.token },
       };
     case "LOGIN_SUCCESS":
-      return { ...store, isAuthenticated: true };
-    case "SIGN_OUT":
-      return { isAuthenticated: false };
+      return {
+        isAuthenticated: true,
+        data: { data: action.data, token: action.token },
+      };
+    case "LOGOUT":
+      return {
+        ...store,
+        isAuthenticated: false,
+      };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
@@ -50,18 +56,19 @@ const registerUser = async (dispatch, data, token) => {
   }
 };
 
-function loginUser(dispatch, email, password) {
-  if (!!email && !!password) {
-    setTimeout(() => {
-      dispatch({ type: "LOGIN_SUCCESS" });
-    }, 2000);
-  }
-}
-
-const logoutUser = async (dispatch, email, password) => {
+const loginUser = async (dispatch, data, token) => {
   try {
-    await localStorage.removeItem("USER_DATA");
-    dispatch({ type: "SIGN_OUT" });
+    localStorage.setItem("USER_DATA", JSON.stringify({ data, token }));
+    await dispatch({ type: "LOGIN_SUCCESS", data, token });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const logoutUser = async (dispatch) => {
+  try {
+    localStorage.removeItem("USER_DATA");
+    await dispatch({ type: "LOGOUT" });
   } catch (error) {
     console.log("ERROR AT CONTEXT: ", error);
   }

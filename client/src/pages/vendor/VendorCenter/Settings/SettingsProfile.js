@@ -87,6 +87,7 @@ export default function VendorCenter() {
     setProfileData({ ...profileData, [input]: e.target.checked });
   };
 
+  // UPDATE REQUEST SENDING HERE
   const handleSubmitUpdate = () => {
     const storeURL = "http://localhost:8080/seller/me";
     // console.log("TOKEN: ", token);

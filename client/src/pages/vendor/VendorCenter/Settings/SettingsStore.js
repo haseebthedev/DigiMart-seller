@@ -1,5 +1,6 @@
 import React from "react";
 import clsx from "clsx";
+import axios from "axios";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -57,14 +58,16 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 
 import logo from "../../../../assets/images/logo.png";
-// import { useUserContext, logoutUser } from "../../../context/UserContext";
 import useStyles from "../styles";
+
+import { useUserContext } from "../../../../context/UserContext";
 
 export default function VendorCenter() {
   const classes = useStyles();
-
   // context
-  // const { store, dispatch } = useUserContext();
+  // eslint-disable-next-line
+  const { store, dispatch } = useUserContext();
+  const token = store.data.token;
 
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -92,18 +95,35 @@ export default function VendorCenter() {
   // };
 
   const [storeData, setStoreData] = React.useState({
-    storeLogo: "",
+    logo: "",
     name: "Haseeb Ahmed",
     biography: "We fu*king sell products online",
     category: "Electronic",
-    address: "Street # 213, Block-F, Satellite Town",
+    warehouseAddress: "Street # 213, Block-F, Satellite Town",
   });
 
-  const onStoreLogo = (files) => {
-    setStoreData({ ...storeData, storeLogo: files.base64 });
+  const onSelectlogo = (files) => {
+    setStoreData({ ...storeData, logo: files.base64 });
   };
   const handleChange = (input) => (e) => {
     setStoreData({ ...storeData, [input]: e.target.value });
+  };
+
+  // UPDATE REQUEST SENDING HERE
+  const handleSubmitUpdate = () => {
+    const storeURL = "http://localhost:8080/store/me";
+    axios
+      .patch(
+        storeURL,
+        {
+          ...storeData,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((res) => console.log("Store Updated. RES: ", res))
+      .catch((error) => console.log("Error: " + error));
   };
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
@@ -374,7 +394,7 @@ export default function VendorCenter() {
                   >
                     <Avatar
                       alt="profile photo"
-                      src={storeData.storeLogo}
+                      src={storeData.logo}
                       className={classes.avatarInProfileSetting}
                     >
                       {"LOGO HERE"}
@@ -382,7 +402,7 @@ export default function VendorCenter() {
                     <FileBase64
                       size="60"
                       multiple={false}
-                      onDone={onStoreLogo}
+                      onDone={onSelectlogo}
                     />
                   </div>
 
@@ -431,11 +451,11 @@ export default function VendorCenter() {
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    id="address"
+                    id="warehouseAddress"
                     label="Warehouse Address"
-                    name="address"
-                    defaultValue={storeData.address}
-                    onChange={handleChange("address")}
+                    name="warehouseAddress"
+                    defaultValue={storeData.warehouseAddress}
+                    onChange={handleChange("warehouseAddress")}
                   />
 
                   <Button
@@ -443,9 +463,7 @@ export default function VendorCenter() {
                     variant="contained"
                     color="secondary"
                     className={classes.submit}
-                    onClick={() =>
-                      console.log("Saving updated profile data...", storeData)
-                    }
+                    onClick={handleSubmitUpdate}
                   >
                     SAVE CHANGES
                   </Button>

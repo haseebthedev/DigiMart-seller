@@ -13,7 +13,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormLabel from "@material-ui/core/FormLabel";
 import axios from "axios";
 
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import { useStyles } from "./styles";
 // eslint-disable-next-line
 import { useUserContext, registerUser } from "../../../context/UserContext";
@@ -39,6 +39,7 @@ const Register = () => {
   // eslint-disable-next-line
   const { store, dispatch } = useUserContext();
 
+  const [isRegistered, setIsRegistered] = React.useState(false);
   const [name, setName] = React.useState("Haseeb Ahmed");
   const [cnic, setCnic] = React.useState("34601-0385037-7");
   const [email, setEmail] = React.useState("haseeb@gmail.com");
@@ -62,21 +63,22 @@ const Register = () => {
         password,
         storeName,
       })
-      .then((res) =>
-        registerUser(dispatch, res.data.data.vendor, res.data.data.token)
-      )
-      // .then((res) => console.log("DATA", res.data))
+      .then(function (res) {
+        setTimeout(() => setIsRegistered(true), [500]);
+        return registerUser(
+          dispatch,
+          res.data.data.vendor,
+          res.data.data.token
+        );
+      })
       .catch((error) =>
         console.log("ERROR: " + JSON.stringify(error.response.data.error))
       );
   };
 
-  const printStore = () => {
-    console.log("STORE: ", store);
-  };
-
   return (
     <React.Fragment>
+      {isRegistered ? <Redirect to="/vendor/dashboard" /> : ""}
       <AppBar position="absolute" className={classes.appBar}>
         <Toolbar>
           <img src={logo} alt="Logo" className={classes.logo} />
@@ -203,13 +205,6 @@ const Register = () => {
                 onClick={handleRegisterVendor}
               >
                 Register
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={printStore}
-              >
-                PRINT STORE
               </Button>
             </Grid>
           </Grid>

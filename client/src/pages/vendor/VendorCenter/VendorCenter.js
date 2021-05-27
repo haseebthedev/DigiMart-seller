@@ -29,7 +29,6 @@ import LiveHelpIcon from "@material-ui/icons/LiveHelp";
 import AssistantPhotoIcon from "@material-ui/icons/AssistantPhoto";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
-import Button from "@material-ui/core/Button";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
@@ -49,19 +48,24 @@ import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore"
 
 import logo from "../../../assets/images/logo.png";
 import CompleteRegister from "../CompleteRegister/CompleteRegister";
+
+import axios from "axios";
 import { useUserContext, logoutUser } from "../../../context/UserContext";
 import useStyles from "./styles";
+import { withRouter, Redirect } from "react-router-dom";
 
-export default function VendorCenter() {
+const VendorCenter = () => {
   const classes = useStyles();
 
   // context
   const { store, dispatch } = useUserContext();
+  const token = store.data.token;
 
   // states
   const [showCompleteRegis, setCompleteRegis] = React.useState(
     store.data.data.isStoreRegistered
   );
+  const [isLoggedOut, setIsLoggedOut] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
@@ -79,12 +83,24 @@ export default function VendorCenter() {
     setOpen(false);
   };
 
-  const printStore = () => {
-    console.log("STORE: ", store);
-  };
+  const logoutHandler = (e) => {
+    e.preventDefault();
 
-  const logoutHandler = () => {
-    logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
+    axios
+      .post(
+        "http://localhost:8080/seller/logout",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(function (res) {
+        setTimeout(() => setIsLoggedOut(true), [500]);
+        return logoutUser(dispatch);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
   };
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
@@ -93,7 +109,6 @@ export default function VendorCenter() {
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
   };
-
   const handleDDSettings = () => {
     setOpenDDSettings(!openDDSettings);
   };
@@ -101,6 +116,7 @@ export default function VendorCenter() {
   return (
     <div className={classes.root}>
       <CssBaseline />
+      {isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
@@ -188,7 +204,7 @@ export default function VendorCenter() {
                   </ListItemIcon>
                   <ListItemText primary="Settings and Config" />
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={logoutHandler}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <ExitToAppIcon fontSize="small" />
                   </ListItemIcon>
@@ -370,8 +386,6 @@ export default function VendorCenter() {
             PageMaker including versions of Lorem Ipsum.
           </Typography>
         </div>
-        <Button onClick={printStore}>SHOW STORE</Button>
-        <Button onClick={logoutHandler}>Log Out</Button>
         <Copyright />
       </main>
     </div>
@@ -389,4 +403,6 @@ export default function VendorCenter() {
       </Typography>
     );
   }
-}
+};
+
+export default withRouter(VendorCenter);

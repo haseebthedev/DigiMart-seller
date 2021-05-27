@@ -57,25 +57,25 @@ export default function App() {
     </Router>
   );
 
-  function PrivateRoute({ children, ...rest }) {
-    return (
-      <Route
-        {...rest}
-        render={(props) =>
-          isAuthenticated ? (
-            children
-          ) : (
-            <Redirect
-              to={{
-                pathname: "/vendor/login",
-                state: { from: props.location },
-              }}
-            />
-          )
-        }
-      />
-    );
-  }
+  // function PrivateRoute({ children, ...rest }) {
+  //   return (
+  //     <Route
+  //       {...rest}
+  //       render={(props) =>
+  //         isAuthenticated ? (
+  //           children
+  //         ) : (
+  //           <Redirect
+  //             to={{
+  //               pathname: "/vendor/login",
+  //               state: { from: props.location },
+  //             }}
+  //           />
+  //         )
+  //       }
+  //     />
+  //   );
+  // }
 }
 
 // ############################################################

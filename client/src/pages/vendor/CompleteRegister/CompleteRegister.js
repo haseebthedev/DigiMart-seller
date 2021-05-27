@@ -91,7 +91,7 @@ export default function CompleteRegister(props) {
       // SAVING STORE DETAILS INTO DATABASE
       const storeURL = "http://localhost:8080/store/register";
       axios
-        .patch(
+        .post(
           storeURL,
           {
             category,
@@ -113,7 +113,7 @@ export default function CompleteRegister(props) {
       const paymentURL =
         "http://localhost:8080/seller/addBankDetailsAndRegisterStore";
       axios
-        .post(
+        .patch(
           paymentURL,
           {
             // change this name
