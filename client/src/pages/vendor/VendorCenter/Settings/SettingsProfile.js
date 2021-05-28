@@ -58,11 +58,14 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { useUserContext, logoutUser } from "../../../../context/UserContext";
 
+// components
+import DeleteAccount from "../../../../components/vendor/FormDialog/DeleteAccount";
+import DeactivateAccount from "../../../../components/vendor/FormDialog/DeactivateAccount";
+
 export default function VendorCenter() {
   const classes = useStyles();
   // eslint-disable-next-line
   const { store, dispatch } = useUserContext();
-
   const token = store.data.token;
 
   const [open, setOpen] = React.useState(true);
@@ -78,6 +81,61 @@ export default function VendorCenter() {
     isNotificationsEnabled: true,
   });
   const [isLoggedOut, setIsLoggedOut] = React.useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = React.useState(false);
+  const [isDeactivatingAccount, setIsDeactivatingAccount] =
+    React.useState(false);
+
+  // show delete Account Dialog
+  const handlerAccountDelete = (e) => {
+    e.preventDefault();
+    setIsDeletingAccount(true);
+  };
+  // Delete Account Handler
+  const confirmedDelete = () => {
+    setIsDeletingAccount(false);
+    console.log("Deleting your account....");
+
+    const URL = "http://localhost:8080/seller/me";
+    axios
+      .delete(URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(function (res) {
+        setIsLoggedOut(true);
+        return logoutUser(dispatch);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
+
+  // show deactivating Account Dialog
+  const handlerAccountDeactivate = (e) => {
+    e.preventDefault();
+    setIsDeactivatingAccount(true);
+  };
+  // Deactivate Account Handler
+  const confirmedDeactivate = () => {
+    setIsDeactivatingAccount(false);
+    console.log("Deactivating your account....");
+
+    const URL = "http://localhost:8080/seller/deActivateAccount";
+    axios
+      .patch(
+        URL,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(function (res) {
+        setIsLoggedOut(true);
+        return logoutUser(dispatch);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
 
   const onProfileChange = (files) => {
     setProfileData({ ...profileData, profilePic: files.base64 });
@@ -120,21 +178,12 @@ export default function VendorCenter() {
     setOpen(false);
   };
 
-  //   const printStore = () => {
-  //     console.log("STORE: ", store);
-  //   };
-
-  //   const logoutHandler = () => {
-  //     logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
-  //   };
-
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
   const [openDDSettings, setOpenDDSettings] = React.useState(true);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
   };
-
   const handleDDSettings = () => {
     setOpenDDSettings(!openDDSettings);
   };
@@ -457,16 +506,6 @@ export default function VendorCenter() {
                     defaultValue={profileData.phoneNumber}
                     onChange={handleChange("phoneNumber")}
                   />
-                  {/* <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    id="address"
-                    label="Address"
-                    name="address"
-                    defaultValue={profileData.address}
-                    onChange={handleChange("address")}
-                  /> */}
 
                   <FormControlLabel
                     margin="normal"
@@ -504,6 +543,28 @@ export default function VendorCenter() {
                   >
                     SAVE CHANGES
                   </Button>
+                  <Grid container justify="center" spacing={2}>
+                    <Grid item>
+                      <Link
+                        color="error"
+                        component="button"
+                        variant="body2"
+                        onClick={handlerAccountDeactivate}
+                      >
+                        Deactivate Account
+                      </Link>
+                    </Grid>
+                    <Grid item>
+                      <Link
+                        color="error"
+                        component="button"
+                        variant="body2"
+                        onClick={handlerAccountDelete}
+                      >
+                        Delete Account
+                      </Link>
+                    </Grid>
+                  </Grid>
                 </form>
               </Grid>
             </div>
@@ -513,6 +574,16 @@ export default function VendorCenter() {
         {/* <Button onClick={printStore}>SHOW STORE</Button>
         <Button onClick={logoutHandler}>Log Out</Button> */}
         <Copyright />
+        <DeleteAccount
+          DeletingAccount={isDeletingAccount}
+          setDeletingAccount={setIsDeletingAccount}
+          confirmedDelete={confirmedDelete}
+        />
+        <DeactivateAccount
+          DeactivatingAccount={isDeactivatingAccount}
+          setDeactivatingAccount={setIsDeactivatingAccount}
+          confirmedDeactivate={confirmedDeactivate}
+        />
       </main>
     </div>
   );
