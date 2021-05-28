@@ -180,12 +180,16 @@ export default function VendorCenter() {
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
   const [openDDSettings, setOpenDDSettings] = React.useState(true);
+  const [openDDPayments, setOpenDDPayments] = React.useState(false);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
   };
   const handleDDSettings = () => {
     setOpenDDSettings(!openDDSettings);
+  };
+  const handleDDPayments = () => {
+    setOpenDDPayments(!openDDPayments);
   };
 
   const logoutHandler = (e) => {
@@ -379,12 +383,30 @@ export default function VendorCenter() {
             </ListItemIcon>
             <ListItemText primary="Messages" />
           </ListItem>
-          <ListItem button>
+
+          <ListItem button onClick={handleDDPayments}>
             <ListItemIcon>
               <PaymentIcon className={classes.iconColor} />
             </ListItemIcon>
             <ListItemText primary="Payments" />
+            {openDDPayments ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
+          <Collapse in={openDDPayments} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                className={classes.dropdown}
+                button
+                component="a"
+                href="/vendor/payments/editBankdetails"
+              >
+                <ListItemIcon>
+                  <SaveAltIcon className={classes.iconColor} />
+                </ListItemIcon>
+                <ListItemText primary="Edit Bank Details" />
+              </ListItem>
+            </List>
+          </Collapse>
+
           <ListItem button>
             <ListItemIcon>
               <AssessmentIcon className={classes.iconColor} />

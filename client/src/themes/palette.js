@@ -4,6 +4,11 @@
 // const success = "#3CD4A0";
 // const info = "#9013FE";
 
+import { useUserContext } from "../context/UserContext";
+// // context
+// const { store, dispatch } = useUserContext();
+// const token = store.data.token;
+
 const pal = {
   // palette: {
   //   primary: {

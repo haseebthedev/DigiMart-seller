@@ -5,6 +5,7 @@ import ForgetPassword from "../pages/vendor/ForgetPassword/ForgetPassword";
 import VendorCenter from "../pages/vendor/VendorCenter/VendorCenter";
 import SettingsProfile from "../pages/vendor/VendorCenter/Settings/SettingsProfile";
 import SettingsStore from "../pages/vendor/VendorCenter/Settings/SettingsStore";
+import EditBankDetails from "../pages/vendor/VendorCenter/Payments/EditBankDetails";
 
 import React from "react";
 import {
@@ -34,16 +35,19 @@ export default function App() {
         <Route exact path="/vendor/register">
           <SignUpVendor />
         </Route>
-        {/* <Route exact path="/vendor/dashboard">
+        <PrivateRoute exact path="/vendor/dashboard">
           <VendorCenter />
-        </Route> */}
+        </PrivateRoute>
         <Route exact path="/vendor/Settings/Profile">
           <SettingsProfile />
         </Route>
         <Route exact path="/vendor/Settings/Store">
           <SettingsStore />
         </Route>
-        <PrivateRoute exact path="/vendor/dashboard">
+        <Route exact path="/vendor/Payments/editBankDetails">
+          <EditBankDetails />
+        </Route>
+        <PrivateRoute exact path="/">
           <VendorCenter />
         </PrivateRoute>
         {/* <Route

@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import axios from "axios";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -44,28 +43,19 @@ import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import BlockIcon from "@material-ui/icons/Block";
-
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import FileBase64 from "react-file-base64";
-import Avatar from "@material-ui/core/Avatar";
-
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
-
 import logo from "../../../../assets/images/logo.png";
 import useStyles from "../styles";
-
-import { useUserContext, logoutUser } from "../../../../context/UserContext";
+import axios from "axios";
 import { Redirect } from "react-router-dom";
+import { useUserContext, logoutUser } from "../../../../context/UserContext";
 
-export default function VendorCenter() {
+export default function EditBankDetails() {
   const classes = useStyles();
-  // context
   // eslint-disable-next-line
   const { store, dispatch } = useUserContext();
   const token = store.data.token;
@@ -74,6 +64,20 @@ export default function VendorCenter() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openProfile = Boolean(anchorEl);
 
+  const [BankDetails, setBankDetails] = React.useState({
+    bankHolderName: "",
+    accountNumber: "",
+    bankName: "",
+    routingNumber: "",
+  });
+
+  const [isLoggedOut, setIsLoggedOut] = React.useState(false);
+
+  const handleChange = (input) => (e) => {
+    setBankDetails({ ...BankDetails, [input]: e.target.value });
+  };
+
+  // DRAWER
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -87,50 +91,9 @@ export default function VendorCenter() {
     setOpen(false);
   };
 
-  // const printStore = () => {
-  //   console.log("STORE: ", store);
-  // };
-
-  // const logoutHandler = () => {
-  //   logoutUser(dispatch, "haseeb@gmail.com", "haseeb123");
-  // };
-
-  const [storeData, setStoreData] = React.useState({
-    logo: "",
-    name: "Haseeb Ahmed",
-    biography: "We fu*king sell products online",
-    category: "Electronic",
-    warehouseAddress: "Street # 213, Block-F, Satellite Town",
-  });
-  const [isLoggedOut, setIsLoggedOut] = React.useState(false);
-
-  const onSelectlogo = (files) => {
-    setStoreData({ ...storeData, logo: files.base64 });
-  };
-  const handleChange = (input) => (e) => {
-    setStoreData({ ...storeData, [input]: e.target.value });
-  };
-
-  // UPDATE REQUEST SENDING HERE
-  const handleSubmitUpdate = () => {
-    const storeURL = "http://localhost:8080/seller/store/me";
-    axios
-      .patch(
-        storeURL,
-        {
-          ...storeData,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then((res) => console.log("Store Updated. RES: ", res))
-      .catch((error) => console.log("Error: " + error));
-  };
-
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
-  const [openDDSettings, setOpenDDSettings] = React.useState(true);
-  const [openDDPayments, setOpenDDPayments] = React.useState(false);
+  const [openDDSettings, setOpenDDSettings] = React.useState(false);
+  const [openDDPayments, setOpenDDPayments] = React.useState(true);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
@@ -142,6 +105,7 @@ export default function VendorCenter() {
     setOpenDDPayments(!openDDPayments);
   };
 
+  // Logout
   const logoutHandler = (e) => {
     e.preventDefault();
 
@@ -157,6 +121,41 @@ export default function VendorCenter() {
         setIsLoggedOut(true);
         return logoutUser(dispatch);
       })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
+
+  // Retriving Old Bank Details
+  React.useEffect(() => {
+    const URL = "http://localhost:8080/seller/personalDetails";
+
+    axios
+      .get(URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(function (res) {
+        const oldBankDetails = res.data.data;
+        setBankDetails(oldBankDetails);
+      })
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+    // eslint-disable-next-line
+  }, [token]);
+
+  // Request to save here...
+  const handlerSaveEdit = () => {
+    const URL = "http://localhost:8080/seller/me";
+    axios
+      .patch(
+        URL,
+        { ...BankDetails },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((res) => console.log("BanK Details updated..."))
       .catch((error) =>
         console.log("ERROR: " + JSON.stringify(error.response.data.error))
       );
@@ -292,6 +291,7 @@ export default function VendorCenter() {
             </ListItemIcon>
             <ListItemText primary={"Dashboard"} />
           </ListItem>
+
           <ListItem button onClick={handleDDProduct}>
             <ListItemIcon>
               <ProductIcon className={classes.iconColor} />
@@ -315,6 +315,7 @@ export default function VendorCenter() {
               </ListItem>
             </List>
           </Collapse>
+
           <ListItem button>
             <ListItemIcon>
               <SalesIcon className={classes.iconColor} />
@@ -343,12 +344,7 @@ export default function VendorCenter() {
           </ListItem>
           <Collapse in={openDDPayments} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem
-                className={classes.dropdown}
-                button
-                component="a"
-                href="/vendor/payments/editBankdetails"
-              >
+              <ListItem button className={classes.dropdown} selected={true}>
                 <ListItemIcon>
                   <SaveAltIcon className={classes.iconColor} />
                 </ListItemIcon>
@@ -390,7 +386,6 @@ export default function VendorCenter() {
                 className={classes.dropdown}
                 component="a"
                 href="/vendor/settings/store"
-                selected={true}
               >
                 <ListItemIcon>
                   <LocalConvenienceStoreIcon className={classes.iconColor} />
@@ -420,87 +415,50 @@ export default function VendorCenter() {
           <Link color="inherit" href="/vendor/dashboard">
             Dashboard
           </Link>
-          <Typography color="textPrimary">Settings</Typography>
+          <Typography color="textPrimary">Payments</Typography>
         </Breadcrumbs>
 
         <div style={{ margin: "20px 0" }}>
-          <Typography variant="h4">Store Settings</Typography>
+          <Typography variant="h4">Edit Bank Details</Typography>
           <Container component="div" maxWidth="xs">
             <div className={classes.paper}>
               <Grid className={classes.settingsSpacing}>
                 <form className={classes.form}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <Avatar
-                      alt="profile photo"
-                      src={storeData.logo}
-                      className={classes.avatarInProfileSetting}
-                    >
-                      {"LOGO HERE"}
-                    </Avatar>
-                    <FileBase64
-                      size="60"
-                      multiple={false}
-                      onDone={onSelectlogo}
-                    />
-                  </div>
-
                   <TextField
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    id="name"
-                    label="Store Name"
-                    name="storeName"
-                    defaultValue={storeData.name}
-                    onChange={handleChange("name")}
+                    label="Bank Holder Name"
+                    name="bankHolderName"
+                    value={BankDetails.bankHolderName}
+                    onChange={handleChange("bankHolderName")}
                   />
                   <TextField
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    id="biography"
-                    label="Biography"
-                    name="biography"
-                    defaultValue={storeData.biography}
-                    onChange={handleChange("biography")}
+                    label="Account Number"
+                    name="accountNumber"
+                    value={BankDetails.accountNumber}
+                    onChange={handleChange("accountNumber")}
                   />
-
-                  <FormControl fullWidth>
-                    <InputLabel style={{ marginLeft: "10px" }}>
-                      Category
-                    </InputLabel>
-                    <Select
-                      variant="outlined"
-                      defaultValue={storeData.category}
-                      onChange={handleChange("category")}
-                      style={{ marginTop: "20px" }}
-                    >
-                      <option value="Electronic">Electronics</option>
-                      <option value="Health">Health and Beauty</option>
-                      <option value="Groceries">Groceries & Pets</option>
-                      <option value="Lifestyle">Home & Lifestyle</option>
-                      <option value="fashion">Fashion & Clothing</option>
-                      <option value="sports">Sports</option>
-                      <option value="automotive">Automotive and Bikes</option>
-                    </Select>
-                  </FormControl>
-
                   <TextField
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    id="warehouseAddress"
-                    label="Warehouse Address"
-                    name="warehouseAddress"
-                    defaultValue={storeData.warehouseAddress}
-                    onChange={handleChange("warehouseAddress")}
+                    label="Routing No."
+                    name="routingNumber"
+                    value={BankDetails.routingNumber}
+                    onChange={handleChange("routingNumber")}
+                  />
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
+                    label="Bank Name"
+                    name="bankName"
+                    value={BankDetails.bankName}
+                    onChange={handleChange("bankName")}
                   />
 
                   <Button
@@ -508,7 +466,7 @@ export default function VendorCenter() {
                     variant="contained"
                     color="secondary"
                     className={classes.submit}
-                    onClick={handleSubmitUpdate}
+                    onClick={handlerSaveEdit}
                   >
                     SAVE CHANGES
                   </Button>
@@ -517,8 +475,9 @@ export default function VendorCenter() {
             </div>
           </Container>
         </div>
-        {/* <Button onClick={printStore}>SHOW STORE</Button> */}
-        {/* <Button onClick={logoutHandler}>Log Out</Button> */}
+
+        {/* <Button onClick={printStore}>SHOW STORE</Button>
+        <Button onClick={logoutHandler}>Log Out</Button> */}
         <Copyright />
       </main>
     </div>

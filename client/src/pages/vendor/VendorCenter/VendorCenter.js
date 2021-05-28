@@ -53,6 +53,9 @@ import axios from "axios";
 import { useUserContext, logoutUser } from "../../../context/UserContext";
 import useStyles from "./styles";
 import { withRouter, Redirect } from "react-router-dom";
+import Switch from "@material-ui/core/Switch";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
 
 const VendorCenter = () => {
   const classes = useStyles();
@@ -105,12 +108,16 @@ const VendorCenter = () => {
 
   const [openDDProduct, setOpenDDProduct] = React.useState(false);
   const [openDDSettings, setOpenDDSettings] = React.useState(false);
+  const [openDDPayments, setOpenDDPayments] = React.useState(false);
 
   const handleDDProduct = () => {
     setOpenDDProduct(!openDDProduct);
   };
   const handleDDSettings = () => {
     setOpenDDSettings(!openDDSettings);
+  };
+  const handleDDPayments = () => {
+    setOpenDDPayments(!openDDPayments);
   };
 
   return (
@@ -138,6 +145,11 @@ const VendorCenter = () => {
               <img src={logo} alt="Logo" className={classes.logo} />
             </div>
             <div>
+              <Switch
+                icon={<Brightness4Icon />}
+                checkedIcon={<Brightness7Icon />}
+              />
+
               <IconButton>
                 <Badge badgeContent={3} color="secondary">
                   <MailIcon fontSize="small" />
@@ -291,12 +303,30 @@ const VendorCenter = () => {
             </ListItemIcon>
             <ListItemText primary="Messages" />
           </ListItem>
-          <ListItem button>
+
+          <ListItem button onClick={handleDDPayments}>
             <ListItemIcon>
               <PaymentIcon className={classes.iconColor} />
             </ListItemIcon>
             <ListItemText primary="Payments" />
+            {openDDPayments ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
+          <Collapse in={openDDPayments} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                className={classes.dropdown}
+                button
+                component="a"
+                href="/vendor/payments/editBankdetails"
+              >
+                <ListItemIcon>
+                  <SaveAltIcon className={classes.iconColor} />
+                </ListItemIcon>
+                <ListItemText primary="Edit Bank Details" />
+              </ListItem>
+            </List>
+          </Collapse>
+
           <ListItem button>
             <ListItemIcon>
               <AssessmentIcon className={classes.iconColor} />
