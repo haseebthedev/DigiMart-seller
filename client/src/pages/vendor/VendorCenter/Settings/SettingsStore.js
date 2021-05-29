@@ -43,7 +43,6 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
-import BlockIcon from "@material-ui/icons/Block";
 
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
@@ -56,6 +55,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
+import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 
 import logo from "../../../../assets/images/logo.png";
 import useStyles from "../styles";
@@ -98,7 +98,7 @@ export default function VendorCenter() {
   const [storeData, setStoreData] = React.useState({
     logo: "",
     name: "Haseeb Ahmed",
-    biography: "We fu*king sell products online",
+    biography: "We love to sell products online",
     category: "Electronic",
     warehouseAddress: "Street # 213, Block-F, Satellite Town",
   });
@@ -301,17 +301,27 @@ export default function VendorCenter() {
           </ListItem>
           <Collapse in={openDDProduct} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.dropdown}>
+              <ListItem
+                button
+                className={classes.dropdown}
+                component="a"
+                href="/vendor/products/add-product"
+              >
                 <ListItemIcon>
                   <SaveAltIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="View Products" />
+                <ListItemText primary="Add a Product" />
               </ListItem>
-              <ListItem button className={classes.dropdown}>
+              <ListItem
+                button
+                className={classes.dropdown}
+                component="a"
+                href="/vendor/products/view-products"
+              >
                 <ListItemIcon>
-                  <BlockIcon className={classes.iconColor} />
+                  <ViewComfyIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="Blocked Products" />
+                <ListItemText primary="View Products" />
               </ListItem>
             </List>
           </Collapse>

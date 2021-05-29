@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
+import MaterialTable from "material-table";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -41,23 +42,57 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
-
+import axios from "axios";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 
-import logo from "../../../assets/images/logo.png";
-import CompleteRegister from "../CompleteRegister/CompleteRegister";
-
-import axios from "axios";
-import { useUserContext, logoutUser } from "../../../context/UserContext";
-import useStyles from "./styles";
+import logo from "../../../../assets/images/logo.png";
+import { useUserContext, logoutUser } from "../../../../context/UserContext";
 import { withRouter, Redirect } from "react-router-dom";
-import Switch from "@material-ui/core/Switch";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
 
-const VendorCenter = () => {
+import useStyles from "../../VendorCenter/styles";
+
+export default function ViewProducts() {
+  const [details, setDetails] = useState();
+
+  const [storeId, setStoreId] = useState("");
+
+  const columns = [
+    { title: "Product Name", field: "name" },
+    { title: "Description", field: "description" },
+    { title: "Brand", field: "manufacturer" },
+    { title: "Category", field: "category" },
+    { title: "Price", field: "price" },
+    { title: "Stock", field: "stockAvailable" },
+    { title: "Discount", field: "discountPercentage" },
+    { title: "Warranty", field: "warranty" },
+    // { title: "Product id", field: "_id" },
+  ];
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8080/seller/store/products", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        console.log(res.data.data.products);
+        setDetails(res.data.data.products);
+        const storeData = res.data.data.products;
+        console.log("storeData on useEffect is ", storeData);
+        setStoreId(
+          storeData.map((items) => {
+            return items._id;
+          })
+        );
+      })
+
+      // .then(console.log("This is details", details))
+
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  }, []);
   const classes = useStyles();
 
   // context
@@ -106,7 +141,7 @@ const VendorCenter = () => {
       );
   };
 
-  const [openDDProduct, setOpenDDProduct] = React.useState(false);
+  const [openDDProduct, setOpenDDProduct] = React.useState(true);
   const [openDDSettings, setOpenDDSettings] = React.useState(false);
   const [openDDPayments, setOpenDDPayments] = React.useState(false);
 
@@ -145,11 +180,6 @@ const VendorCenter = () => {
               <img src={logo} alt="Logo" className={classes.logo} />
             </div>
             <div>
-              <Switch
-                icon={<Brightness4Icon />}
-                checkedIcon={<Brightness7Icon />}
-              />
-
               <IconButton>
                 <Badge badgeContent={3} color="secondary">
                   <MailIcon fontSize="small" />
@@ -248,12 +278,7 @@ const VendorCenter = () => {
 
         {/* Drawer Menu List */}
         <List>
-          <ListItem
-            button
-            component="a"
-            href="/vendor/dashboard"
-            selected={true}
-          >
+          <ListItem button component="a" href="/vendor/dashboard">
             <ListItemIcon>
               <DashboardIcon className={classes.iconColor} />
               {/* <MailIcon className={classes.iconColor} /> */}
@@ -273,20 +298,22 @@ const VendorCenter = () => {
               <ListItem
                 button
                 className={classes.dropdown}
+                button
                 component="a"
                 href="/vendor/products/add-product"
               >
                 <ListItemIcon>
                   <SaveAltIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="Add a Product" />
+                <ListItemText primary="Add Products" />
               </ListItem>
-
               <ListItem
+                button
                 className={classes.dropdown}
                 button
                 component="a"
                 href="/vendor/products/view-products"
+                selected={true}
               >
                 <ListItemIcon>
                   <ViewComfyIcon className={classes.iconColor} />
@@ -400,33 +427,114 @@ const VendorCenter = () => {
           <Link color="inherit" href="/">
             Vendor
           </Link>
-          <Typography color="textPrimary">Dashboard</Typography>
+          <Typography color="textPrimary">Products</Typography>
         </Breadcrumbs>
 
         <div style={{ margin: "20px 0" }}>
-          <Typography variant="h4">Vendor Center</Typography>
+          <Typography variant="h4">View Products</Typography>
         </div>
 
-        {/* COMPLETE STORE REGISTRATION FORM */}
-        {!showCompleteRegis ? (
-          <CompleteRegister setCompleteRegis={setCompleteRegis} />
-        ) : (
-          ""
-        )}
-
+        {/* COMPLETE STORE Products table /////////////////////////////////////////////////*/}
         <div style={{ margin: "20px 0" }}>
-          <Typography paragraph>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
+          <MaterialTable
+            title="All Products"
+            data={details}
+            columns={columns}
+            editable={{
+              onRowAdd: (newData) =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    setDetails([...details, newData]);
+
+                    resolve();
+                  }, 1000);
+                }),
+              onRowUpdate: (newData, oldData) =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    const dataUpdate = [...details];
+                    const index = oldData.tableData.id;
+                    console.log("selected item has index of", index);
+                    dataUpdate[index] = newData;
+                    setDetails([...dataUpdate]);
+                    console.log("Selected store id is ", storeId[index]);
+                    console.log("Details are", ...details);
+                    console.log("New data is ", newData);
+                    const updatedData = newData;
+
+                    const {
+                      name,
+                      category,
+                      description,
+                      // manufactureDate,
+                      stockAvailable,
+                      price,
+                      weight,
+                      discountPercentage,
+                      manufacturer,
+                      warranty,
+                      // images,
+                      // colors,
+                      // isVisibilityEnabled,
+                    } = newData;
+
+                    axios
+                      .patch(
+                        `http://localhost:8080/seller/store/product/${storeId[index]}`,
+                        {
+                          name,
+                          category,
+                          description,
+                          stockAvailable,
+                          price,
+                          weight,
+                          discountPercentage,
+                          manufacturer,
+                          warranty,
+                        },
+                        {
+                          headers: { Authorization: `Bearer ${token}` },
+                        }
+                      )
+                      .then((res) => console.log("Product Updated. RES: ", res))
+                      .catch((error) => console.log("Error: " + error));
+                    resolve();
+                  }, 1000);
+                }),
+              onRowDelete: (oldData) =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    const dataDelete = [...details];
+                    const index = oldData.tableData.id;
+                    console.log("selected item has index of", index);
+                    dataDelete.splice(index, 1);
+                    setDetails([...dataDelete]);
+                    console.log("Selected store id is ", storeId[index]);
+
+                    axios
+                      .delete(
+                        `http://localhost:8080/seller/store/product/${storeId[index]}`,
+
+                        {
+                          headers: { Authorization: `Bearer ${token}` },
+                        }
+                      )
+                      .then((res) => console.log("Product Updated. RES: ", res))
+                      .catch((error) => console.log("Error: " + error));
+                    resolve();
+                  }, 1000);
+                }),
+            }}
+            options={{
+              rowStyle: {
+                backgroundColor: "#EEE",
+              },
+              exportButton: true,
+              filtering: true,
+            }}
+          />
         </div>
+
         <Copyright />
       </main>
     </div>
@@ -444,6 +552,4 @@ const VendorCenter = () => {
       </Typography>
     );
   }
-};
-
-export default withRouter(VendorCenter);
+}

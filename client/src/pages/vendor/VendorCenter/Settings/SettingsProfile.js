@@ -42,7 +42,6 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
-import BlockIcon from "@material-ui/icons/Block";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Container from "@material-ui/core/Container";
@@ -52,6 +51,8 @@ import FileBase64 from "react-file-base64";
 import Avatar from "@material-ui/core/Avatar";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
+import ViewComfyIcon from "@material-ui/icons/ViewComfy";
+
 import logo from "../../../../assets/images/logo.png";
 import useStyles from "../styles";
 import axios from "axios";
@@ -350,17 +351,27 @@ export default function VendorCenter() {
           </ListItem>
           <Collapse in={openDDProduct} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.dropdown}>
+              <ListItem
+                button
+                className={classes.dropdown}
+                component="a"
+                href="/vendor/products/add-product"
+              >
                 <ListItemIcon>
                   <SaveAltIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="View Products" />
+                <ListItemText primary="Add a Product" />
               </ListItem>
-              <ListItem button className={classes.dropdown}>
+              <ListItem
+                className={classes.dropdown}
+                button
+                component="a"
+                href="/vendor/products/view-products"
+              >
                 <ListItemIcon>
-                  <BlockIcon className={classes.iconColor} />
+                  <ViewComfyIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="Blocked Products" />
+                <ListItemText primary="View Products" />
               </ListItem>
             </List>
           </Collapse>

@@ -1,11 +1,13 @@
 // VENDOR LINKS
 import LoginVendor from "../pages/vendor/Login/Login";
-import SignUpVendor from "../pages/vendor/Register/Register";
+import SignUpVendor from "../pages/admin/Register/Register";
 import ForgetPassword from "../pages/vendor/ForgetPassword/ForgetPassword";
 import VendorCenter from "../pages/vendor/VendorCenter/VendorCenter";
 import SettingsProfile from "../pages/vendor/VendorCenter/Settings/SettingsProfile";
 import SettingsStore from "../pages/vendor/VendorCenter/Settings/SettingsStore";
 import EditBankDetails from "../pages/vendor/VendorCenter/Payments/EditBankDetails";
+import AddProduct from "../pages/vendor/VendorCenter/Products/AddProduct";
+import ViewProducts from "../pages/vendor/VendorCenter/Products/ViewProducts";
 
 import React from "react";
 import {
@@ -38,6 +40,12 @@ export default function App() {
         <PrivateRoute exact path="/vendor/dashboard">
           <VendorCenter />
         </PrivateRoute>
+        <Route exact path="/vendor/products/add-product">
+          <AddProduct />
+        </Route>
+        <Route exact path="/vendor/products/view-products">
+          <ViewProducts />
+        </Route>
         <Route exact path="/vendor/Settings/Profile">
           <SettingsProfile />
         </Route>

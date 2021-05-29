@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+
 import clsx from "clsx";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -41,33 +43,25 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 import TuneIcon from "@material-ui/icons/Tune";
 import AssistantIcon from "@material-ui/icons/Assistant";
 import SaveAltIcon from "@material-ui/icons/SaveAlt";
-
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 
-import logo from "../../../assets/images/logo.png";
-import CompleteRegister from "../CompleteRegister/CompleteRegister";
+import useStyles from "../styles";
 
-import axios from "axios";
-import { useUserContext, logoutUser } from "../../../context/UserContext";
-import useStyles from "./styles";
-import { withRouter, Redirect } from "react-router-dom";
-import Switch from "@material-ui/core/Switch";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
+import logo from "../../../../assets/images/logo.png";
+import Form from "./Form";
 
-const VendorCenter = () => {
+import { useUserContext, logoutUser } from "../../../../context/UserContext";
+import { Redirect } from "react-router-dom";
+
+export default function AddProduct() {
   const classes = useStyles();
 
-  // context
+  // eslint-disable-next-line
   const { store, dispatch } = useUserContext();
   const token = store.data.token;
 
-  // states
-  const [showCompleteRegis, setCompleteRegis] = React.useState(
-    store.data.data.isStoreRegistered
-  );
   const [isLoggedOut, setIsLoggedOut] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -106,7 +100,7 @@ const VendorCenter = () => {
       );
   };
 
-  const [openDDProduct, setOpenDDProduct] = React.useState(false);
+  const [openDDProduct, setOpenDDProduct] = React.useState(true);
   const [openDDSettings, setOpenDDSettings] = React.useState(false);
   const [openDDPayments, setOpenDDPayments] = React.useState(false);
 
@@ -145,22 +139,23 @@ const VendorCenter = () => {
               <img src={logo} alt="Logo" className={classes.logo} />
             </div>
             <div>
-              <Switch
-                icon={<Brightness4Icon />}
-                checkedIcon={<Brightness7Icon />}
-              />
-
-              <IconButton>
+              <IconButton aria-label="show 4 new mails">
                 <Badge badgeContent={3} color="secondary">
                   <MailIcon fontSize="small" />
                 </Badge>
               </IconButton>
-              <IconButton>
+              <IconButton aria-label="show 17 new notifications">
                 <Badge badgeContent={9} color="secondary">
                   <NotificationsIcon fontSize="small" />
                 </Badge>
               </IconButton>
-              <IconButton edge="end" aria-haspopup="true" onClick={handleMenu}>
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+              >
                 <AccountCircle fontSize="large" />
               </IconButton>
               <Menu
@@ -248,12 +243,7 @@ const VendorCenter = () => {
 
         {/* Drawer Menu List */}
         <List>
-          <ListItem
-            button
-            component="a"
-            href="/vendor/dashboard"
-            selected={true}
-          >
+          <ListItem button component="a" href="/vendor/dashboard">
             <ListItemIcon>
               <DashboardIcon className={classes.iconColor} />
               {/* <MailIcon className={classes.iconColor} /> */}
@@ -275,16 +265,16 @@ const VendorCenter = () => {
                 className={classes.dropdown}
                 component="a"
                 href="/vendor/products/add-product"
+                selected={true}
               >
                 <ListItemIcon>
                   <SaveAltIcon className={classes.iconColor} />
                 </ListItemIcon>
-                <ListItemText primary="Add a Product" />
+                <ListItemText primary="Add Products" />
               </ListItem>
-
               <ListItem
-                className={classes.dropdown}
                 button
+                className={classes.dropdown}
                 component="a"
                 href="/vendor/products/view-products"
               >
@@ -400,50 +390,17 @@ const VendorCenter = () => {
           <Link color="inherit" href="/">
             Vendor
           </Link>
-          <Typography color="textPrimary">Dashboard</Typography>
+          <Typography color="textPrimary">Products</Typography>
         </Breadcrumbs>
 
         <div style={{ margin: "20px 0" }}>
-          <Typography variant="h4">Vendor Center</Typography>
+          <Typography variant="h4">Add Product</Typography>
         </div>
-
-        {/* COMPLETE STORE REGISTRATION FORM */}
-        {!showCompleteRegis ? (
-          <CompleteRegister setCompleteRegis={setCompleteRegis} />
-        ) : (
-          ""
-        )}
 
         <div style={{ margin: "20px 0" }}>
-          <Typography paragraph>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
+          <Form />
         </div>
-        <Copyright />
       </main>
     </div>
   );
-
-  function Copyright() {
-    return (
-      <Typography variant="body2" color="textSecondary" align="center">
-        {"Copyright © "}
-        <Link color="inherit" href="#">
-          Digi-Mart
-        </Link>{" "}
-        {new Date().getFullYear()}
-        {"."}
-      </Typography>
-    );
-  }
-};
-
-export default withRouter(VendorCenter);
+}
