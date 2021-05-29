@@ -146,6 +146,13 @@ adminSchema.methods.generateAuthToken=async function(){
     return token
 }
 
+//get Size of collection
+adminSchema.statics.getStorageDetails = async function() {
+    const Size = await Admin.collection.stats({scale: 1024});
+    return Size.totalSize
+}
+
+
 //whenever the object gets stringify toJSON() is called so we use it here to hide data
 adminSchema.methods.toJSON=function(){
     const user=this

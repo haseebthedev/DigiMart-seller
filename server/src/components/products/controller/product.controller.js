@@ -177,6 +177,47 @@ const viewProductsOfStore = async(req, res, next) => {
         next(err)
     }
 }
+
+const blockProduct = async(req, res, next) => {
+    try{
+        const updates = Object.keys(req.body)
+        const allowedUpdated = ['isVisibilityEnabled']
+        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        if(!isValidOperation || updates.length == 0){
+            throw new Error('Invalid Keys! Please enter valid keys.')
+        }
+        const productID = req.params.id
+        const product = await Product.findOne({_id:productID})
+        product['isVisibilityEnabled'] = req.body['isVisibilityEnabled']
+        await product.save()
+        res.status(200).json({
+            message:`Your product has been blocked successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getTotalNumberOfProducts = async(req, res, next) => {
+    try{
+        const totalNumberOfProducts = await Product.estimatedDocumentCount()
+        return res.status(200).json({
+            message:`Total number of products fetched successfully!.`,
+            data:{
+                totalNumber: totalNumberOfProducts
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
 module.exports = {
     //VENDOR
     addProduct,
@@ -187,5 +228,7 @@ module.exports = {
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,
-    viewProductsOfStore
+    viewProductsOfStore,
+    blockProduct,
+    getTotalNumberOfProducts
 }

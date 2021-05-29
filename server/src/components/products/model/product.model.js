@@ -79,6 +79,11 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 })
 
+//get Size of collection
+productSchema.statics.getStorageDetails = async function() {
+    const Size = await Product.collection.stats({scale: 1024});
+    return Size.totalSize
+}
 
 productSchema.plugin(uniqueValidator, { message: '{PATH} already exists!' });
 const Product = mongoose.model('Product',productSchema)

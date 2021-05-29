@@ -143,6 +143,13 @@ buyerSchema.statics.findByCredientials= async(email,password)=>{
     return user
 }
 
+
+//get Size of collection
+buyerSchema.statics.getStorageDetails = async function() {
+    const Size = await Buyer.collection.stats({scale: 1024});
+    return Size.totalSize
+}
+
 //when we call res.send() its calling json.stringify() behind the scenes
 //whenever the object gets stringify toJSON() is called so we use it here to hide data
 buyerSchema.methods.toJSON=function(){

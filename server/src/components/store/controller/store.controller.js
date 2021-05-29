@@ -1,4 +1,5 @@
 const Store = require('../model/store.model')
+const Product = require('../../products/model/product.model')
 
 const registerStore = async(req, res, next) => {
     req.body['name'] = req.user.storeName
@@ -69,8 +70,45 @@ const updateStore = async(req, res, next) => {
         next(err)
     }
 }
+
+const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
+    try{
+        const filters = {isApproved: false}
+        const totalNumberOfStores = await Store.count(filters)
+        return res.status(200).json({
+            message:`Total number of Stores for approval fetched successfully!.`,
+            data:{
+                totalNumber: totalNumberOfStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getTotalNumberOfStoresApproved = async(req, res, next) =>{
+    try{
+        const filters = {isApproved: true}
+        const totalNumberOfStores = await Store.count(filters)
+        return res.status(200).json({
+            message:`Total number of Stores approved fetched successfully!.`,
+            data:{
+                totalNumber: totalNumberOfStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports = {
     registerStore,
     getStoreDetails,
-    updateStore
+    updateStore,
+    getTotalNumberOfStoreApprovals,
+    getTotalNumberOfStoresApproved,
 }

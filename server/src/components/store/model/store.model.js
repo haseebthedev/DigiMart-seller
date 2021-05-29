@@ -42,10 +42,9 @@ const storeSchema = new mongoose.Schema({
     logo:{
         type: String
     },
-    activityStatus:{
-        type: String,
-        default: 'inActive',
-        enum: ['active','inActive','partially-Active']
+    isActive:{
+        type: Boolean,
+        default: false
     },
     biography:{
         type: String,
@@ -83,6 +82,12 @@ const storeSchema = new mongoose.Schema({
 
 //crating index on name of store
 storeSchema.index({name: 1},{unique: true, name:'IDX_STORE_NAME'})
+
+//get Size of collection
+storeSchema.statics.getStorageDetails = async function() {
+    const Size = await Store.collection.stats({scale: 1024});
+    return Size.totalSize
+}
 
 storeSchema.plugin(uniqueValidator, { message: '{PATH} already exists!' });
 //creating model of moongoose and then creating an instance of model and then saving it

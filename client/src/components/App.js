@@ -1,6 +1,6 @@
 // VENDOR LINKS
 import LoginVendor from "../pages/vendor/Login/Login";
-import SignUpVendor from "../pages/admin/Register/Register";
+import SignUpVendor from "../pages/vendor/Register/Register";
 import ForgetPassword from "../pages/vendor/ForgetPassword/ForgetPassword";
 import VendorCenter from "../pages/vendor/VendorCenter/VendorCenter";
 import SettingsProfile from "../pages/vendor/VendorCenter/Settings/SettingsProfile";

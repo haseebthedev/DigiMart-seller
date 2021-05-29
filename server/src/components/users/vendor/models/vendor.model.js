@@ -120,7 +120,7 @@ const vendorSchema=new mongoose.Schema({
     },
     isAccountActive:{
         type: Boolean,
-        default: true
+        default: false
     },
     isNotificationsEnabled:{
         type: Boolean,
@@ -161,6 +161,12 @@ vendorSchema.statics.findByCredientials= async(email,password)=>{
       throw new Error('Unable to login! Invalid password!')
     }
     return user
+}
+
+//get Size of collection
+vendorSchema.statics.getStorageDetails = async function() {
+    const vendorSize = await Vendor.collection.stats({scale: 1024});
+    return vendorSize.totalSize
 }
 
 //when we call res.send() its calling json.stringify() behind the scenes
