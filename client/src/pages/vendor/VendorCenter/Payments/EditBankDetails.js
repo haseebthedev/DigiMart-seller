@@ -55,6 +55,9 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import { useUserContext, logoutUser } from "../../../../context/UserContext";
 
+// component
+import DeleteBankDetails from "../../../../components/vendor/FormDialog/DeleteBankDetails";
+
 export default function EditBankDetails() {
   const classes = useStyles();
   // eslint-disable-next-line
@@ -73,7 +76,9 @@ export default function EditBankDetails() {
   });
 
   const [isLoggedOut, setIsLoggedOut] = React.useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = React.useState(false);
 
+  // updating BankDetails usestate
   const handleChange = (input) => (e) => {
     setBankDetails({ ...BankDetails, [input]: e.target.value });
   };
@@ -157,6 +162,41 @@ export default function EditBankDetails() {
         }
       )
       .then((res) => console.log("BanK Details updated..."))
+      .catch((error) =>
+        console.log("ERROR: " + JSON.stringify(error.response.data.error))
+      );
+  };
+
+  // show delete Account Dialog
+  const handlerAccountDelete = (e) => {
+    e.preventDefault();
+    setIsDeletingAccount(true);
+  };
+
+  // Delete Account Handler
+  const confirmedDelete = () => {
+    setIsDeletingAccount(false);
+
+    let bankDetails = {
+      bankHolderName: "",
+      accountNumber: "",
+      bankName: "",
+      routingNumber: "",
+    };
+    console.log("Deleting your account....");
+
+    const URL = "http://localhost:8080/seller/me";
+    axios
+      .patch(
+        URL,
+        {
+          ...bankDetails,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((res) => setBankDetails(bankDetails))
       .catch((error) =>
         console.log("ERROR: " + JSON.stringify(error.response.data.error))
       );
@@ -481,6 +521,18 @@ export default function EditBankDetails() {
                   >
                     SAVE CHANGES
                   </Button>
+                  <Grid container justify="center" spacing={2}>
+                    <Grid item>
+                      <Link
+                        color="error"
+                        component="button"
+                        variant="body2"
+                        onClick={handlerAccountDelete}
+                      >
+                        Delete Bank Details
+                      </Link>
+                    </Grid>
+                  </Grid>
                 </form>
               </Grid>
             </div>
@@ -490,6 +542,11 @@ export default function EditBankDetails() {
         {/* <Button onClick={printStore}>SHOW STORE</Button>
         <Button onClick={logoutHandler}>Log Out</Button> */}
         <Copyright />
+        <DeleteBankDetails
+          DeletingAccount={isDeletingAccount}
+          setDeletingAccount={setIsDeletingAccount}
+          confirmedDelete={confirmedDelete}
+        />
       </main>
     </div>
   );

@@ -9,15 +9,19 @@
 // const { store, dispatch } = useUserContext();
 // const token = store.data.token;
 
+var mode = localStorage.getItem("THEME_MODE");
+// console.log("MODE: ", mode);
+
 const pal = {
   // palette: {
   //   primary: {
   //     main: primary,
   //   },
   // },
-  // palette: {
-  //   type: "dark",
-  // },
+
+  palette: {
+    type: mode ? mode : "light",
+  },
 };
 
 export default pal;

@@ -49,17 +49,21 @@ import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 
 import logo from "../../../../assets/images/logo.png";
 import { useUserContext, logoutUser } from "../../../../context/UserContext";
-import { withRouter, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import useStyles from "../../VendorCenter/styles";
 
 export default function ViewProducts() {
-  const [details, setDetails] = useState();
+  const classes = useStyles();
+  // context
+  const { store, dispatch } = useUserContext();
+  const token = store.data.token;
 
+  const [details, setDetails] = useState();
   const [storeId, setStoreId] = useState("");
 
   const columns = [
-    { title: "Product Name", field: "name" },
+    { title: "Name", field: "name" },
     { title: "Description", field: "description" },
     { title: "Brand", field: "manufacturer" },
     { title: "Category", field: "category" },
@@ -67,7 +71,6 @@ export default function ViewProducts() {
     { title: "Stock", field: "stockAvailable" },
     { title: "Discount", field: "discountPercentage" },
     { title: "Warranty", field: "warranty" },
-    // { title: "Product id", field: "_id" },
   ];
 
   useEffect(() => {
@@ -76,33 +79,21 @@ export default function ViewProducts() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log(res.data.data.products);
+        // console.log(res.data.data.products);
         setDetails(res.data.data.products);
         const storeData = res.data.data.products;
-        console.log("storeData on useEffect is ", storeData);
+        // console.log("storeData on useEffect is ", storeData);
         setStoreId(
           storeData.map((items) => {
             return items._id;
           })
         );
       })
-
-      // .then(console.log("This is details", details))
-
       .catch((error) =>
         console.log("ERROR: " + JSON.stringify(error.response.data.error))
       );
-  }, []);
-  const classes = useStyles();
+  }, [token]);
 
-  // context
-  const { store, dispatch } = useUserContext();
-  const token = store.data.token;
-
-  // states
-  const [showCompleteRegis, setCompleteRegis] = React.useState(
-    store.data.data.isStoreRegistered
-  );
   const [isLoggedOut, setIsLoggedOut] = React.useState(false);
   const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -298,7 +289,6 @@ export default function ViewProducts() {
               <ListItem
                 button
                 className={classes.dropdown}
-                button
                 component="a"
                 href="/vendor/products/add-product"
               >
@@ -310,7 +300,6 @@ export default function ViewProducts() {
               <ListItem
                 button
                 className={classes.dropdown}
-                button
                 component="a"
                 href="/vendor/products/view-products"
                 selected={true}
@@ -434,10 +423,10 @@ export default function ViewProducts() {
           <Typography variant="h4">View Products</Typography>
         </div>
 
-        {/* COMPLETE STORE Products table /////////////////////////////////////////////////*/}
+        {/* COMPLETE STORE Products table */}
         <div style={{ margin: "20px 0" }}>
           <MaterialTable
-            title="All Products"
+            title=""
             data={details}
             columns={columns}
             editable={{
@@ -454,13 +443,9 @@ export default function ViewProducts() {
                   setTimeout(() => {
                     const dataUpdate = [...details];
                     const index = oldData.tableData.id;
-                    console.log("selected item has index of", index);
                     dataUpdate[index] = newData;
                     setDetails([...dataUpdate]);
-                    console.log("Selected store id is ", storeId[index]);
-                    console.log("Details are", ...details);
-                    console.log("New data is ", newData);
-                    const updatedData = newData;
+                    // console.log("New data is ", newData);
 
                     const {
                       name,
@@ -506,7 +491,6 @@ export default function ViewProducts() {
                   setTimeout(() => {
                     const dataDelete = [...details];
                     const index = oldData.tableData.id;
-                    console.log("selected item has index of", index);
                     dataDelete.splice(index, 1);
                     setDetails([...dataDelete]);
                     console.log("Selected store id is ", storeId[index]);

@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import clsx from "clsx";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -7,11 +8,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
+import Grid from "@material-ui/core/Grid";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import Switch from "@material-ui/core/Switch";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 
@@ -45,17 +48,20 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 import ViewComfyIcon from "@material-ui/icons/ViewComfy";
+import Brightness4Icon from "@material-ui/icons/Brightness4";
+import Brightness7Icon from "@material-ui/icons/Brightness7";
 
 import logo from "../../../assets/images/logo.png";
 import CompleteRegister from "../CompleteRegister/CompleteRegister";
 
-import axios from "axios";
+// graphs
+import TopSellingProducts from "./VendorAnalytics/TopSellingProducts";
+import ProductRevenue from "./VendorAnalytics/ProductRevenue";
+import WeeklySales from "./VendorAnalytics/WeeklySales";
+
 import { useUserContext, logoutUser } from "../../../context/UserContext";
-import useStyles from "./styles";
 import { withRouter, Redirect } from "react-router-dom";
-import Switch from "@material-ui/core/Switch";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
+import useStyles from "./styles";
 
 const VendorCenter = () => {
   const classes = useStyles();
@@ -120,6 +126,26 @@ const VendorCenter = () => {
     setOpenDDPayments(!openDDPayments);
   };
 
+  // DARK MODE
+  // eslint-disable-next-line
+  const [mode, setMode] = React.useState(false);
+  const modeType = localStorage.getItem("THEME_MODE");
+
+  // dark mode handler
+  const modeHandler = () => {
+    if (!modeType) {
+      localStorage.setItem("THEME_MODE", "dark");
+      window.location.reload();
+      console.log("set");
+      setMode(true);
+    } else {
+      localStorage.removeItem("THEME_MODE");
+      window.location.reload();
+      console.log("removed");
+      setMode(false);
+    }
+  };
+
   return (
     <div className={classes.root}>
       {isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
@@ -148,6 +174,8 @@ const VendorCenter = () => {
               <Switch
                 icon={<Brightness4Icon />}
                 checkedIcon={<Brightness7Icon />}
+                checked={!!modeType}
+                onChange={modeHandler}
               />
 
               <IconButton>
@@ -415,17 +443,19 @@ const VendorCenter = () => {
         )}
 
         <div style={{ margin: "20px 0" }}>
-          <Typography paragraph>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of Letraset sheets containing Lorem Ipsum passages,
-            and more recently with desktop publishing software like Aldus
-            PageMaker including versions of Lorem Ipsum.
-          </Typography>
+          <Grid container spacing={4} justify="space-between">
+            <Grid item xs={12} md={6}>
+              <TopSellingProducts />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <ProductRevenue />
+            </Grid>
+          </Grid>
+          <Grid container spacing={4} justify="center">
+            <Grid item xs={12} md={8}>
+              <WeeklySales />
+            </Grid>
+          </Grid>
         </div>
         <Copyright />
       </main>

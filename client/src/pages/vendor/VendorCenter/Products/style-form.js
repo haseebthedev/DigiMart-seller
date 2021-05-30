@@ -11,6 +11,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    [theme.breakpoints.down(700)]: {
+      margin: theme.spacing(1.8, 4),
+    },
   },
   avatar: {
     width: 50,
@@ -23,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   submit: {
-    marginTop: 20,
     margin: theme.spacing(0, 0, 2),
   },
 
