@@ -98,10 +98,12 @@ export default function ViewProducts() {
 												discountPercentage,
 												manufacturer,
 												warranty,
+											},
+											{
+												headers: {
+													Authorization: `Bearer ${token}`,
+												},
 											}
-											// {
-											//   headers: { Authorization: `Bearer ${token}` },
-											// }
 										)
 										.then((res) =>
 											console.log(
@@ -129,11 +131,12 @@ export default function ViewProducts() {
 
 									axios
 										.delete(
-											`http://localhost:8080/seller/store/product/${storeId[index]}`
-
-											// {
-											//   headers: { Authorization: `Bearer ${token}` },
-											// }
+											`http://localhost:8080/seller/store/product/${storeId[index]}`,
+											{
+												headers: {
+													Authorization: `Bearer ${token}`,
+												},
+											}
 										)
 										.then((res) =>
 											console.log(
