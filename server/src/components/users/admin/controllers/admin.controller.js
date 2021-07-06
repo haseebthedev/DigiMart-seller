@@ -2,6 +2,7 @@ const Admin = require('../models/admin.model')
 const bcrypt=require('bcryptjs')
 const notification = require('../../../notifications/account')
 
+//FOR ADMIN's OWN PROFILE
 const registerAdmin = async(req, res, next) => {
     const admin = new Admin(req.body)
     try{
@@ -213,8 +214,63 @@ const changePassword = async(req, res, next) => {
     }
 }
 
+//FOR SUPER ADMIN
+
+const editOtherAdminProfile = async(req, res, next) => {
+    try{
+
+        if(req.user.roles.includes('SuperAdmin')){
+            const adminID = req.params.id
+            const admin = await Admin.findOne({_id: adminID})
+            const updates=Object.keys(req.body)
+
+            if(updates.length == 0)
+            throw new Error('Invalid Keys! Please enter valid keys.')
+
+            const allowedUpdated=['name','email','password','gender','phoneNumber',
+            'accountNumber','routingNumber','bankHolderName','bankName','CNIC',
+            'profilePic','isNotificationsEnabled','isDarkModeEnabled']
+            const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+            if(!isValidOperation || updates.length == 0){
+                throw new Error('Invalid Keys! Please enter valid keys.')
+            }
+
+            //update admin
+            updates.forEach((update) => admin[update]=req.body[update])
+            await admin.save()
+            return res.status(200).json({
+                message:`updated`,
+                data:{
+                    admin
+                }
+            })
+        }
+        else{
+            throw new Error('Not authorized as a super Admin!')
+        }
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const deActivateOtherAdmin = async(req, res, next) => {
+    try{
+        if(req.user.roles.includes('SuperAdmin')){
+            const adminID = req.params.id
+            const admin = await Admin.findOne({_id: adminID})
+        }
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
 
 module.exports = {
+    //for admin's own profile
     registerAdmin,
     getMyDetails,
     loginAdmin,
@@ -223,5 +279,7 @@ module.exports = {
     activateMyAccount,
     deleteMyAccount,
     updateProfile,
-    changePassword
+    changePassword,
+    //for super admin to acess other admins
+    editOtherAdminProfile
 }

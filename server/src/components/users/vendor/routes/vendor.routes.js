@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const vendorController = require('../controllers/vendor.controller')
 const vendorAuth = require('../middlewares/vendorAuth')
+const auth = require('../../auth')
 
 //registration
 router.post('/seller/register', vendorController.registerVendor)
@@ -27,5 +28,10 @@ router.get('/seller/personalDetails', vendorAuth, vendorController.getPersonalDe
 
 //change password
 router.patch('/seller/updatePassword', vendorAuth, vendorController.changePassword)
+
+
+//ROUTES FOR ADMIN
+router.get('/admin/getTotalNumberOfSellers', auth.admin, vendorController.getTotalNumberOfVendors)
+router.get('/admin/getAllSellersDetails', auth.admin, vendorController.getAllVendorsDetails)
 
 module.exports = router

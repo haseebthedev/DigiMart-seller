@@ -71,6 +71,8 @@ const updateStore = async(req, res, next) => {
     }
 }
 
+//ROUTES FOR ADMIN
+
 const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
     try{
         const filters = {isApproved: false}
@@ -105,10 +107,15 @@ const getTotalNumberOfStoresApproved = async(req, res, next) =>{
     }
 }
 
+
+ 
+
 module.exports = {
+    //for store owner
     registerStore,
     getStoreDetails,
     updateStore,
+    //for admin
     getTotalNumberOfStoreApprovals,
     getTotalNumberOfStoresApproved,
 }

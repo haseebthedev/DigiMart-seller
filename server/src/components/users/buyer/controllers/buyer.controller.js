@@ -34,6 +34,8 @@ const loginBuyer = async (req, res, next) => {
     try{
         const buyer=await Buyer.findByCredientials(req.body.email,req.body.password)
         const token=await buyer.generateAuthToken()
+        buyer.isAccountActive = true
+        await buyer.save()
         res.json({
             message:`You are logged in successfully! Welcome to DigiMart.`,
             data:{
@@ -225,6 +227,42 @@ const changePassword = async(req, res, next) => {
     }
 }
 
+//ROUTES FOR ADMIN
+
+const getAllBuyersDetails = async(req, res, next) => {
+    try{
+        const filters = {}
+        const Buyers = await Buyer.find(filters)
+        return res.status(200).json({
+            message:`Buyers data fetched successfully!.`,
+            data:{
+                Buyers: Buyers
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getTotalNumberOfBuyers = async(req, res, next) => {
+    try{
+        const totalNumberOfBuyers = await Buyer.estimatedDocumentCount()
+        return res.status(200).json({
+            message:`Total number of buyers fetched successfully!.`,
+            data:{
+                totalNumber: totalNumberOfBuyers
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
 module.exports = {
     registerBuyer,
     loginBuyer,
@@ -234,5 +272,8 @@ module.exports = {
     deleteMyAccount,
     forgetAccountPassword,
     updateProfile,
-    changePassword
+    changePassword,
+    //for admin
+    getAllBuyersDetails,
+    getTotalNumberOfBuyers
 }

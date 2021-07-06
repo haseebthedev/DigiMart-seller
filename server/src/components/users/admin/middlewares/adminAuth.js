@@ -6,7 +6,6 @@ const auth=async(req,res,next)=>{
         const token=req.header('Authorization').replace('Bearer ','')
         const decoded=jwt.verify(token,process.env.JWT_ADMIN_CODE)
         const user=await Admin.findOne({_id:decoded._id , 'tokens.token':token})
-
         if(!user){
             throw new Error()
         }
@@ -16,7 +15,7 @@ const auth=async(req,res,next)=>{
     }
     catch(e){
         e.status = 401
-        e.message = 'Sorry! You are not Authorized.'
+        e.message = 'Sorry! You are not Authorized as Admin.'
         next(e)
     }
    

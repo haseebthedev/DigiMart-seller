@@ -26,20 +26,34 @@ const registerVendor = async(req, res, next) => {
     }
     catch (err){
         //err.message='not added'
-        err.status = 402
+        err.status = 404
         next(err)
     }
 }
 
 const loginVendor = async (req, res, next) => {
     try{
+        const isStoreRegistered = false
         const vendor=await Vendor.findByCredientials(req.body.email,req.body.password)
         const token=await vendor.generateAuthToken()
+        // if store then activate store and vendor profile
+        if(req.store){
+            isStoreRegistered = true
+            //activate account status
+            vendor.isAccountActive = true;
+            //save vendor
+            await vendor.save()
+            //activate store
+            req.store.isActive = true
+            //save store
+            await req.store.save()
+        }
         res.json({
             message:`You are logged in successfully! Welcome to DigiMart.`,
             data:{
                 vendor: vendor,
-                token:token
+                token:token,
+                isStoreRegistered : isStoreRegistered
             }
         })
     }
@@ -79,7 +93,7 @@ const deleteMyAccount = async(req, res, next) => {
         await req.user.remove()
         //later add this
         //if vendor delete .. delete its store, products, reviews etc.
-        const productsOfStore = Product.find({storeID: store._id})
+        const productsOfStore = await Product.find({storeID: store._id})
         await productsOfStore.remove()
         await store.remove()
 
@@ -106,20 +120,31 @@ const deleteMyAccount = async(req, res, next) => {
 
 const deActivateMyAccount = async(req, res, next) => {
     try{
+        var isStoreRegistered = false
         const vendor = req.user
         //deactivate account status
         req.user.isAccountActive = false;
         //deactivate store
-        if(!req.store)
-        throw new Error('Store is not registered yet! Please register your store.')
-        req.store.isActive = false
-        //when we deactivate store before logging it out
-        //we call api to unpublish its all products
+        if(req.store){
+            isStoreRegistered = true
+            req.store.isActive = false
+            //we unpublish its all products
+            const productsOfStore =  await Product.find({storeID: req.store._id})
+            if(productsOfStore){
+                productsOfStore.forEach(async(product) => {
+                    product.isVisibilityEnabled = false
+                    await product.save()
+                })
+            }
+            //save store
+            await req.store.save()
+        }
+        //logout
         req.user.tokens=req.user.tokens.filter((tokens)=>{
             return tokens.token !== req.token
         })
+        //save user
         await req.user.save()
-        await req.store.save()
         //send deactivation mail
         const subject = 'Account Deactivate Email'
         const message = `Your seller account registered on ${vendor.email} has been deactivated temporily. 
@@ -130,7 +155,8 @@ const deActivateMyAccount = async(req, res, next) => {
         res.status(200).json({
             message:`Your account has been deactivated successfully. You can login again to activate it.`,
             data:{
-                email: req.user.email
+                email: req.user.email,
+                isStoreRegistered : isStoreRegistered
             }
         })
     }
@@ -142,18 +168,37 @@ const deActivateMyAccount = async(req, res, next) => {
 
 const activateMyAccount = async(req, res, next) => {
     try{
-        //activate account status
-        req.user.isAccountActive = true;
-        //activate store
-        if(!req.store)
-        throw new Error('Store is not registered yet! Please register your store.')
-        req.store.isActive = true
-        await req.user.save()
-        await req.store.save()
+        var isStoreRegistered = false;
+
+        //if store, activate store
+        if(req.store){
+            isStoreRegistered = true
+            //activate account status
+            req.user.isAccountActive = true;
+            //save user
+            await req.user.save()
+            //active store
+            req.store.isActive = true
+            //If products, then set its products visisble
+            const productsOfStore =  await Product.find({storeID: req.store._id})
+            if(productsOfStore){
+                productsOfStore.forEach(async(product) => {
+                    product.isVisibilityEnabled = false
+                    await product.save()
+                })
+            }
+            //save store
+            await req.store.save()
+        }
+        else{
+            throw new Error('Please register your store to activate account.')
+        }
+        
         res.status(200).json({
             message:`Account has been Activated successfully.`,
             data:{
-                user: req.user
+                user: req.user,
+                isStoreRegistered: isStoreRegistered
             }
         })
     }
@@ -313,7 +358,43 @@ const changePassword = async(req, res, next) => {
     }
 }
 
+//ROUTES FOR ADMIN
+
+const getTotalNumberOfVendors = async(req, res, next) => {
+    try{
+        const totalNumberOfVendors = await Vendor.estimatedDocumentCount()
+        return res.status(200).json({
+            message:`Total number of Vendors fetched successfully!.`,
+            data:{
+                totalNumber: totalNumberOfVendors
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getAllVendorsDetails = async(req, res, next) => {
+    try{
+        const filters = {}
+        const Vendors = await Vendor.find(filters)
+        return res.status(200).json({
+            message:`Vendors data fetched successfully!.`,
+            data:{
+                Vendors: Vendors
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports={
+    //for vendor
     registerVendor,
     loginVendor,
     logoutVendor,
@@ -324,5 +405,8 @@ module.exports={
     forgetAccountPassword,
     updateProfile,
     getPersonalDetails,
-    changePassword
+    changePassword,
+    //for admin
+    getAllVendorsDetails,
+    getTotalNumberOfVendors
 }

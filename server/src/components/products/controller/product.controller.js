@@ -180,18 +180,13 @@ const viewProductsOfStore = async(req, res, next) => {
 
 const blockProduct = async(req, res, next) => {
     try{
-        const updates = Object.keys(req.body)
-        const allowedUpdated = ['isVisibilityEnabled']
-        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-        if(!isValidOperation || updates.length == 0){
-            throw new Error('Invalid Keys! Please enter valid keys.')
-        }
+        
         const productID = req.params.id
         const product = await Product.findOne({_id:productID})
-        product['isVisibilityEnabled'] = req.body['isVisibilityEnabled']
+        product['isVisibilityEnabled'] = false
         await product.save()
         res.status(200).json({
-            message:`Your product has been blocked successfully!`,
+            message:`blocked !`,
             data:{
                 product: product
             }
