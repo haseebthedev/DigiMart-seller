@@ -12,7 +12,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 
-import axios from "axios";
+import api from "../../../Axios/api";
 import Logo from "../../../assets/images/logo.png";
 
 import { withRouter } from "react-router-dom";
@@ -36,11 +36,9 @@ const ForgetPassword = () => {
 	};
 
 	const getPassword = () => {
-		const URL = "http://localhost:8080/seller/forgetPassword";
-		axios
-			.patch(URL, { email: userEmail })
+		api.patch("/seller/forgetPassword", { email: userEmail })
 			.then((res) => console.log("Send Mail", res))
-			.catch((error) => console.log());
+			.catch((error) => console.log("ERROR" + error));
 
 		setState({ open: true, vertical: "bottom", horizontal: "center" });
 	};

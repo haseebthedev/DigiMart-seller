@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import axios from "axios";
+import api from "../../Axios/api";
 import { Redirect } from "react-router-dom";
 
 // MUI Components
@@ -108,14 +108,13 @@ const Layout = (props) => {
 	const logoutHandler = (e) => {
 		e.preventDefault();
 
-		axios
-			.post(
-				"http://localhost:8080/seller/logout",
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+		api.post(
+			"/seller/logout",
+			{},
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		)
 			.then(function (res) {
 				console.log("logging off");
 				setIsLoggedOut(true);
@@ -144,8 +143,7 @@ const Layout = (props) => {
 	};
 
 	// DARK MODE
-	// eslint-disable-next-line
-	const [mode, setMode] = React.useState(false);
+	const [setMode] = React.useState(false);
 	const modeType = localStorage.getItem("THEME_MODE");
 
 	// dark mode handler

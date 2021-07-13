@@ -1,25 +1,26 @@
 import React from "react";
-import axios from "axios";
-import { Paper, FormControl, InputLabel, Select } from "@material-ui/core";
-// import Link from "@material-ui/core/Link";
-import Button from "@material-ui/core/Button";
-
-import TextField from "@material-ui/core/TextField";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
+import api from "../../../Axios/api";
+import {
+	Paper,
+	FormControl,
+	InputLabel,
+	Select,
+	Button,
+	TextField,
+	Container,
+	Grid,
+	Avatar,
+} from "@material-ui/core";
 import FileBase64 from "react-file-base64";
-import Avatar from "@material-ui/core/Avatar";
-
 import useStyles from "./styles";
-
 import { useUserContext } from "../../../context/UserContext";
 import { Redirect } from "react-router-dom";
 
 export default function VendorCenter() {
 	const classes = useStyles();
 
-	// eslint-disable-next-line
-	const { store, dispatch } = useUserContext();
+	// context
+	const { store } = useUserContext();
 	const token = store.data.token;
 
 	const [storeData, setStoreData] = React.useState({
@@ -40,17 +41,15 @@ export default function VendorCenter() {
 
 	// UPDATE REQUEST SENDING HERE
 	const handleSubmitUpdate = () => {
-		const storeURL = "http://localhost:8080/seller/store/me";
-		axios
-			.patch(
-				storeURL,
-				{
-					...storeData,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+		api.patch(
+			"/seller/store/me",
+			{
+				...storeData,
+			},
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		)
 			.then((res) => console.log("Store Updated. RES: ", res))
 			.catch((error) => console.log("Error: " + error));
 	};

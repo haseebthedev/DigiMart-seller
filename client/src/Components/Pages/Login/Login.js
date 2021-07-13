@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import axios from "axios";
+import React from "react";
+import api from "../../../Axios/api";
 
 import {
 	Avatar,
@@ -9,6 +9,7 @@ import {
 	Paper,
 	Grid,
 	Typography,
+	InputLabel,
 } from "@material-ui/core";
 import { LockOutlined } from "@material-ui/icons/";
 import { withRouter, Redirect } from "react-router-dom";
@@ -23,47 +24,40 @@ const Login = () => {
 	const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
 	const [loginData, setLoginData] = React.useState({
-		email: "haseeb@gmail.com",
-		emailError: false,
-		emailErrorMessage: "",
+		email: "",
 		password: "haseeb123",
-		passwordError: "",
-		otherMsg: "",
+		errorMessage: "",
 	});
 
 	const validateEmail = (email) => {
 		const regEx =
 			/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-		// const res = regEx.test(email);
-		// console.log("isValid", res);
+		const res = regEx.test(email);
 
-		// if (res === true) {
-		// 	setLoginData({ ...loginData, emailError: false });
-		// } else {
-		// 	setLoginData({ ...loginData, emailError: true });
-		// 	console.log("error found!!");
-		// }
+		if (!res === true) {
+			return "Wrong Email";
+		}
+		return "";
 	};
 
 	const handleChange = (input) => (e) => {
-		switch (input) {
-			case "email":
-				validateEmail(e.target.value);
-				break;
-			case "password":
-				console.log(input);
-				break;
+		var error = "";
+		if (input === "email") {
+			error = validateEmail(e.target.value);
 		}
-		setLoginData({ ...loginData, [input]: e.target.value });
+		setLoginData({
+			...loginData,
+			[input]: e.target.value,
+			errorMessage: error,
+		});
 	};
 
 	const handleLoginVendor = (e) => {
 		e.preventDefault();
 
-		axios
-			.post("http://localhost:8080/seller/login", {
-				...loginData,
-			})
+		api.post("/seller/login", {
+			...loginData,
+		})
 			.then(function (res) {
 				setTimeout(() => setIsLoggedIn(true), [1000]);
 				return loginUser(
@@ -73,15 +67,18 @@ const Login = () => {
 				);
 			})
 			.catch((error) =>
-				console.log(
-					"ERROR: " + JSON.stringify(error.response.data.error)
-				)
+				// console.log(
+				// 	"ERROR: " + JSON.stringify(error.response.data.error)
+				// );
+
+				setLoginData({
+					...loginData,
+					errorMessage:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+				})
 			);
 	};
-
-	useEffect(() => {
-		console.log("emailError ", loginData.emailError);
-	}, [loginData]);
 
 	return (
 		<Grid container className={classes.root}>
@@ -119,8 +116,6 @@ const Login = () => {
 							autoFocus
 							defaultValue={loginData.email}
 							onChange={handleChange("email")}
-							error={loginData.emailError}
-							helperText={loginData.emailErrorMessage}
 						/>
 						<TextField
 							variant="outlined"
@@ -134,6 +129,16 @@ const Login = () => {
 							defaultValue={loginData.password}
 							onChange={handleChange("password")}
 						/>
+						<InputLabel
+							style={{
+								color: "red",
+								marginTop: 10,
+								marginBottom: 5,
+								textAlign: "center",
+							}}
+						>
+							{loginData.errorMessage.toString()}
+						</InputLabel>
 						<Button
 							type="submit"
 							fullWidth

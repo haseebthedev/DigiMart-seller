@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import MaterialTable from "material-table";
 import { Grid, Paper } from "@material-ui/core";
 import { useUserContext } from "../../../../context/UserContext";
+import api from "../../../../Axios/api";
 
 import useStyles from "./styles";
 
@@ -27,15 +27,12 @@ export default function ViewProducts() {
 	];
 
 	useEffect(() => {
-		axios
-			.get("http://localhost:8080/seller/store/products", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
+		api.get("/seller/store/products", {
+			headers: { Authorization: `Bearer ${token}` },
+		})
 			.then((res) => {
-				// console.log(res.data.data.products);
 				setDetails(res.data.data.products);
 				const storeData = res.data.data.products;
-				// console.log("storeData on useEffect is ", storeData);
 				setStoreId(
 					storeData.map((items) => {
 						return items._id;
@@ -85,26 +82,25 @@ export default function ViewProducts() {
 										warranty,
 									} = newData;
 
-									axios
-										.patch(
-											`http://localhost:8080/seller/store/product/${storeId[index]}`,
-											{
-												name,
-												category,
-												description,
-												stockAvailable,
-												price,
-												weight,
-												discountPercentage,
-												manufacturer,
-												warranty,
+									api.patch(
+										`/seller/store/product/${storeId[index]}`,
+										{
+											name,
+											category,
+											description,
+											stockAvailable,
+											price,
+											weight,
+											discountPercentage,
+											manufacturer,
+											warranty,
+										},
+										{
+											headers: {
+												Authorization: `Bearer ${token}`,
 											},
-											{
-												headers: {
-													Authorization: `Bearer ${token}`,
-												},
-											}
-										)
+										}
+									)
 										.then((res) =>
 											console.log(
 												"Product Updated. RES: ",
@@ -129,15 +125,14 @@ export default function ViewProducts() {
 										storeId[index]
 									);
 
-									axios
-										.delete(
-											`http://localhost:8080/seller/store/product/${storeId[index]}`,
-											{
-												headers: {
-													Authorization: `Bearer ${token}`,
-												},
-											}
-										)
+									api.delete(
+										`/seller/store/product/${storeId[index]}`,
+										{
+											headers: {
+												Authorization: `Bearer ${token}`,
+											},
+										}
+									)
 										.then((res) =>
 											console.log(
 												"Product Updated. RES: ",

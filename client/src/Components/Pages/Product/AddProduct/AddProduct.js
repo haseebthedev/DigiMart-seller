@@ -7,7 +7,7 @@ import {
 	Avatar,
 	Paper,
 } from "@material-ui/core";
-import axios from "axios";
+import api from "../../../../Axios/api";
 import FileBase64 from "react-file-base64";
 import LibraryAddIcon from "@material-ui/icons/LibraryAdd";
 import useStyles from "./styles";
@@ -17,7 +17,7 @@ import { useUserContext } from "../../../../context/UserContext";
 export default function AddProduct() {
 	const classes = useStyles();
 
-	// eslint-disable-next-line
+	// context
 	const { store } = useUserContext();
 	const token = store.data.token;
 
@@ -41,19 +41,19 @@ export default function AddProduct() {
 	const handleProductDetails = (input) => (e) => {
 		setProductDetails({ ...productDetails, [input]: e.target.value });
 	};
+	
 	const addProductHandler = (e) => {
 		e.preventDefault();
 
-		axios
-			.post(
-				"http://localhost:8080/seller/store/product",
-				{
-					...productDetails,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+		api.post(
+			"/seller/store/product",
+			{
+				...productDetails,
+			},
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		)
 			.then((res) => console.log(res.data))
 			.catch((error) =>
 				console.log(
