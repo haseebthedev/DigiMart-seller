@@ -1,11 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		// height: "10vh",
-		// marginTop: theme.spacing(2),
-	},
-
 	paper: {
 		margin: theme.spacing(3, 6),
 		justifyContent: "center",
@@ -20,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 		width: 50,
 		height: 50,
 		margin: theme.spacing(1),
-		backgroundColor: theme.palette.secondary.main,
+		backgroundColor: theme.palette.primary.main,
 	},
 	form: {
 		width: "100%", // Fix IE 11 issue.
@@ -29,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 	submit: {
 		margin: theme.spacing(0, 0, 2),
 	},
-
 	captcha: {
 		display: "flex",
 		flexDirection: "column",

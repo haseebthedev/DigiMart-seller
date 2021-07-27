@@ -20,6 +20,7 @@ import {
 	MenuItem,
 	Menu,
 	Collapse,
+	Avatar,
 } from "@material-ui/core";
 
 import {
@@ -30,7 +31,7 @@ import {
 } from "react-router-dom";
 
 // MUI Icons
-import AccountCircle from "@material-ui/icons/AccountCircle";
+// import AccountCircle from "@material-ui/icons/AccountCircle";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -58,6 +59,8 @@ import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore"
 import ViewComfyIcon from "@material-ui/icons/ViewComfy";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
+import StorageIcon from "@material-ui/icons/Storage";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
@@ -66,7 +69,8 @@ import useStyles from "./styles";
 import VendorAnalytics from "../VendorAnalytics/VendorAnalytics";
 import AddProduct from "../Pages/Product/AddProduct/AddProduct";
 import ViewProducts from "../Pages/Product/ViewProducts/ViewProducts";
-import EditBankDetails from "../Pages/Payment/EditBankDetails";
+import PaymentMethod from "../Pages/Payment/PaymentMethod";
+import Transactions from "../Pages/Payment/Transactions";
 import SettingsProfile from "../Pages/Setting/SettingsProfile";
 import SettingsStore from "../Pages/Setting/SettingsStore";
 
@@ -79,6 +83,8 @@ const Layout = (props) => {
 	// context
 	const { store, dispatch } = useUserContext();
 	const token = store.data.token;
+	const name = store.data.data.name;
+	const profilePic = store.data.data.profilePic;
 
 	// Current Path - URL Location
 	const {
@@ -143,7 +149,7 @@ const Layout = (props) => {
 	};
 
 	// DARK MODE
-	const [setMode] = React.useState(false);
+	const [setMode] = useState(false);
 	const modeType = localStorage.getItem("THEME_MODE");
 
 	// dark mode handler
@@ -151,15 +157,28 @@ const Layout = (props) => {
 		if (!modeType) {
 			localStorage.setItem("THEME_MODE", "dark");
 			window.location.reload();
-			console.log("set");
 			setMode(true);
 		} else {
 			localStorage.removeItem("THEME_MODE");
 			window.location.reload();
-			console.log("removed");
 			setMode(false);
 		}
 	};
+
+	// activating profile again
+	// useEffect(() => {
+	// 	const activateAccount = async () => {
+	// 		await api.patch(
+	// 			"/seller/activateAccount",
+	// 			{},
+	// 			{
+	// 				headers: { Authorization: `Bearer ${token}` },
+	// 			}
+	// 		);
+	// 	};
+	// 	activateAccount();
+	// 	// eslint-disable-next-line
+	// }, []);
 
 	return (
 		// <Router>
@@ -195,13 +214,16 @@ const Layout = (props) => {
 						</div>
 						<div>
 							<Switch
-								icon={<Brightness4Icon />}
-								checkedIcon={<Brightness7Icon />}
+								color="primary"
+								icon={<Brightness4Icon color="primary" />}
+								checkedIcon={
+									<Brightness7Icon color="primary" />
+								}
 								checked={!!modeType}
 								onChange={modeHandler}
 							/>
 							<IconButton>
-								<Badge badgeContent={3} color="secondary">
+								<Badge badgeContent={3} color="primary">
 									<MailIcon
 										fontSize="small"
 										style={{
@@ -211,7 +233,7 @@ const Layout = (props) => {
 								</Badge>
 							</IconButton>
 							<IconButton>
-								<Badge badgeContent={9} color="secondary">
+								<Badge badgeContent={9} color="primary">
 									<NotificationsIcon
 										fontSize="small"
 										style={{
@@ -225,12 +247,7 @@ const Layout = (props) => {
 								aria-haspopup="true"
 								onClick={handleMenu}
 							>
-								<AccountCircle
-									fontSize="large"
-									style={{
-										color: "grey",
-									}}
-								/>
+								<Avatar alt="Remy Sharp" src={profilePic} />
 							</IconButton>
 							<Menu
 								id="menu-appbar"
@@ -252,9 +269,9 @@ const Layout = (props) => {
 									<Typography
 										variant="h5"
 										weight="medium"
-										color="secondary"
+										color="primary"
 									>
-										Hi, Haseeb
+										Hi, {name}
 									</Typography>
 								</div>
 
@@ -414,7 +431,7 @@ const Layout = (props) => {
 
 					<ListItem button onClick={handleDDPayments}>
 						<ListItemIcon>
-							<PaymentIcon className={classes.iconColor} />
+							<MonetizationOnIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Payments" />
 						{openDDPayments ? <ExpandLess /> : <ExpandMore />}
@@ -426,17 +443,33 @@ const Layout = (props) => {
 								button
 								selected={
 									pathname ===
-									"/vendor/payments/EditBankDetails"
+									"/vendor/payments/PaymentMethod"
 								}
 								component={Link}
-								to="/vendor/payments/EditBankDetails"
+								to="/vendor/payments/PaymentMethod"
 							>
 								<ListItemIcon>
-									<SaveAltIcon
+									<PaymentIcon
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Edit Bank Details" />
+								<ListItemText primary="Payment Methods" />
+							</ListItem>
+							<ListItem
+								className={classes.dropdown}
+								button
+								selected={
+									pathname === "/vendor/payments/Transactions"
+								}
+								component={Link}
+								to="/vendor/payments/Transactions"
+							>
+								<ListItemIcon>
+									<StorageIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Transactions" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -519,8 +552,12 @@ const Layout = (props) => {
 						component={ViewProducts}
 					/>
 					<Route
-						path="/vendor/payments/EditBankDetails"
-						component={EditBankDetails}
+						path="/vendor/payments/PaymentMethod"
+						component={PaymentMethod}
+					/>
+					<Route
+						path="/vendor/payments/Transactions"
+						component={Transactions}
 					/>
 					<Route
 						path="/vendor/setting/profile"

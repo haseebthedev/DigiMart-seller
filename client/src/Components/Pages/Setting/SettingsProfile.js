@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../../Axios/api";
 import {
 	Link,
@@ -10,15 +10,23 @@ import {
 	Switch,
 	Paper,
 	Avatar,
+	Modal,
 } from "@material-ui/core";
-import FileBase64 from "react-file-base64";
 import { Redirect } from "react-router-dom";
-import { useUserContext, logoutUser } from "../../../context/UserContext";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import {
+	useUserContext,
+	logoutUser,
+	updateProfile,
+} from "../../../context/UserContext";
 import useStyles from "./styles";
 
 // components
 import DeleteAccount from "../../FormDialog/DeleteAccount";
 import DeactivateAccount from "../../FormDialog/DeactivateAccount";
+import RemoveProfilePic from "../../FormDialog/RemoveProfilePic";
+import ImageCrop from "../../ImageCropDialog/ImageCrop";
 
 export default function VendorCenter() {
 	const classes = useStyles();
@@ -28,17 +36,31 @@ export default function VendorCenter() {
 	const token = store.data.token;
 
 	const [profileData, setProfileData] = useState({
-		profilePic: "",
-		name: "Haseeb Ahmed",
-		email: "haseeb@gmail.com",
-		phoneNumber: "+923455488210",
-		isDarkModeEnabled: false,
-		isNotificationsEnabled: true,
+		profilePic: null,
+		name: store.data.data.name,
+		email: store.data.data.email,
+		phoneNumber: store.data.data.phoneNumber,
+		isDarkModeEnabled: store.data.data.isDarkModeEnabled,
+		isNotificationsEnabled: store.data.data.isNotificationsEnabled,
 	});
-	const [isLoggedOut, setIsLoggedOut] = React.useState(false);
 
+	const [isLoggedOut, setIsLoggedOut] = React.useState(false);
 	const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 	const [isDeactivatingAccount, setIsDeactivatingAccount] = useState(false);
+	const [isProfilePicRemove, setIsProfilePicRemove] = useState(false);
+
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
 
 	// show delete Account Dialog
 	const handlerAccountDelete = (e) => {
@@ -90,8 +112,19 @@ export default function VendorCenter() {
 			);
 	};
 
-	const onProfileChange = (files) => {
-		setProfileData({ ...profileData, profilePic: files.base64 });
+	// Show delete ProfilePic dialog
+	const handlerRemoveProfilePic = (e) => {
+		e.preventDefault();
+		setIsProfilePicRemove(true);
+	};
+
+	const confirmedRemoveProfilePic = () => {
+		setProfileData({ ...profileData, profilePic: null });
+		setIsProfilePicRemove(false);
+	};
+
+	const onProfileChange = (image) => {
+		setProfileData({ ...profileData, profilePic: image });
 	};
 	const handleChange = (input) => (e) => {
 		setProfileData({ ...profileData, [input]: e.target.value });
@@ -101,19 +134,75 @@ export default function VendorCenter() {
 	};
 
 	// UPDATE REQUEST SENDING HERE
-	const handleSubmitUpdate = () => {
-		api.patch(
-			"/seller/me",
-			{
-				...profileData,
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
-			.then((res) => console.log("Profile Updated. RES: ", res))
-			.catch((error) => console.log("Error: " + error));
+	const handleSubmitUpdate = async () => {
+
+		await api
+			.patch(
+				"/seller/me",
+				{
+					...profileData,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then(async (res) => {
+				// console.log("before");
+				const oldData = store.data.data;
+				const newData = { ...oldData, ...profileData };
+
+				setTimeout(function () {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "Your Profile has been updated!",
+						open: true,
+					});
+					setTimeout(function () {
+						updateProfile(dispatch, newData, token);
+					}, 1000);
+				}, 1000);
+			})
+			.catch((error) =>
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong!",
+					open: true,
+				})
+			);
 	};
+
+	// Modal Settings here
+	const [modalOpen, setModelOpen] = React.useState(false);
+
+	const handleOpen = () => {
+		setModelOpen(true);
+	};
+
+	const handleClose = () => {
+		setModelOpen(false);
+	};
+
+	useEffect(() => {
+		const {
+			profilePic,
+			name,
+			email,
+			phoneNumber,
+			isDarkModeEnabled,
+			isNotificationsEnabled,
+		} = store.data.data;
+		setProfileData({
+			profilePic,
+			name,
+			email,
+			phoneNumber,
+			isDarkModeEnabled,
+			isNotificationsEnabled,
+		});
+		// eslint-disable-next-line
+	}, []);
 
 	return (
 		<Grid container className={classes.root}>
@@ -126,7 +215,7 @@ export default function VendorCenter() {
 								<div
 									style={{
 										display: "flex",
-										justifyContent: "space-between",
+										justifyContent: "space-evenly",
 										alignItems: "center",
 										marginBottom: "20px",
 									}}
@@ -138,11 +227,20 @@ export default function VendorCenter() {
 											classes.avatarInProfileSetting
 										}
 									></Avatar>
-									<FileBase64
-										size="60"
-										multiple={false}
-										onDone={onProfileChange}
-									/>
+
+									<div>
+										<Button
+											color="primary"
+											onClick={handleOpen}
+										>
+											Upload
+										</Button>
+										<Button
+											onClick={handlerRemoveProfilePic}
+										>
+											Remove Image
+										</Button>
+									</div>
 								</div>
 
 								<TextField
@@ -180,7 +278,7 @@ export default function VendorCenter() {
 									margin="normal"
 									control={
 										<Switch
-											color="secondary"
+											color="primary"
 											checked={
 												profileData.isDarkModeEnabled
 											}
@@ -197,7 +295,7 @@ export default function VendorCenter() {
 									margin="normal"
 									control={
 										<Switch
-											color="secondary"
+											color="primary"
 											checked={
 												profileData.isNotificationsEnabled
 											}
@@ -214,7 +312,7 @@ export default function VendorCenter() {
 								<Button
 									fullWidth
 									variant="contained"
-									color="secondary"
+									color="primary"
 									className={classes.submit}
 									onClick={handleSubmitUpdate}
 								>
@@ -255,8 +353,55 @@ export default function VendorCenter() {
 						setDeactivatingAccount={setIsDeactivatingAccount}
 						confirmedDeactivate={confirmedDeactivate}
 					/>
+					<RemoveProfilePic
+						RemoveProfilePic={isProfilePicRemove}
+						setRemoveProfilePic={setIsProfilePicRemove}
+						confirmedRemoveProfilePic={confirmedRemoveProfilePic}
+					/>
+					<Snackbar
+						open={open}
+						anchorOrigin={{ vertical, horizontal }}
+						autoHideDuration={3000}
+						onClose={handleCloseSnackBar}
+						key={vertical + horizontal}
+					>
+						<MuiAlert
+							elevation={6}
+							variant="filled"
+							onClose={handleCloseSnackBar}
+							severity={snackBarstate.type}
+						>
+							{snackBarstate.message}
+						</MuiAlert>
+					</Snackbar>
 				</Container>
 			</Grid>
+
+			<Modal
+				open={modalOpen}
+				onClose={handleClose}
+				onBackdropClick={handleClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: "#FFF",
+						width: "70vw",
+						height: "70vh",
+						padding: "20px",
+						position: "relative",
+					}}
+				>
+					<ImageCrop
+						onProfileChange={onProfileChange}
+						handleClose={handleClose}
+					/>
+				</div>
+			</Modal>
 		</Grid>
 	);
 }

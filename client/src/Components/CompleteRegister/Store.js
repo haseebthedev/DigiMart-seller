@@ -100,17 +100,17 @@ export default function Store(props) {
 					>
 						<FormControlLabel
 							value="individual"
-							control={<Radio color="secondary" />}
+							control={<Radio color="primary" />}
 							label="I'm an Individual"
 						/>
 						<FormControlLabel
 							value="shop"
-							control={<Radio color="secondary" />}
+							control={<Radio color="primary" />}
 							label="I'm a Shopkepper"
 						/>
 						<FormControlLabel
 							value="brand"
-							control={<Radio color="secondary" />}
+							control={<Radio color="primary" />}
 							label="We're a Brand"
 						/>
 					</RadioGroup>

@@ -1,20 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import api from "../../../Axios/api";
 import {
 	Paper,
 	FormControl,
 	InputLabel,
 	Select,
+	MenuItem,
 	Button,
 	TextField,
 	Container,
 	Grid,
 	Avatar,
+	Modal,
 } from "@material-ui/core";
-import FileBase64 from "react-file-base64";
-import useStyles from "./styles";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import { useUserContext } from "../../../context/UserContext";
 import { Redirect } from "react-router-dom";
+import ImageCrop from "../../ImageCropDialog/ImageCrop";
+
+import RemoveStoreLogo from "../../FormDialog/RemoveStoreLogo";
+
+import useStyles from "./styles";
 
 export default function VendorCenter() {
 	const classes = useStyles();
@@ -23,17 +30,31 @@ export default function VendorCenter() {
 	const { store } = useUserContext();
 	const token = store.data.token;
 
-	const [storeData, setStoreData] = React.useState({
-		logo: "",
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
+
+	const [storeData, setStoreData] = useState({
+		logo: null,
 		name: "Haseeb Ahmed",
 		biography: "We love to sell products online",
 		category: "Electronic",
 		warehouseAddress: "Street # 213, Block-F, Satellite Town",
 	});
-	const [isLoggedOut] = React.useState(false);
+	const [isLoggedOut] = useState(false);
+	const [isStoreLogoRemove, setStoreLogoRemove] = useState(false);
 
-	const onSelectlogo = (files) => {
-		setStoreData({ ...storeData, logo: files.base64 });
+	const onSelectlogo = (image) => {
+		setStoreData({ ...storeData, logo: image });
 	};
 	const handleChange = (input) => (e) => {
 		setStoreData({ ...storeData, [input]: e.target.value });
@@ -50,9 +71,49 @@ export default function VendorCenter() {
 				headers: { Authorization: `Bearer ${token}` },
 			}
 		)
-			.then((res) => console.log("Store Updated. RES: ", res))
-			.catch((error) => console.log("Error: " + error));
+			.then((res) =>
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "Your Store has been updated!",
+					open: true,
+				})
+			)
+			.catch((error) =>
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					open: true,
+				})
+			);
 	};
+
+	// Modal Settings here
+	const [modalOpen, setModelOpen] = React.useState(false);
+
+	const handleOpen = () => {
+		setModelOpen(true);
+	};
+
+	const handleClose = () => {
+		setModelOpen(false);
+	};
+
+	// Show delete ProfilePic dialog
+	const handlerRemoveStoreLogo = (e) => {
+		e.preventDefault();
+		setStoreLogoRemove(true);
+	};
+
+	const confirmedRemoveStoreLogo = () => {
+		setStoreData({ ...storeData, logo: null });
+		setStoreLogoRemove(false);
+	};
+
+	let currentValue = storeData.category || "DEFAULT";
 
 	return (
 		<Grid container className={classes.root}>
@@ -65,7 +126,7 @@ export default function VendorCenter() {
 								<div
 									style={{
 										display: "flex",
-										justifyContent: "space-between",
+										justifyContent: "space-evenly",
 										alignItems: "center",
 										marginBottom: "20px",
 									}}
@@ -79,11 +140,19 @@ export default function VendorCenter() {
 									>
 										{"LOGO HERE"}
 									</Avatar>
-									<FileBase64
-										size="60"
-										multiple={false}
-										onDone={onSelectlogo}
-									/>
+									<div>
+										<Button
+											color="primary"
+											onClick={handleOpen}
+										>
+											Upload
+										</Button>
+										<Button
+											onClick={handlerRemoveStoreLogo}
+										>
+											Remove Image
+										</Button>
+									</div>
 								</div>
 
 								<TextField
@@ -113,30 +182,36 @@ export default function VendorCenter() {
 									</InputLabel>
 									<Select
 										variant="outlined"
-										value={storeData.category}
+										value={currentValue}
+										defaultValue={"DEFAULT"}
 										onChange={handleChange("category")}
 										align="left"
 										style={{ marginTop: "20px" }}
 									>
-										<option value="Electronic">
+										<MenuItem value="DEFAULT" disabled>
+											Choose a Category...
+										</MenuItem>
+										<MenuItem value="Electronic">
 											Electronics
-										</option>
-										<option value="Health">
+										</MenuItem>
+										<MenuItem value="Health">
 											Health and Beauty
-										</option>
-										<option value="Groceries">
+										</MenuItem>
+										<MenuItem value="Groceries">
 											Groceries & Pets
-										</option>
-										<option value="Lifestyle">
+										</MenuItem>
+										<MenuItem value="Lifestyle">
 											Home & Lifestyle
-										</option>
-										<option value="fashion">
+										</MenuItem>
+										<MenuItem value="fashion">
 											Fashion & Clothing
-										</option>
-										<option value="sports">Sports</option>
-										<option value="automotive">
+										</MenuItem>
+										<MenuItem value="sports">
+											Sports
+										</MenuItem>
+										<MenuItem value="automotive">
 											Automotive and Bikes
-										</option>
+										</MenuItem>
 									</Select>
 								</FormControl>
 
@@ -154,7 +229,7 @@ export default function VendorCenter() {
 								<Button
 									fullWidth
 									variant="contained"
-									color="secondary"
+									color="primary"
 									className={classes.submit}
 									onClick={handleSubmitUpdate}
 								>
@@ -163,8 +238,54 @@ export default function VendorCenter() {
 							</form>
 						</Grid>
 					</div>
+					<RemoveStoreLogo
+						RemoveStoreLogo={isStoreLogoRemove}
+						setStoreLogoRemove={setStoreLogoRemove}
+						confirmedRemoveStoreLogo={confirmedRemoveStoreLogo}
+					/>
+					<Snackbar
+						open={open}
+						anchorOrigin={{ vertical, horizontal }}
+						autoHideDuration={3000}
+						onClose={handleCloseSnackBar}
+						key={vertical + horizontal}
+					>
+						<MuiAlert
+							elevation={6}
+							variant="filled"
+							onClose={handleCloseSnackBar}
+							severity={snackBarstate.type}
+						>
+							{snackBarstate.message}
+						</MuiAlert>
+					</Snackbar>
 				</Container>
 			</Grid>
+			<Modal
+				open={modalOpen}
+				onClose={handleClose}
+				onBackdropClick={handleClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<div
+					style={{
+						backgroundColor: "#FFF",
+						width: "70vw",
+						height: "70vh",
+						padding: "20px",
+						position: "relative",
+					}}
+				>
+					<ImageCrop
+						onProfileChange={onSelectlogo}
+						handleClose={handleClose}
+					/>
+				</div>
+			</Modal>
 		</Grid>
 	);
 }

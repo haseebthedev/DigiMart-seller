@@ -198,7 +198,7 @@ export default function CompleteRegister(props) {
 										: false
 								}
 								variant="contained"
-								color="secondary"
+								color="primary"
 								onClick={handleNext}
 								className={classes.button}
 							>

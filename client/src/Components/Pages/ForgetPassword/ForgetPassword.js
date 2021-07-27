@@ -75,7 +75,7 @@ const ForgetPassword = () => {
 							<Grid item xs={12} className={classes.buttons}>
 								<Button
 									variant="contained"
-									color="secondary"
+									color="primary"
 									onClick={getPassword}
 								>
 									Get Password

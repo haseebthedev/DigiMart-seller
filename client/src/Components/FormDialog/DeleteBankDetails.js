@@ -36,7 +36,7 @@ export default function DeleteBankDetails(props) {
 					</Button>
 					<Button
 						onClick={confirmDelete}
-						color="secondary"
+						color="primary"
 						variant="contained"
 					>
 						DELETE

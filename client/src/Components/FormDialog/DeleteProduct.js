@@ -8,9 +8,9 @@ import {
 	DialogTitle,
 } from "@material-ui/core";
 
-export default function DeleteAccount(props) {
+export default function DeleteProduct(props) {
 	const handleClose = () => {
-		props.setDeletingAccount(false);
+		props.setDeletingProduct(false);
 	};
 
 	const confirmDelete = () => {
@@ -19,16 +19,11 @@ export default function DeleteAccount(props) {
 
 	return (
 		<div>
-			<Dialog open={props.DeletingAccount} onClose={handleClose}>
-				<DialogTitle>Account Deletion</DialogTitle>
+			<Dialog open={props.DeletingProduct} onClose={handleClose}>
+				<DialogTitle>Product Deletion</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						Do you really want to delete your Vendor Account?
-					</DialogContentText>
-					<DialogContentText color="error">
-						Warning: This is a non-reverseable process and once your
-						account gets deleted, it would delete your data from
-						DigiMart.
+						Do you really want to delete this Product?
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
@@ -40,7 +35,7 @@ export default function DeleteAccount(props) {
 						color="primary"
 						variant="contained"
 					>
-						DELETE
+						YES, DELETE
 					</Button>
 				</DialogActions>
 			</Dialog>

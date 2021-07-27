@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => {
 			display: "flex",
 		},
 		appBar: {
-			background: theme.palette.type === "light" ? "#FFF" : "primary",
+			background: theme.palette.type === "light" ? "#FFF" : "#FFF",
 			transition: theme.transitions.create(["margin", "width"], {
 				easing: theme.transitions.easing.sharp,
 				duration: theme.transitions.duration.leavingScreen,
@@ -40,8 +40,7 @@ const useStyles = makeStyles((theme) => {
 			flexShrink: 0,
 		},
 		drawerPaper: {
-			background:
-				"linear-gradient(130deg, rgba(9,0,113,1) 30%, #EF233C 80%)",
+			background: theme.palette.primary.main,
 			color: "#FFF",
 			width: drawerWidth,
 			paddingLeft: theme.spacing(1),
@@ -50,7 +49,6 @@ const useStyles = makeStyles((theme) => {
 			display: "flex",
 			alignItems: "center",
 			padding: theme.spacing(0, 1),
-			// necessary for content to be below app bar
 			...theme.mixins.toolbar,
 			justifyContent: "flex-end",
 		},
@@ -88,10 +86,10 @@ const useStyles = makeStyles((theme) => {
 		},
 		avatar: {
 			margin: theme.spacing(1),
-			backgroundColor: theme.palette.secondary.main,
+			backgroundColor: theme.palette.primary.main,
 		},
 		form: {
-			width: "100%", // Fix IE 11 issue.
+			width: "100%",
 			marginTop: theme.spacing(1),
 		},
 		switch: {
@@ -103,7 +101,7 @@ const useStyles = makeStyles((theme) => {
 		avatarInProfileSetting: {
 			height: "120px",
 			width: "120px",
-			backgroundColor: theme.palette.secondary.main,
+			backgroundColor: theme.palette.primary.main,
 			[theme.breakpoints.down(700)]: {
 				height: "60px",
 				width: "60px",

@@ -4,24 +4,22 @@
 // const success = "#3CD4A0";
 // const info = "#9013FE";
 
-// import { useUserContext } from "../context/UserContext";
-// // context
-// const { store, dispatch } = useUserContext();
-// const token = store.data.token;
-
 var mode = localStorage.getItem("THEME_MODE");
-// console.log("MODE: ", mode);
 
 const pal = {
-  // palette: {
-  //   primary: {
-  //     main: primary,
-  //   },
-  // },
-
-  palette: {
-    type: mode ? mode : "light",
-  },
+	palette: {
+		primary: {
+			light: "#ff2450",
+			main: "#DC143C",
+			dark: "#bd062a",
+		},
+		secondary: {
+			light: "#BA55D3",
+			main: "#9932CC",
+			dark: "#9400D3",
+		},
+		type: mode ? mode : "light",
+	},
 };
 
 export default pal;

@@ -8,39 +8,39 @@ import {
 	DialogTitle,
 } from "@material-ui/core";
 
-export default function DeleteAccount(props) {
+export default function RemoveProfilePic(props) {
 	const handleClose = () => {
-		props.setDeletingAccount(false);
+		props.setRemoveProfilePic(false);
 	};
 
-	const confirmDelete = () => {
-		props.confirmedDelete();
+	const confirmRemove = () => {
+		props.confirmedRemoveProfilePic();
 	};
 
 	return (
 		<div>
-			<Dialog open={props.DeletingAccount} onClose={handleClose}>
-				<DialogTitle>Account Deletion</DialogTitle>
+			<Dialog open={props.RemoveProfilePic} onClose={handleClose}>
+				<DialogTitle>Removing Profile Picture</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						Do you really want to delete your Vendor Account?
+						Do you really want to remove your Profile Picture?
 					</DialogContentText>
-					<DialogContentText color="error">
+					{/* <DialogContentText color="error">
 						Warning: This is a non-reverseable process and once your
 						account gets deleted, it would delete your data from
 						DigiMart.
-					</DialogContentText>
+					</DialogContentText> */}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} variant="outlined">
 						Cancel
 					</Button>
 					<Button
-						onClick={confirmDelete}
+						onClick={confirmRemove}
 						color="primary"
 						variant="contained"
 					>
-						DELETE
+						Remove
 					</Button>
 				</DialogActions>
 			</Dialog>

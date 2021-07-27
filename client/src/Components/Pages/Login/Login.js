@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import api from "../../../Axios/api";
 
 import {
@@ -21,9 +21,9 @@ const Login = () => {
 	const classes = useStyles();
 	// context
 	const { dispatch } = useUserContext();
-	const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	const [loginData, setLoginData] = React.useState({
+	const [loginData, setLoginData] = useState({
 		email: "",
 		password: "haseeb123",
 		errorMessage: "",
@@ -67,10 +67,6 @@ const Login = () => {
 				);
 			})
 			.catch((error) =>
-				// console.log(
-				// 	"ERROR: " + JSON.stringify(error.response.data.error)
-				// );
-
 				setLoginData({
 					...loginData,
 					errorMessage:
@@ -112,7 +108,7 @@ const Login = () => {
 							fullWidth
 							label="Email Address"
 							name="email"
-							color="secondary"
+							color="primary"
 							autoFocus
 							defaultValue={loginData.email}
 							onChange={handleChange("email")}
@@ -125,7 +121,7 @@ const Login = () => {
 							name="password"
 							label="Password"
 							type="password"
-							color="secondary"
+							color="primary"
 							defaultValue={loginData.password}
 							onChange={handleChange("password")}
 						/>
@@ -143,7 +139,7 @@ const Login = () => {
 							type="submit"
 							fullWidth
 							variant="contained"
-							color="secondary"
+							color="primary"
 							className={classes.submit}
 							onClick={handleLoginVendor}
 						>
@@ -154,7 +150,7 @@ const Login = () => {
 								<Link
 									href="/vendor/forget-password"
 									variant="body2"
-									color="secondary"
+									color="primary"
 								>
 									Forgot password?
 								</Link>
@@ -163,7 +159,7 @@ const Login = () => {
 								<Link
 									href="/vendor/register"
 									variant="body2"
-									color="secondary"
+									color="primary"
 								>
 									Don't have an account?
 								</Link>

@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "@material-ui/pickers": "^3.3.10",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -15,8 +16,10 @@
     "material-table": "^1.69.3",
     "react": "^17.0.2",
     "react-chartjs-2": "^3.0.3",
+    "react-csv-reader": "^3.3.1",
     "react-dom": "^17.0.2",
     "react-file-base64": "^1.0.3",
+    "react-image-crop": "^8.6.12",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "web-vitals": "^1.0.1"

@@ -23,8 +23,8 @@ const Register = () => {
 	const classes = useStyles();
 
 	// context
-	const { store, dispatch } = useUserContext();
-	const token = store.data.token;
+	const { dispatch } = useUserContext();
+	// const token = store.data.token;
 
 	const [isRegistered, setIsRegistered] = React.useState(false);
 	const [name, setName] = React.useState("Haseeb Ahmed");
@@ -50,10 +50,10 @@ const Register = () => {
 				birthday,
 				password,
 				storeName,
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
 			}
+			// {
+			// 	headers: { Authorization: `Bearer ${token}` },
+			// }
 		)
 			.then(function (res) {
 				setTimeout(() => setIsRegistered(true), [1000]);
@@ -177,17 +177,17 @@ const Register = () => {
 							>
 								<FormControlLabel
 									value="male"
-									control={<Radio color="secondary" />}
+									control={<Radio color="primary" />}
 									label="Male"
 								/>
 								<FormControlLabel
 									value="female"
-									control={<Radio color="secondary" />}
+									control={<Radio color="primary" />}
 									label="Female"
 								/>
 								<FormControlLabel
 									value="other"
-									control={<Radio color="secondary" />}
+									control={<Radio color="primary" />}
 									label="Other"
 								/>
 							</RadioGroup>
@@ -195,7 +195,7 @@ const Register = () => {
 						<Grid item xs={12} className={classes.buttons}>
 							<Button
 								variant="contained"
-								color="secondary"
+								color="primary"
 								onClick={handleRegisterVendor}
 							>
 								Register

@@ -37,7 +37,7 @@ export default function DeactivateAccount(props) {
 					</Button>
 					<Button
 						onClick={confirmDeactivate}
-						color="secondary"
+						color="primary"
 						variant="contained"
 					>
 						DEACTIVATE
