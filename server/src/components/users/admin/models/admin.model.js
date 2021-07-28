@@ -70,6 +70,10 @@ const adminSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isAccountBlock:{
+        type:Boolean,
+        default:false
+    },
     password:{
         type:String,
         required:true,

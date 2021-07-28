@@ -3,7 +3,6 @@ const passwordGenerator = require('generate-password');
 const bcrypt = require('bcryptjs')
 const Product = require('../../../products/model/product.model')
 const notification = require('../../../notifications/account');
-const Store = require('../../../store/model/store.model');
 
 const registerVendor = async(req, res, next) => {
     const vendor=new Vendor(req.body)
@@ -91,7 +90,7 @@ const deleteMyAccount = async(req, res, next) => {
         throw new Error('Store is not registered yet! Please register your store.')
         const store = req.store
         await req.user.remove()
-        //later add this
+        //later add this if vendor delete its reviews etc.
         //if vendor delete .. delete its store, products, reviews etc.
         const productsOfStore = await Product.find({storeID: store._id})
         await productsOfStore.remove()
@@ -211,16 +210,40 @@ const activateMyAccount = async(req, res, next) => {
 const addBankDetails = async(req, res, next) => {
     try{
         const updates = Object.keys(req.body)
-        const allowedUpdated=['routingNumber','accountNumber','bankName','bankHolderName','isStoreRegistered']
-        const isValidOperation=updates.every((update) => allowedUpdated.includes(update))
-        if(!isValidOperation){
-            throw new Error('Error:Please enter valid update!')
-        }
+        //validations
+        // const allowedUpdated=['routingNumber','accountNumber','bankName','AccountHolderName',
+        // 'paymentMethod','isPrimaryAccount','paymentEmail','isStoreRegistered']
+        // const isValidOperation=updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation){
+        //     throw new Error('Please enter valid bank details!')
+        // }
         const user = req.user
-        updates.forEach((update)=>user[update]=req.body[update])
-        await user.save()
+        //check if account already exists
+        let isAccountAlreadyExists = false;
+        user['PaymentAccounts'].forEach((account) => {
+            if(account.accountNumber === req.body.accountNumber &&
+               account.paymentMethod === req.body.paymentMethod){
+                isAccountAlreadyExists = true;
+            }
+        })
+        if(isAccountAlreadyExists)
+        {
+            throw new Error('Account already exists!')
+        }
+        //If primary, remove previous account from primary account
+        if(req.body.isPrimaryAccount == true){
+            user['PaymentAccounts'].forEach((account) => {
+                account.isPrimaryAccount = false
+            })
+            await user.save()
+        }
+        //adding acccount in accounts array
+        const addAccountDetails = await Vendor.findOneAndUpdate(
+            { _id: user._id }, 
+            { $push: { PaymentAccounts: req.body} 
+            })
         return res.status(200).json({
-                message:`Bank Details have been updated successfully.`,
+                message:`Payment account has been updated successfully.`,
                 data:{
                     email: req.user.email
                 }
@@ -228,27 +251,6 @@ const addBankDetails = async(req, res, next) => {
     }
     catch(e){
         e.status = 402
-        next(e)
-    }
-}
-
-const updateAccountPassword = async(req, res, next) => {
-    try{
-        const user = req.body.password
-        user['password'] = password
-        await user.save()
-        //send new password email to user
-        //userEmail.sendForgetPasswordMail(user.email,password)
-        return res.status(200).json({
-            message:`User Password have been updated successfully.`,
-            data:{
-                email: req.user.email,
-                pass: password
-            }
-        })
-    }
-    catch(e){
-        e.status = 404
         next(e)
     }
 }
@@ -283,8 +285,7 @@ const forgetAccountPassword = async(req, res, next) => {
 const updateProfile = async(req, res, next) => {
     try{
         const updates=Object.keys(req.body)
-        const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
-        'accountNumber','routingNumber','bankHolderName','bankName','CNIC',
+        const allowedUpdated=['name','email','password','gender','phoneNumber','birthday','CNIC',
         'isStoreRegistered','profilePic','isNotificationsEnabled','isDarkModeEnabled']
         const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
         if(!isValidOperation || updates.length == 0){
@@ -317,14 +318,102 @@ const getPersonalDetails = async(req, res, next) => {
         const vendor = req.user
         //console.log(vendor)
         res.status(201).send({
-            message: `Store data fetched Successfully!`,
+            message: `Vendor data fetched Successfully!`,
             data: {
-                accountNumber: vendor.accountNumber,
-                routingNumber: vendor.routingNumber,
-                bankHolderName: vendor.bankHolderName,
-                bankName: vendor.bankName
+                vendor
             }
         })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getBankDetails = async(req, res, next) => {
+    try{
+        const vendor = req.user
+        //console.log(vendor)
+        res.status(201).send({
+            message: `Data fetched Successfully!`,
+            data: {
+                PaymentAccounts: vendor.PaymentAccounts
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const updateBankAccountDetailsById = async(req, res, next) => {
+    try{
+        let isAccountIdPresent = false
+        const updates=Object.keys(req.body)
+        const user = req.user
+        const updateAccountId = req.params.id
+        //find account of user using id
+        user['PaymentAccounts'].forEach(async (account) => {
+            if(account._id == updateAccountId){ 
+                //If primary, remove previous account from primary account
+                if(req.body.isPrimaryAccount == true){
+                    user['PaymentAccounts'].forEach((account) => {
+                        account.isPrimaryAccount = false
+                    })
+                }
+                //update data of account
+                isAccountIdPresent = true
+                updates.forEach((update) => account[update]=req.body[update])
+
+                await user.save()
+                res.status(200).send({
+                    message: `Payment Account updated Successfully!`,
+                    data: {
+                        account 
+                    }
+                })
+            }
+        })
+        if(!isAccountIdPresent){
+            throw new Error('Account not found !')
+        }
+        
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const deleteBankAccountById = async(req, res, next) => {
+    try{
+        let isAccountIdPresent = false
+        const user = req.user
+        const deleteAccountId = req.params.id
+        //find if account Id present
+        user['PaymentAccounts'].forEach(async (account) => {
+            if(account._id == deleteAccountId){ 
+                //update data of account
+                isAccountIdPresent = true
+            }
+        })
+        if(!isAccountIdPresent){
+            throw new Error('Account not found !')
+        }
+        //filter account from all payment accounts and save
+        user['PaymentAccounts'] = user['PaymentAccounts'].filter(function(account){
+            return account._id != deleteAccountId; 
+        });
+        await user.save()
+        res.status(200).send({
+            message: `Payment Account deleted Successfully!`,
+                data: {
+                         
+                }
+        })
+
+        
     }
     catch(e){
         e.status = 404
@@ -393,6 +482,24 @@ const getAllVendorsDetails = async(req, res, next) => {
     }
 }
 
+const registerStore = async (req, res, next) => {
+    try{
+        const user = req.user
+        user.isStoreRegistered = true
+        await user.save()
+        return res.status(200).json({
+            message:`Store registered successfully!.`,
+            data:{
+                user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports={
     //for vendor
     registerVendor,
@@ -406,6 +513,10 @@ module.exports={
     updateProfile,
     getPersonalDetails,
     changePassword,
+    getBankDetails,
+    updateBankAccountDetailsById,
+    deleteBankAccountById,
+    registerStore,
     //for admin
     getAllVendorsDetails,
     getTotalNumberOfVendors

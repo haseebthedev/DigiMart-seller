@@ -107,9 +107,83 @@ const getTotalNumberOfStoresApproved = async(req, res, next) =>{
     }
 }
 
+const approveStore = async(req, res, next) => {
+    try{
+        const storeID = req.params.id
+        const store = await Store.findOne({_id: storeID})
+        store.isApproved = true
+        await store.save()
+        return res.status(200).json({
+            message:`Approved!`,
+            data:{
+                store: store
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const disApproveStore = async(req, res, next) => {
+    try{
+        const storeID = req.params.id
+        const store = await Store.findOne({_id: storeID})
+        store.isApproved = false
+        await store.save()
+        return res.status(200).json({
+            message:`Not Approved!`,
+            data:{
+                store: store
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const enableMarketingService = async(req, res, next) => {
+    try{
+        const storeID = req.params.id
+        const store = await Store.findOne({_id: storeID})
+        store.isApprovedPromotionTool = true
+        await store.save()
+        return res.status(200).json({
+            message:`Enabled Marketing Tool!`,
+            data:{
+                store: store
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const disableMarketingService = async(req, res, next) => {
+    try{
+        const storeID = req.params.id
+        const store = await Store.findOne({_id: storeID})
+        store.isApprovedPromotionTool = false
+        await store.save()
+        return res.status(200).json({
+            message:`Disabled Marketing Tool!`,
+            data:{
+                store: store
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
 
  
-
 module.exports = {
     //for store owner
     registerStore,
@@ -118,4 +192,8 @@ module.exports = {
     //for admin
     getTotalNumberOfStoreApprovals,
     getTotalNumberOfStoresApproved,
+    approveStore,
+    disApproveStore,
+    enableMarketingService,
+    disableMarketingService
 }

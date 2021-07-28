@@ -72,24 +72,35 @@ const vendorSchema=new mongoose.Schema({
             throw new Error('Password cannot be "password"!')
         }
     },
-    //Bank account details
-    accountNumber:{
-        type:String,
-        // validate(value){
-        //     if(!validator.isIBAN(value)){
-        //          throw new Error("Account Number is invalid!")
-        //     }
-        // }
-    },
-    routingNumber:{
-        type: String
-    },
-    bankHolderName:{
-        type: String
-    },
-    bankName:{
-        type: String
-    },
+    //Payment account details
+    PaymentAccounts:[{
+        accountNumber:{
+            type:String,
+            // validate(value){
+            //     if(!validator.isIBAN(value)){
+            //          throw new Error("Account Number is invalid!")
+            //     }
+            // }
+        },
+        routingNumber:{
+            type: String
+        },
+        AccountHolderName:{
+            type: String
+        },
+        bankName:{
+            type: String
+        },
+        paymentMethod:{
+            type: String
+        },
+        isPrimaryAccount:{
+            type: Boolean
+        },
+        paymentEmail:{
+            type: String
+        }
+    }],
     CNIC:{
         type:String,
         required:[true,'Please enter your valid CNIC number!'],

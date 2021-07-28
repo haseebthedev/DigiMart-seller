@@ -22,7 +22,10 @@ require('./src/db/mongoose')
 app.use(morgan('tiny'))
 
 //parse request to body parser
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+
+//update limit of recieving json data
+app.use(express.json({ limit: "50mb" }))
 
 //load routes
 app.use(express.json())

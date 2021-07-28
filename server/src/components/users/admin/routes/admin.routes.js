@@ -16,7 +16,8 @@ router.patch('/admin/updatePassword', adminAuth, adminController.changePassword)
 
 //ROUTES FOR SUPER ADMIN
 //(to apply operations on other admins)
-router.patch('/superAdmin/updateOtherAdmin/:id', adminAuth, adminController.editOtherAdminProfile )
-
+router.patch('/superAdmin/updateAdmin/:id', adminAuth, adminController.editOtherAdminProfile )
+router.patch('/superAdmin/blockAdmin/:id', adminAuth, adminController.blockOtherAdmin)
+router.patch('/superAdmin/unBlockAdmin/:id', adminAuth, adminController.unBlockOtherAdmin)
 
 module.exports = router

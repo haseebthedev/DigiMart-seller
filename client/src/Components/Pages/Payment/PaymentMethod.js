@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-// import api from "../../../Axios/api";
+import React, { useState, useEffect } from "react";
+import api from "../../../Axios/api";
 import {
 	Button,
 	Link,
@@ -23,14 +23,14 @@ import MuiAlert from "@material-ui/lab/Alert";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-
-// components
-// import DeletePaymentDialog from "../../FormDialog/DeletePaymentMethod";
-
+import { useUserContext } from "../../../context/UserContext";
+import DeletePaymentMethod from "../../FormDialog/DeletePaymentMethod";
 import useStyles from "./styles";
 
 export default function PaymentMethod() {
 	const classes = useStyles();
+	const { store } = useUserContext();
+	const token = store.data.token;
 
 	// Snackbar
 	const [snackBarstate, setSnackBar] = useState({
@@ -45,14 +45,56 @@ export default function PaymentMethod() {
 		setSnackBar({ ...snackBarstate, open: false });
 	};
 
+	// Delete Product Dialog
+	const [pid, setPid] = useState();
+	const [isDeletingPayMethod, setIsDeletingPayMethod] = useState(false);
 	// List of Payment methods
 	const [paymentData, setPaymentData] = useState([]);
 
 	// new Payment methods (MODAL)
 	const [newPayMethod, setNewPayMethod] = useState({
-		method: "SECONDARY",
+		paymentMethod: "",
+		isPrimaryAccount: false,
+		routingNumber: "",
+		accountNumber: "",
+		bankName: "",
+		AccountHolderName: "",
+		paymentEmail: "",
 	});
 
+	// show delete Account Dialog
+	const handlerPayMethodDelete = (id) => {
+		setPid(id);
+		setIsDeletingPayMethod(true);
+	};
+	// Delete Account Handler
+	const confirmedDeletePayment = () => {
+		// api to delete payment method
+		api.delete(`/seller/PaymentAccount/${pid}`, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((res) => {
+				let newList = paymentData.filter((el) => el._id !== pid);
+				setPaymentData(newList);
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Payment Method has been deleted!",
+					open: true,
+				});
+			})
+			.catch(() => {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong!",
+					open: true,
+				});
+			});
+		setIsDeletingPayMethod(false);
+	};
+
+	// Handling Form Inputs here
 	const handleChange = (input) => (e) => {
 		setNewPayMethod({
 			...newPayMethod,
@@ -66,51 +108,113 @@ export default function PaymentMethod() {
 		});
 	};
 
-	const submitNewMethod = () => {
-		setPaymentData([...paymentData, newPayMethod]);
+	const submitNewMethod = async () => {
+		await api
+			.patch(
+				"/seller/addPaymentAccount",
+				{ ...newPayMethod },
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then(() => {
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Payment method has been added.",
+					open: true,
+				});
+				setPaymentData([...paymentData, newPayMethod]);
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
+			})
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong.",
+					open: true,
+				});
+			});
+
 		setModelOpen(false);
 		setNewPayMethod({});
-		setSnackBar({
-			...snackBarstate,
-			type: "success",
-			message: "SUCCESS: Payment method has been added.",
-			open: true,
-		});
+	};
+
+	const submitUpdateMethod = async (el) => {
+		await api
+			.patch(
+				`/seller/updatePaymentAccount/${pid}`,
+				{ ...newPayMethod },
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then(() => {
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Payment method has been updated.",
+					open: true,
+				});
+				setEPModelOpen(false);
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
+			})
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong.",
+					open: true,
+				});
+			});
 	};
 
 	// Modal Settings here
 	const [modalOpen, setModelOpen] = useState(false);
-
 	const handleOpen = () => {
 		setModelOpen(true);
 	};
-
 	const handleClose = () => {
 		setModelOpen(false);
 	};
 
-	// delete Button Handler
-	const deleteMethod = (index) => {
-		try {
-			const oldList = paymentData.filter(
-				(el, _index) => _index !== index
-			);
-			setPaymentData(oldList);
-			setSnackBar({
-				...snackBarstate,
-				type: "success",
-				message: "SUCCESS: Payment method has been deleted.",
-				open: true,
-			});
-		} catch (error) {
-			setSnackBar({
-				...snackBarstate,
-				type: "error",
-				message: "ERROR: " + error,
-				open: true,
-			});
-		}
+	// Edit Payment Modal Settings here
+	const [EPmodalOpen, setEPModelOpen] = useState(false);
+	const handleEPOpen = () => {
+		setEPModelOpen(true);
 	};
+	const handleEPClose = () => {
+		setEPModelOpen(false);
+	};
+
+	const editPayMethod = (el) => {
+		handleEPOpen(true);
+		setNewPayMethod(el);
+		setPid(el._id);
+	};
+
+	useEffect(() => {
+		api.get("/seller/bankDetails", {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((res) => {
+				setPaymentData(res.data.data.PaymentAccounts);
+			})
+			.catch(() => {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message:
+						"ERROR: Server is busy or not responding at the moment.",
+					open: true,
+				});
+			});
+		// eslint-disable-next-line
+	}, []);
 
 	return (
 		<Grid container className={classes.root}>
@@ -126,12 +230,12 @@ export default function PaymentMethod() {
 										gutterBottom
 										className={classes.method}
 										color={
-											el.isPrimary === true
+											el.isPrimaryAccount === true
 												? "primary"
 												: "textPrimary"
 										}
 									>
-										{el.isPrimary === true
+										{el.isPrimaryAccount === true
 											? "PRIMARY"
 											: "SECONDARY"}
 									</Typography>
@@ -140,41 +244,44 @@ export default function PaymentMethod() {
 										gutterBottom
 										align="center"
 									>
-										{el.method}
+										{el.paymentMethod}
 									</Typography>
 									<Typography
 										variant="body2"
 										className={classes.method}
 									>
-										{el.name}
+										{el.AccountHolderName}
 									</Typography>
-									{el.title === "PayPal" ? (
+									{el.paymentMethod === "PAYPAL" ? (
 										<Typography
 											variant="body2"
 											className={classes.method}
 										>
-											{el.email}
+											{el.paymentEmail}
 										</Typography>
 									) : (
 										<Typography
 											variant="body2"
 											className={classes.method}
 										>
-											{el.method === "PAYPAL"
-												? el.email
-												: el.accountNo}
+											{el.accountNumber}
 										</Typography>
 									)}
 									<ButtonGroup
 										color="primary"
 										className={classes.btns}
 									>
-										<Button color="primary">
+										<Button
+											color="primary"
+											onClick={() => editPayMethod(el)}
+										>
 											<EditIcon />
 										</Button>
 										<Button
 											color="primary"
-											onClick={() => deleteMethod(index)}
+											onClick={() =>
+												handlerPayMethodDelete(el._id)
+											}
 										>
 											<DeleteIcon />
 										</Button>
@@ -237,7 +344,9 @@ export default function PaymentMethod() {
 											align="left"
 											style={{ marginTop: 16 }}
 											fullWidth
-											onChange={handleChange("method")}
+											onChange={handleChange(
+												"paymentMethod"
+											)}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Choose a Payment Method...
@@ -263,7 +372,7 @@ export default function PaymentMethod() {
 							</form>
 						</Grid>
 						<Grid item xs={12} sm={12} md={6}>
-							{newPayMethod.method === "BANK" ? (
+							{newPayMethod.paymentMethod === "BANK" ? (
 								<form>
 									<Typography variant="h5">
 										Enter Bank Account Details
@@ -276,7 +385,12 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Account Holder Name"
 												placeholder="Haseeb Butt etc."
-												onChange={handleChange("name")}
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -286,8 +400,11 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Account Number"
 												placeholder="XXXX XXXX XXXX XXXX etc."
+												value={
+													newPayMethod.accountNumber
+												}
 												onChange={handleChange(
-													"accountNo"
+													"accountNumber"
 												)}
 											/>
 										</Grid>
@@ -299,6 +416,7 @@ export default function PaymentMethod() {
 												label="Bank Name"
 												name="Bank Name"
 												placeholder="Meezan Bank Limited etc."
+												value={newPayMethod.bankName}
 												onChange={handleChange(
 													"bankName"
 												)}
@@ -310,8 +428,11 @@ export default function PaymentMethod() {
 													control={
 														<Checkbox
 															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
 															onChange={handleMethod(
-																"isPrimary"
+																"isPrimaryAccount"
 															)}
 														/>
 													}
@@ -321,7 +442,7 @@ export default function PaymentMethod() {
 										</Grid>
 									</Grid>
 								</form>
-							) : newPayMethod.method === "EASYPAISA" ? (
+							) : newPayMethod.paymentMethod === "EASYPAISA" ? (
 								<form>
 									<Typography variant="h5">
 										Enter Easypaisa Details
@@ -335,7 +456,12 @@ export default function PaymentMethod() {
 												label="Account Holder Name"
 												name="Account Holder Name"
 												placeholder="Haseeb Butt etc."
-												onChange={handleChange("name")}
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -346,8 +472,11 @@ export default function PaymentMethod() {
 												label="Account Number"
 												name="Account Number"
 												placeholder="034X XXXXXXX"
+												value={
+													newPayMethod.accountNumber
+												}
 												onChange={handleChange(
-													"accountNo"
+													"accountNumber"
 												)}
 											/>
 										</Grid>
@@ -357,8 +486,11 @@ export default function PaymentMethod() {
 													control={
 														<Checkbox
 															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
 															onChange={handleMethod(
-																"isPrimary"
+																"isPrimaryAccount"
 															)}
 														/>
 													}
@@ -368,7 +500,7 @@ export default function PaymentMethod() {
 										</Grid>
 									</Grid>
 								</form>
-							) : newPayMethod.method === "JAZZCASH" ? (
+							) : newPayMethod.paymentMethod === "JAZZCASH" ? (
 								<form>
 									<Typography variant="h5">
 										Enter JazzCash Details
@@ -382,7 +514,12 @@ export default function PaymentMethod() {
 												label="Account Holder Name"
 												name="Account Holder Name"
 												placeholder="Haseeb Butt etc."
-												onChange={handleChange("name")}
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -393,8 +530,11 @@ export default function PaymentMethod() {
 												label="Account Number"
 												name="Account Number"
 												placeholder="030X XXXXXXX"
+												value={
+													newPayMethod.accountNumber
+												}
 												onChange={handleChange(
-													"accountNo"
+													"accountNumber"
 												)}
 											/>
 										</Grid>
@@ -404,8 +544,11 @@ export default function PaymentMethod() {
 													control={
 														<Checkbox
 															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
 															onChange={handleMethod(
-																"isPrimary"
+																"isPrimaryAccount"
 															)}
 														/>
 													}
@@ -415,7 +558,7 @@ export default function PaymentMethod() {
 										</Grid>
 									</Grid>
 								</form>
-							) : newPayMethod.method === "PAYONEER" ? (
+							) : newPayMethod.paymentMethod === "PAYONEER" ? (
 								<form>
 									<Typography variant="h5">
 										Enter Payoneer Details
@@ -428,7 +571,12 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Account Holder Name"
 												placeholder="Haseeb Butt etc."
-												onChange={handleChange("name")}
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -438,6 +586,7 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Bank Name"
 												placeholder="Citi Bank Limited etc."
+												value={newPayMethod.bankName}
 												onChange={handleChange(
 													"bankName"
 												)}
@@ -450,8 +599,11 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Account Number"
 												placeholder="XXXX XXXX XXXX XXXX"
+												value={
+													newPayMethod.accountNumber
+												}
 												onChange={handleChange(
-													"accountNo"
+													"accountNumber"
 												)}
 											/>
 										</Grid>
@@ -462,8 +614,11 @@ export default function PaymentMethod() {
 												fullWidth
 												label="Routing Number"
 												placeholder="XXXXXXXXX"
+												value={
+													newPayMethod.routingNumber
+												}
 												onChange={handleChange(
-													"routingNo"
+													"routingNumber"
 												)}
 											/>
 										</Grid>
@@ -473,8 +628,11 @@ export default function PaymentMethod() {
 													control={
 														<Checkbox
 															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
 															onChange={handleMethod(
-																"isPrimary"
+																"isPrimaryAccount"
 															)}
 														/>
 													}
@@ -484,7 +642,7 @@ export default function PaymentMethod() {
 										</Grid>
 									</Grid>
 								</form>
-							) : newPayMethod.method === "PAYPAL" ? (
+							) : newPayMethod.paymentMethod === "PAYPAL" ? (
 								<form>
 									<Typography variant="h5">
 										Enter PayPal Details
@@ -498,7 +656,12 @@ export default function PaymentMethod() {
 												label="Username"
 												name="Username"
 												placeholder="Haseeb Butt etc."
-												onChange={handleChange("name")}
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -509,7 +672,12 @@ export default function PaymentMethod() {
 												label="Email"
 												name="PayPal Email"
 												placeholder="haseeb@gmail.com etc."
-												onChange={handleChange("email")}
+												value={
+													newPayMethod.paymentEmail
+												}
+												onChange={handleChange(
+													"paymentEmail"
+												)}
 											/>
 										</Grid>
 										<Grid item xs={12} sm={12}>
@@ -518,8 +686,11 @@ export default function PaymentMethod() {
 													control={
 														<Checkbox
 															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
 															onChange={handleMethod(
-																"isPrimary"
+																"isPrimaryAccount"
 															)}
 														/>
 													}
@@ -547,12 +718,386 @@ export default function PaymentMethod() {
 								color="primary"
 								onClick={submitNewMethod}
 							>
-								SUBMIT
+								Save
 							</Button>
 						</Grid>
 					</Grid>
 				</Container>
 			</Modal>
+
+			{/* Modal to Edit Payment method */}
+			<Modal
+				open={EPmodalOpen}
+				onClose={handleEPClose}
+				onBackdropClick={handleEPClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container component={Paper} maxWidth="sm">
+					<Grid container style={{ padding: 20 }} spacing={4}>
+						<Grid item xs={12} sm={12} md={12} align="center">
+							{newPayMethod.paymentMethod === "BANK" ? (
+								<form>
+									<Typography variant="h5">
+										Enter Bank Account Details
+									</Typography>
+									<Grid container justify="center">
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Holder Name"
+												placeholder="Haseeb Butt etc."
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Number"
+												placeholder="XXXX XXXX XXXX XXXX etc."
+												value={
+													newPayMethod.accountNumber
+												}
+												onChange={handleChange(
+													"accountNumber"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Bank Name"
+												name="Bank Name"
+												placeholder="Meezan Bank Limited etc."
+												value={newPayMethod.bankName}
+												onChange={handleChange(
+													"bankName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
+															onChange={handleMethod(
+																"isPrimaryAccount"
+															)}
+														/>
+													}
+													label="Primary Method to receive Payments."
+												/>
+											</FormGroup>
+										</Grid>
+									</Grid>
+								</form>
+							) : newPayMethod.paymentMethod === "EASYPAISA" ? (
+								<form>
+									<Typography variant="h5">
+										Enter Easypaisa Details
+									</Typography>
+									<Grid container justify="center">
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Holder Name"
+												name="Account Holder Name"
+												placeholder="Haseeb Butt etc."
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Number"
+												name="Account Number"
+												placeholder="034X XXXXXXX"
+												value={
+													newPayMethod.accountNumber
+												}
+												onChange={handleChange(
+													"accountNumber"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
+															onChange={handleMethod(
+																"isPrimaryAccount"
+															)}
+														/>
+													}
+													label="Primary Method to receive Payments."
+												/>
+											</FormGroup>
+										</Grid>
+									</Grid>
+								</form>
+							) : newPayMethod.paymentMethod === "JAZZCASH" ? (
+								<form>
+									<Typography variant="h5">
+										Enter JazzCash Details
+									</Typography>
+									<Grid container justify="center">
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Holder Name"
+												name="Account Holder Name"
+												placeholder="Haseeb Butt etc."
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Number"
+												name="Account Number"
+												placeholder="030X XXXXXXX"
+												value={
+													newPayMethod.accountNumber
+												}
+												onChange={handleChange(
+													"accountNumber"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
+															onChange={handleMethod(
+																"isPrimaryAccount"
+															)}
+														/>
+													}
+													label="Primary Method to receive Payments."
+												/>
+											</FormGroup>
+										</Grid>
+									</Grid>
+								</form>
+							) : newPayMethod.paymentMethod === "PAYONEER" ? (
+								<form>
+									<Typography variant="h5">
+										Enter Payoneer Details
+									</Typography>
+									<Grid container justify="center">
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Holder Name"
+												placeholder="Haseeb Butt etc."
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Bank Name"
+												placeholder="Citi Bank Limited etc."
+												value={newPayMethod.bankName}
+												onChange={handleChange(
+													"bankName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Account Number"
+												placeholder="XXXX XXXX XXXX XXXX"
+												value={
+													newPayMethod.accountNumber
+												}
+												onChange={handleChange(
+													"accountNumber"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Routing Number"
+												placeholder="XXXXXXXXX"
+												value={
+													newPayMethod.routingNumber
+												}
+												onChange={handleChange(
+													"routingNumber"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
+															onChange={handleMethod(
+																"isPrimaryAccount"
+															)}
+														/>
+													}
+													label="Primary Method to receive Payments."
+												/>
+											</FormGroup>
+										</Grid>
+									</Grid>
+								</form>
+							) : newPayMethod.paymentMethod === "PAYPAL" ? (
+								<form>
+									<Typography variant="h5">
+										Enter PayPal Details
+									</Typography>
+									<Grid container justify="center">
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Username"
+												name="Username"
+												placeholder="Haseeb Butt etc."
+												value={
+													newPayMethod.AccountHolderName
+												}
+												onChange={handleChange(
+													"AccountHolderName"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<TextField
+												variant="outlined"
+												margin="normal"
+												fullWidth
+												label="Email"
+												name="PayPal Email"
+												placeholder="haseeb@gmail.com etc."
+												value={
+													newPayMethod.paymentEmail
+												}
+												onChange={handleChange(
+													"paymentEmail"
+												)}
+											/>
+										</Grid>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																newPayMethod.isPrimaryAccount
+															}
+															onChange={handleMethod(
+																"isPrimaryAccount"
+															)}
+														/>
+													}
+													label="Primary Method to receive Payments."
+												/>
+											</FormGroup>
+										</Grid>
+									</Grid>
+								</form>
+							) : (
+								<div></div>
+							)}
+						</Grid>
+						<Grid item xs={12} sm={12} md={12} align="right">
+							<Button
+								variant="outlined"
+								color="primary"
+								style={{ marginRight: 10 }}
+								onClick={handleEPClose}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={submitUpdateMethod}
+							>
+								UPDATE
+							</Button>
+						</Grid>
+					</Grid>
+				</Container>
+			</Modal>
+
+			{/* Delete Payment Method Dialog */}
+			<DeletePaymentMethod
+				DeletingPayMethod={isDeletingPayMethod}
+				setIsDeletingPayMethod={setIsDeletingPayMethod}
+				confirmedDeletePayment={confirmedDeletePayment}
+			/>
 
 			{/*  Snackbar Alert */}
 			<Snackbar

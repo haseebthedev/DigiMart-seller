@@ -10,16 +10,16 @@ import {
 
 export default function DeletePaymentMethod(props) {
 	const handleClose = () => {
-		props.setDeletingMethod(false);
+		props.setIsDeletingPayMethod(false);
 	};
 
 	const confirmDelete = () => {
-		props.confirmedDelete();
+		props.confirmedDeletePayment();
 	};
 
 	return (
 		<div>
-			<Dialog open={props.DeletingAccount} onClose={handleClose}>
+			<Dialog open={props.DeletingPayMethod} onClose={handleClose}>
 				<DialogTitle>Payment Method Deletion</DialogTitle>
 				<DialogContent>
 					<DialogContentText>

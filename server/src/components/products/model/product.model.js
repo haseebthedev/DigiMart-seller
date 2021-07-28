@@ -12,17 +12,21 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true,'Please select category of product.']
     },
+    subCategory:{
+        type: String,
+        //required: [true,'Please select sub category of product.']
+    },
     description:{
         type: String,
-        required:[true,'Please enter product description.']
+        //required:[true,'Please enter product description.']
     },
     manufactureDate:{
         type: String,
-        required: [true,'Please enter product manufacture date.']
+        //required: [true,'Please enter product manufacture date.']
     },
     stockAvailable:{
         type:Number,
-        required: [true,'Please enter available stock of this product.']
+        //required: [true,'Please enter available stock of this product.']
     },
     price:{
         type: Number,
@@ -48,7 +52,7 @@ const productSchema = new mongoose.Schema({
     },
     images:{
         type: [String],
-        required: [true,'Please upload product image.']
+        //required: [true,'Please upload product image.']
     },
     colors:{
         type: [String],

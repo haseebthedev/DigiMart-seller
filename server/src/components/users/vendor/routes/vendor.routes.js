@@ -14,7 +14,9 @@ router.patch('/seller/activateAccount', vendorAuth, vendorController.activateMyA
 router.patch('/seller/deActivateAccount', vendorAuth, vendorController.deActivateMyAccount)
 
 //for ading bank details after vendor registration
-router.patch('/seller/addBankDetailsAndRegisterStore', vendorAuth ,vendorController.addBankDetails)
+router.patch('/seller/addPaymentAccount', vendorAuth ,vendorController.addBankDetails)
+router.patch('/seller/updatePaymentAccount/:id', vendorAuth, vendorController.updateBankAccountDetailsById)
+router.delete('/seller/paymentAccount/:id', vendorAuth, vendorController.deleteBankAccountById)
 router.delete('/seller/me', vendorAuth, vendorController.deleteMyAccount)
 
 //forget Password
@@ -22,9 +24,11 @@ router.patch('/seller/forgetPassword' , vendorController.forgetAccountPassword)
 
 //update profile
 router.patch('/seller/me', vendorAuth ,vendorController.updateProfile)
+router.patch('/seller/store/register', vendorAuth ,vendorController.registerStore)
 
 //get private details(for getting bank details etc. when required)
 router.get('/seller/personalDetails', vendorAuth, vendorController.getPersonalDetails)
+router.get('/seller/bankDetails', vendorAuth, vendorController.getBankDetails)
 
 //change password
 router.patch('/seller/updatePassword', vendorAuth, vendorController.changePassword)

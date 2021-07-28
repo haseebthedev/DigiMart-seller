@@ -18,17 +18,14 @@ import {
 	LinearProgress,
 } from "@material-ui/core";
 import CSVReader from "react-csv-reader";
-
 import { useUserContext } from "../../../../context/UserContext";
 
-import DeleteProduct from "../../../FormDialog/DeleteProduct";
-
-import useStyles from "./styles";
 import Pal from "../../../../themes/palette";
+import useStyles from "./styles";
+import DeleteProduct from "../../../FormDialog/DeleteProduct";
 
 export default function ViewProducts() {
 	const classes = useStyles();
-	// context
 	const { store } = useUserContext();
 	const token = store.data.token;
 
@@ -49,23 +46,29 @@ export default function ViewProducts() {
 
 	const columns = [
 		{ title: "Name", field: "name" },
-		{ title: "Description", field: "description" },
 		{ title: "Manufacturer", field: "manufacturer" },
 		{ title: "Category", field: "category" },
 		{ title: "Price", field: "price" },
-		{ title: "StockAvailable", field: "stockAvailable" },
-		{ title: "DiscountPercentage", field: "discountPercentage" },
+		{
+			title: "StockAvailable",
+			field: "stockAvailable",
+		},
+		{
+			title: "DiscountPercentage",
+			field: "discountPercentage",
+		},
 		{ title: "Warranty", field: "warranty" },
 	];
 
 	// category list retrive from DB
 	const [productCategories, setProductCategories] = useState([]);
-
+	const [productSubCategories, setProductSubCategories] = useState([]);
 	const [productDetails, setProductDetails] = useState({
 		name: "Feeder",
 		description: "Amazing Product",
 		manufactureDate: "11/06/2003",
 		category: "Electronics",
+		subCategory: "",
 		price: "1000",
 		stockAvailable: 10,
 		weight: 20,
@@ -178,6 +181,9 @@ export default function ViewProducts() {
 		setModelOpen(false);
 	};
 
+	// Import Products List
+	const [IPdata, setIPdata] = useState([]);
+
 	// Import Products Modal
 	const [ipmodalOpen, setIpmodalOpen] = useState(false);
 	const openIPmodal = () => {
@@ -185,33 +191,15 @@ export default function ViewProducts() {
 	};
 	const closeIPmodal = () => {
 		setIpmodalOpen(false);
+
+		// reseting all form values
+		setProgressCSV("determinate");
+		setProgressCSV(0);
+		setSelectedFile("");
+		setIPdata([]);
 	};
 
-	useEffect(() => {
-		// Retriving List of Products from API
-		api.get("/seller/store/products", {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-			.then((res) => {
-				setDetails(res.data.data.products);
-			})
-			.catch((error) =>
-				console.log(
-					"ERROR: " + JSON.stringify(error.response.data.error)
-				)
-			);
-
-		// Retriving List of Categories from API
-		api.get("/seller/productCategories", {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-			.then((res) => {
-				const categoryList = res.data.data.categories;
-				setProductCategories(categoryList);
-			})
-			.catch((error) => console.log("Error: " + error));
-	}, [token]);
-
+	// Delete Product Dialog
 	const [isDeletingProduct, setIsDeletingProduct] = useState(false);
 
 	// show delete Account Dialog
@@ -253,6 +241,64 @@ export default function ViewProducts() {
 	// ProgressBar variant
 	const [progressCSV, setProgressCSV] = useState("determinate");
 	const [progressValue, setProgressValue] = useState(0);
+	const [selectedFile, setSelectedFile] = useState();
+
+	const handleFileLoaded = (data, fileInfo) => {
+		setSelectedFile(fileInfo.name);
+		setProgressCSV("indeterminate");
+
+		setTimeout(() => {
+			setProgressValue(100);
+			setProgressCSV("determinate");
+		}, 1000);
+
+		const newProducList = data.map((prod) =>
+			prod.colors === undefined
+				? {
+						...prod,
+						colors: [],
+						images: [],
+						manufactureDate: "01/01/2000",
+						weight: 20,
+				  }
+				: prod
+		);
+		setIPdata(newProducList);
+	};
+
+	const handeStartImport = async () => {
+		for (let i = 0; i < IPdata.length; i++) {
+			await api
+				.post(
+					"/seller/store/product",
+					{
+						...IPdata[i],
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "Products have been added successfully!",
+						open: true,
+					});
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
+				})
+				.catch((error) =>
+					setSnackBar({
+						...snackBarstate,
+						message: "ERROR: Something went wrong!!",
+						type: "error",
+						open: true,
+					})
+				);
+		}
+	};
 
 	// parse config
 	const papaparseOptions = {
@@ -263,26 +309,74 @@ export default function ViewProducts() {
 			header.charAt(0).toLowerCase().concat(header.slice(1)),
 	};
 
-	const [IPdata, setIPdata] = useState([]);
-
-	const handleFileLoaded = (data) => {
-		setProgressCSV("indeterminate");
-		setTimeout(() => {
-			setProgressValue(100);
-			setProgressCSV("determinate");
-		}, 1000);
-
-		const newProducList = data.map((prod) =>
-			prod.colors === undefined
-				? { ...prod, colors: [], images: [] }
-				: prod
-		);
-		setIPdata(newProducList);
+	const retrivingAllProducts = async () => {
+		await api
+			.get("/seller/store/products", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				setDetails(res.data.data.products);
+			})
+			.catch((error) =>
+				console.log(
+					"ERROR: " + JSON.stringify(error.response.data.error)
+				)
+			);
 	};
 
-	const handeStartImport = async () => {
-		setDetails([...IPdata, ...details]);
+	// Get Categories and Sub Categories from API
+	const getAllCategory = async () => {
+		// Parent Category
+		api.get("/seller/product/categories", {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((res) => {
+				const categoryList = res.data.data.categories;
+
+				// Removing all repeating categories
+				let uniqueCategories = [
+					...new Map(
+						categoryList.map((item) => [
+							item["parentCategoryName"],
+							item,
+						])
+					).values(),
+				];
+				setProductCategories(uniqueCategories);
+			})
+			.catch((error) => console.log("Error: " + error));
 	};
+	const getSubCategory = async () => {
+		await api
+			.get(`/seller/subCategories/${productDetails.category}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				const categoryList = res.data.data.categories;
+				// Removing all repeating categories
+				let uniqueCategories = [
+					...new Map(
+						categoryList.map((item) => [item["name"], item])
+					).values(),
+				];
+				setProductSubCategories(uniqueCategories);
+			})
+			.catch((error) => console.log("Error: " + error));
+	};
+
+	useEffect(() => {
+		// Retriving List of Products from API
+		retrivingAllProducts();
+
+		// Retriving List of Categories from API
+		getAllCategory();
+		// eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
+		getSubCategory();
+		// eslint-disable-next-line
+	}, [productDetails.category]);
 
 	return (
 		<Grid container className={classes.root}>
@@ -332,8 +426,10 @@ export default function ViewProducts() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
+							whiteSpace: "nowrap",
 						},
 						exportButton: true,
+						// tableLayout: "fixed",
 					}}
 				/>
 				<Snackbar
@@ -353,14 +449,6 @@ export default function ViewProducts() {
 					</MuiAlert>
 				</Snackbar>
 			</Grid>
-
-			<DeleteProduct
-				DeletingProduct={isDeletingProduct}
-				setDeletingProduct={setIsDeletingProduct}
-				confirmedDelete={confirmedDelete}
-			/>
-
-			{/* =========================================================== */}
 
 			{/* Edit Product */}
 			<Modal
@@ -447,6 +535,7 @@ export default function ViewProducts() {
 										name="category"
 										style={{ marginTop: 8 }}
 										defaultValue={"DEFAULT"}
+										value={productDetails.category}
 										onChange={handleProductDetails(
 											"category"
 										)}
@@ -474,21 +563,24 @@ export default function ViewProducts() {
 										name="category"
 										style={{ marginTop: 8 }}
 										defaultValue={"DEFAULT"}
+										value={productDetails.subCategory}
 										onChange={handleProductDetails(
-											"category"
+											"subCategory"
 										)}
 									>
 										<MenuItem value="DEFAULT" disabled>
 											Choose sub-category
 										</MenuItem>
-										{productCategories.map((el, index) => (
-											<MenuItem
-												value={el.parentCategoryName}
-												key={index}
-											>
-												{el.parentCategoryName}
-											</MenuItem>
-										))}
+										{productSubCategories.map(
+											(el, index) => (
+												<MenuItem
+													value={el.name}
+													key={index}
+												>
+													{el.name}
+												</MenuItem>
+											)
+										)}
 									</Select>
 								</Grid>
 								<Grid item xs={12} sm={6} md={6} lg={3}>
@@ -597,12 +689,26 @@ export default function ViewProducts() {
 									style={{ margin: "10px 0" }}
 								>
 									<Grid item>
-										<input
-											type="file"
-											multiple
-											accept="image/png, image/jpeg"
-											onChange={fileHandler}
-										/>
+										<div>
+											<label htmlFor="contained-button-file">
+												<Button
+													size="small"
+													variant="contained"
+													color="primary"
+													component="span"
+												>
+													Select Images
+												</Button>
+											</label>
+											<input
+												id="contained-button-file"
+												type="file"
+												multiple
+												accept="image/png, image/jpeg"
+												onChange={fileHandler}
+												hidden
+											/>
+										</div>
 									</Grid>
 								</Grid>
 								<Grid container justify="center">
@@ -708,29 +814,55 @@ export default function ViewProducts() {
 								alignItems: "center",
 							}}
 						>
-							<CSVReader
-								onFileLoaded={handleFileLoaded}
-								parserOptions={papaparseOptions}
-							/>
+							<div>
+								<label htmlFor="contained-button-file">
+									<Button
+										variant="contained"
+										color="primary"
+										component="span"
+									>
+										Select File
+									</Button>
+								</label>
+								<CSVReader
+									inputId="contained-button-file"
+									onFileLoaded={handleFileLoaded}
+									parserOptions={papaparseOptions}
+									inputStyle={{ display: "none" }}
+								/>
+							</div>
+							<div>
+								<Typography variant="subtitle2" color="primary">
+									{selectedFile}
+								</Typography>
+							</div>
 
-							<Button
-								variant="contained"
-								color="primary"
-								disabled={progressValue === 0 ? true : false}
-								onClick={handeStartImport}
-							>
-								Start Importing
-							</Button>
+							<div>
+								<Button
+									variant="contained"
+									color="primary"
+									disabled={
+										progressValue === 0 ? true : false
+									}
+									onClick={handeStartImport}
+								>
+									Start Importing
+								</Button>
+							</div>
 						</Grid>
 						<Grid item xs={12} sm={12} md={12} align="center">
-							<LinearProgress
-								variant={progressCSV}
-								value={progressValue}
-							/>
+							{!selectedFile ? (
+								<div></div>
+							) : (
+								<LinearProgress
+									variant={progressCSV}
+									value={progressValue}
+								/>
+							)}
 						</Grid>
 						<Grid item xs={12} sm={12} md={12}>
-							{progressValue === 100 ? (
-								<Typography variant="body1">
+							{selectedFile ? (
+								<Typography variant="body1" align="center">
 									Products have been loaded. Click on Start
 									Importing Button now!
 								</Typography>
@@ -742,6 +874,7 @@ export default function ViewProducts() {
 				</Container>
 			</Modal>
 
+			{/* Snackbar Alert */}
 			<Snackbar
 				open={open}
 				anchorOrigin={{ vertical, horizontal }}
@@ -758,6 +891,13 @@ export default function ViewProducts() {
 					{snackBarstate.message}
 				</MuiAlert>
 			</Snackbar>
+
+			{/* Delete Confirmation Dialog */}
+			<DeleteProduct
+				DeletingProduct={isDeletingProduct}
+				setDeletingProduct={setIsDeletingProduct}
+				confirmedDelete={confirmedDelete}
+			/>
 		</Grid>
 	);
 }

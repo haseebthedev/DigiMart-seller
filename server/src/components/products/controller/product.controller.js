@@ -5,10 +5,14 @@ const addProduct = async(req, res, next) => {
     //FOR AUTHENTICATED VENDOR
     try{
         //check if product name added before in this store DB
+        if(!req.store){
+            throw new Error('Please register your store to add Product.')
+        }
         const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:req.store._id})
         if(isProductNamePresent){
             throw new Error('Product with this name already added before.')
         }
+
         req.body['storeID'] = req.store._id
         req.body['storeName'] = req.store.name
         const product = new Product(req.body)
@@ -29,12 +33,13 @@ const addProduct = async(req, res, next) => {
 const updateProduct = async(req, res, next) => {
     try{
         const updates = Object.keys(req.body)
-        const allowedUpdated = ['name','category','description','manufactureDate','stockAvailable','price',
-        'weight','discountPercentage','manufacturer','warranty','images','colors','isVisibilityEnabled']
-        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-        if(!isValidOperation || updates.length == 0){
-            throw new Error('Invalid Keys! Please enter valid keys.')
-        }
+        //validations
+        // const allowedUpdated = ['name','category','description','manufactureDate','stockAvailable','price',
+        // 'weight','discountPercentage','manufacturer','warranty','images','colors','isVisibilityEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
         const productID = req.params.id
         const storeID = req.store._id
         
@@ -213,6 +218,8 @@ const getTotalNumberOfProducts = async(req, res, next) => {
         next(e)
     }
 }
+
+
 module.exports = {
     //VENDOR
     addProduct,

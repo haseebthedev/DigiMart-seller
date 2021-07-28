@@ -4,24 +4,18 @@ import {
 	TextField,
 	Grid,
 	Typography,
-	Avatar,
 	Paper,
 	Select,
 	MenuItem,
 } from "@material-ui/core";
 import api from "../../../../Axios/api";
-import LibraryAddIcon from "@material-ui/icons/LibraryAdd";
-
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-
 import useStyles from "./styles";
 import { useUserContext } from "../../../../context/UserContext";
 
 export default function AddProduct() {
 	const classes = useStyles();
-
-	// context
 	const { store } = useUserContext();
 	const token = store.data.token;
 
@@ -40,12 +34,13 @@ export default function AddProduct() {
 
 	// category list retrive from DB
 	const [productCategories, setProductCategories] = useState([]);
-
+	const [productSubCategories, setProductSubCategories] = useState([]);
 	const [productDetails, setProductDetails] = useState({
-		name: "Feeder",
-		description: "Amazing Product",
+		name: "",
+		description: "",
 		manufactureDate: "11/06/2003",
 		category: "Electronics",
+		subCategory: "",
 		price: "1000",
 		stockAvailable: 10,
 		weight: 20,
@@ -120,24 +115,65 @@ export default function AddProduct() {
 
 	// Retriving List from Categories from API
 	useEffect(() => {
-		api.get("/seller/productCategories", {
+		getAllCategory();
+		// eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
+		getSubCategory();
+		// eslint-disable-next-line
+	}, [productDetails.category]);
+
+	const getAllCategory = async () => {
+		// Parent Category
+		api.get("/seller/product/categories", {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then((res) => {
 				const categoryList = res.data.data.categories;
-				setProductCategories(categoryList);
+
+				// Removing all repeating categories
+				let uniqueCategories = [
+					...new Map(
+						categoryList.map((item) => [
+							item["parentCategoryName"],
+							item,
+						])
+					).values(),
+				];
+				setProductCategories(uniqueCategories);
 			})
 			.catch((error) => console.log("Error: " + error));
-	}, [token]);
+	};
+
+	const getSubCategory = async () => {
+		await api
+			.get(`/seller/subCategories/${productDetails.category}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				const categoryList = res.data.data.categories;
+				// Removing all repeating categories
+				let uniqueCategories = [
+					...new Map(
+						categoryList.map((item) => [item["name"], item])
+					).values(),
+				];
+				setProductSubCategories(uniqueCategories);
+			})
+			.catch((error) => console.log("Error: " + error));
+	};
 
 	return (
 		<Grid container className={classes.root}>
 			<Grid item xs={12} sm={12} md={12} component={Paper}>
 				<div className={classes.paper}>
-					<Avatar className={classes.avatar}>
+					{/* <Avatar className={classes.avatar}>
 						<LibraryAddIcon />
-					</Avatar>
-					<Typography variant="h5">Add Product</Typography>
+					</Avatar> */}
+					<Typography variant="h4" gutterBottom>
+						Add Product
+					</Typography>
 					<form className={classes.form} noValidate>
 						<Grid container spacing={2}>
 							<Grid item xs={12} sm={6} md={6} lg={6}>
@@ -224,17 +260,16 @@ export default function AddProduct() {
 									name="category"
 									style={{ marginTop: 8 }}
 									defaultValue={"DEFAULT"}
-									onChange={handleProductDetails("category")}
+									onChange={handleProductDetails(
+										"subCategory"
+									)}
 								>
 									<MenuItem value="DEFAULT" disabled>
 										Choose sub-category
 									</MenuItem>
-									{productCategories.map((el, index) => (
-										<MenuItem
-											value={el.parentCategoryName}
-											key={index}
-										>
-											{el.parentCategoryName}
+									{productSubCategories.map((el, index) => (
+										<MenuItem value={el.name} key={index}>
+											{el.name}
 										</MenuItem>
 									))}
 								</Select>
@@ -341,12 +376,26 @@ export default function AddProduct() {
 								style={{ margin: "10px 0" }}
 							>
 								<Grid item>
-									<input
-										type="file"
-										multiple
-										accept="image/png, image/jpeg"
-										onChange={fileHandler}
-									/>
+									<div>
+										<label htmlFor="contained-button-file">
+											<Button
+												size="small"
+												variant="contained"
+												color="primary"
+												component="span"
+											>
+												Select Images
+											</Button>
+										</label>
+										<input
+											id="contained-button-file"
+											type="file"
+											multiple
+											accept="image/png, image/jpeg"
+											onChange={fileHandler}
+											hidden
+										/>
+									</div>
 								</Grid>
 							</Grid>
 							<Grid container justify="center">
@@ -379,17 +428,29 @@ export default function AddProduct() {
 								</div>
 							</Grid>
 						</div>
-						<Button
-							size="large"
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							className={classes.submit}
-							onClick={addProductHandler}
-						>
-							Add Product
-						</Button>
+						<Grid container>
+							<Grid
+								item
+								xs={12}
+								sm={12}
+								md={12}
+								lg={12}
+								align="center"
+							>
+								<Button
+									size="large"
+									type="submit"
+									maxWidth="sm"
+									variant="contained"
+									color="primary"
+									className={classes.submit}
+									onClick={addProductHandler}
+								>
+									Add Product
+								</Button>
+							</Grid>
+						</Grid>
+
 						<Snackbar
 							open={open}
 							anchorOrigin={{ vertical, horizontal }}

@@ -57,7 +57,7 @@ export default function CompleteRegister(props) {
 		setState({ ...state, [input]: e.target.checked });
 	};
 
-	const handleNext = () => {
+	const handleNext = async () => {
 		setActiveStep(activeStep + 1);
 
 		// Saving Store/Payment data to Server
@@ -85,40 +85,53 @@ export default function CompleteRegister(props) {
 			} = state;
 
 			// SAVING STORE DETAILS INTO DATABASE
-			api.post(
-				"/seller/store/register",
-				{
-					category,
-					biography,
-					warehouseAddress,
-					physicalAddress,
-					city,
-					country,
-					type,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+			await api
+				.post(
+					"/seller/store/register",
+					{
+						category,
+						biography,
+						warehouseAddress,
+						physicalAddress,
+						city,
+						country,
+						type,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
 				.then((res) => console.log("Store Saved. RES: ", res))
 				.catch((error) => console.log("Error: " + error));
 
 			// SAVING PAYMENT DETAILS INTO DATABASE
-			api.patch(
-				"/seller/addBankDetailsAndRegisterStore",
-				{
-					// change this name
-					bankHolderName,
-					bankName,
-					accountNumber,
-					routingNumber,
-					isStoreRegistered: checkAgreement,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
+			await api
+				.patch(
+					"/seller/addPaymentAccount",
+					{
+						// change this name
+						AccountHolderName: bankHolderName,
+						bankName,
+						accountNumber,
+						routingNumber,
+						isStoreRegistered: checkAgreement,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
 				.then((res) => console.log("Payment Saved", res))
+				.catch((error) => console.log("Error: " + error));
+
+			await api
+				.patch(
+					"/seller/store/register",
+					{},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then((res) => console.log("Stored Registerd!!"))
 				.catch((error) => console.log("Error: " + error));
 
 			console.log("Registration has been completed...");

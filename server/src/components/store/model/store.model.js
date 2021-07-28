@@ -77,9 +77,6 @@ const storeSchema = new mongoose.Schema({
     timestamps: true
 })
 
-//crating index on customers of store
-// storeSchema.index({customersID: 1},{unique: true, name:'IDX_STORE_CUSTOMERS'})
-
 //crating index on name of store
 storeSchema.index({name: 1},{unique: true, name:'IDX_STORE_NAME'})
 

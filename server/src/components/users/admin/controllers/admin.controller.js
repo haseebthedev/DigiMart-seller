@@ -53,7 +53,11 @@ const getMyDetails = async(req, res, next) => {
 const loginAdmin = async(req, res, next) => {
     try{
         const admin=await Admin.findByCredientials(req.body.email,req.body.password)
+        if(admin.isAccountBlock){
+            throw new Error('Sorry! Your account is Blocked')
+        }
         const token=await admin.generateAuthToken()
+        admin['isAccountActive'] = true
         res.json({
             message:`You are logged in successfully. Welcome to Admin Dashboard!.`,
             data:{
@@ -75,6 +79,7 @@ const logoutAdmin = async(req, res, next) => {
             //if tokens.token !== req.token it returns false filtering it out
             return tokens.token !== req.token
         })
+        admin['isAccountActive'] = false
         await req.user.save()
         res.status(200).json({
             message:`Logged out from the device successfully!`,
@@ -219,7 +224,9 @@ const changePassword = async(req, res, next) => {
 const editOtherAdminProfile = async(req, res, next) => {
     try{
 
-        if(req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
             const adminID = req.params.id
             const admin = await Admin.findOne({_id: adminID})
             const updates=Object.keys(req.body)
@@ -228,8 +235,8 @@ const editOtherAdminProfile = async(req, res, next) => {
             throw new Error('Invalid Keys! Please enter valid keys.')
 
             const allowedUpdated=['name','email','password','gender','phoneNumber',
-            'accountNumber','routingNumber','bankHolderName','bankName','CNIC',
-            'profilePic','isNotificationsEnabled','isDarkModeEnabled']
+            'accountNumber','routingNumber','bankHolderName','bankName','CNIC', 'roles',
+            'profilePic','isNotificationsEnabled','isDarkModeEnabled','isAccountActive','isAccountBlock']
             const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
             if(!isValidOperation || updates.length == 0){
                 throw new Error('Invalid Keys! Please enter valid keys.')
@@ -244,10 +251,6 @@ const editOtherAdminProfile = async(req, res, next) => {
                     admin
                 }
             })
-        }
-        else{
-            throw new Error('Not authorized as a super Admin!')
-        }
 
     }
     catch(e){
@@ -256,12 +259,45 @@ const editOtherAdminProfile = async(req, res, next) => {
     }
 }
 
-const deActivateOtherAdmin = async(req, res, next) => {
+const blockOtherAdmin = async(req, res, next) => {
     try{
-        if(req.user.roles.includes('SuperAdmin')){
-            const adminID = req.params.id
-            const admin = await Admin.findOne({_id: adminID})
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
         }
+        const adminID = req.params.id
+        const admin = await Admin.findOne({_id: adminID})
+        admin['isAccountBlock'] = true
+        await admin.save()
+        return res.status(200).json({
+            message:`Blocked`,
+            data:{
+                admin
+            }
+        })
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const unBlockOtherAdmin = async(req, res, next) => {
+    try{
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const adminID = req.params.id
+        const admin = await Admin.findOne({_id: adminID})
+        admin['isAccountBlock'] = false
+        await admin.save()
+        return res.status(200).json({
+            message:`UnBlocked`,
+            data:{
+                admin
+            }
+        })
+
     }
     catch(e){
         e.status = 404
@@ -281,5 +317,7 @@ module.exports = {
     updateProfile,
     changePassword,
     //for super admin to acess other admins
-    editOtherAdminProfile
+    editOtherAdminProfile,
+    blockOtherAdmin,
+    unBlockOtherAdmin
 }
