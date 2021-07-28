@@ -135,7 +135,6 @@ export default function VendorCenter() {
 
 	// UPDATE REQUEST SENDING HERE
 	const handleSubmitUpdate = async () => {
-
 		await api
 			.patch(
 				"/seller/me",
@@ -274,7 +273,7 @@ export default function VendorCenter() {
 									onChange={handleChange("phoneNumber")}
 								/>
 
-								<FormControlLabel
+								{/* <FormControlLabel
 									margin="normal"
 									control={
 										<Switch
@@ -290,7 +289,7 @@ export default function VendorCenter() {
 									label="Dark Mode"
 									labelPlacement="start"
 									className={classes.switch}
-								/>
+								/> */}
 								<FormControlLabel
 									margin="normal"
 									control={
@@ -304,7 +303,7 @@ export default function VendorCenter() {
 											)}
 										/>
 									}
-									label="Receive system Notifications"
+									label="Receive system Notifications: "
 									labelPlacement="start"
 									className={classes.switch}
 								/>

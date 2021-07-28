@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import api from "../../Axios/api";
 import { Redirect } from "react-router-dom";
@@ -140,12 +140,30 @@ const Layout = (props) => {
 
 	const handleDDProduct = () => {
 		setOpenDDProduct(!openDDProduct);
+
+		// Closing all other DD
+		if (!openDDProduct === true) {
+			setOpenDDSettings(false);
+			setOpenDDPayments(false);
+		}
 	};
 	const handleDDSettings = () => {
 		setOpenDDSettings(!openDDSettings);
+
+		// Closing all other DD
+		if (!openDDSettings === true) {
+			setOpenDDProduct(false);
+			setOpenDDPayments(false);
+		}
 	};
 	const handleDDPayments = () => {
 		setOpenDDPayments(!openDDPayments);
+
+		// Closing all other DD
+		if (!openDDPayments === true) {
+			setOpenDDProduct(false);
+			setOpenDDSettings(false);
+		}
 	};
 
 	// DARK MODE
@@ -166,19 +184,21 @@ const Layout = (props) => {
 	};
 
 	// activating profile again
-	// useEffect(() => {
-	// 	const activateAccount = async () => {
-	// 		await api.patch(
-	// 			"/seller/activateAccount",
-	// 			{},
-	// 			{
-	// 				headers: { Authorization: `Bearer ${token}` },
-	// 			}
-	// 		);
-	// 	};
-	// 	activateAccount();
-	// 	// eslint-disable-next-line
-	// }, []);
+	useEffect(() => {
+		const activateAccount = () => {
+			api.patch(
+				"/seller/activateAccount",
+				{},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+				.then((res) => console.log("Activating the profile again!"))
+				.catch((error) => console.log("ERROR: " + error));
+		};
+		activateAccount();
+		// eslint-disable-next-line
+	}, [token]);
 
 	return (
 		// <Router>

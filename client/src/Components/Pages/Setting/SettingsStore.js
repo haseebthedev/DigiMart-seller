@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../../Axios/api";
 import {
 	Paper,
@@ -18,15 +18,11 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { useUserContext } from "../../../context/UserContext";
 import { Redirect } from "react-router-dom";
 import ImageCrop from "../../ImageCropDialog/ImageCrop";
-
 import RemoveStoreLogo from "../../FormDialog/RemoveStoreLogo";
-
 import useStyles from "./styles";
 
 export default function VendorCenter() {
 	const classes = useStyles();
-
-	// context
 	const { store } = useUserContext();
 	const token = store.data.token;
 
@@ -45,10 +41,10 @@ export default function VendorCenter() {
 
 	const [storeData, setStoreData] = useState({
 		logo: null,
-		name: "Haseeb Ahmed",
-		biography: "We love to sell products online",
-		category: "Electronic",
-		warehouseAddress: "Street # 213, Block-F, Satellite Town",
+		name: "",
+		biography: "",
+		category: "",
+		warehouseAddress: "",
 	});
 	const [isLoggedOut] = useState(false);
 	const [isStoreLogoRemove, setStoreLogoRemove] = useState(false);
@@ -113,7 +109,37 @@ export default function VendorCenter() {
 		setStoreLogoRemove(false);
 	};
 
-	let currentValue = storeData.category || "DEFAULT";
+	const getStoreDetails = async () => {
+		await api
+			.get("/seller/store/me", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				const { logo, name, biography, category, warehouseAddress } =
+					res.data.data.store;
+				setStoreData({
+					logo,
+					name,
+					biography,
+					category,
+					warehouseAddress,
+				});
+			})
+			.catch((error) =>
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message:
+						"ERROR: Server is busy or not Responding at the moment!",
+					open: true,
+				})
+			);
+	};
+
+	useEffect(() => {
+		getStoreDetails();
+		// eslint-disable-next-line
+	}, []);
 
 	return (
 		<Grid container className={classes.root}>
@@ -162,7 +188,7 @@ export default function VendorCenter() {
 									id="name"
 									label="Store Name"
 									name="storeName"
-									defaultValue={storeData.name}
+									value={storeData.name}
 									onChange={handleChange("name")}
 								/>
 								<TextField
@@ -172,7 +198,7 @@ export default function VendorCenter() {
 									id="biography"
 									label="Biography"
 									name="biography"
-									defaultValue={storeData.biography}
+									value={storeData.biography}
 									onChange={handleChange("biography")}
 								/>
 
@@ -182,7 +208,7 @@ export default function VendorCenter() {
 									</InputLabel>
 									<Select
 										variant="outlined"
-										value={currentValue}
+										value={storeData.category}
 										defaultValue={"DEFAULT"}
 										onChange={handleChange("category")}
 										align="left"
@@ -222,7 +248,7 @@ export default function VendorCenter() {
 									id="warehouseAddress"
 									label="Warehouse Address"
 									name="warehouseAddress"
-									defaultValue={storeData.warehouseAddress}
+									value={storeData.warehouseAddress}
 									onChange={handleChange("warehouseAddress")}
 								/>
 
