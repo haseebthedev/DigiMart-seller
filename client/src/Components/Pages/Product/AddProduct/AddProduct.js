@@ -440,7 +440,6 @@ export default function AddProduct() {
 								<Button
 									size="large"
 									type="submit"
-									maxWidth="sm"
 									variant="contained"
 									color="primary"
 									className={classes.submit}

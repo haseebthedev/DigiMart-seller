@@ -31,7 +31,6 @@ import {
 } from "react-router-dom";
 
 // MUI Icons
-// import AccountCircle from "@material-ui/icons/AccountCircle";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -61,6 +60,9 @@ import Brightness4Icon from "@material-ui/icons/Brightness4";
 import Brightness7Icon from "@material-ui/icons/Brightness7";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import StorageIcon from "@material-ui/icons/Storage";
+import SurroundSoundIcon from "@material-ui/icons/SurroundSound";
+import EventIcon from "@material-ui/icons/Event";
+import LocalActivityIcon from "@material-ui/icons/LocalActivity";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
@@ -73,6 +75,7 @@ import PaymentMethod from "../Pages/Payment/PaymentMethod";
 import Transactions from "../Pages/Payment/Transactions";
 import SettingsProfile from "../Pages/Setting/SettingsProfile";
 import SettingsStore from "../Pages/Setting/SettingsStore";
+import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -137,6 +140,7 @@ const Layout = (props) => {
 	const [openDDProduct, setOpenDDProduct] = useState(false);
 	const [openDDSettings, setOpenDDSettings] = useState(false);
 	const [openDDPayments, setOpenDDPayments] = useState(false);
+	const [openDDPromotions, setOpenDDPromotions] = useState(false);
 
 	const handleDDProduct = () => {
 		setOpenDDProduct(!openDDProduct);
@@ -164,6 +168,9 @@ const Layout = (props) => {
 			setOpenDDProduct(false);
 			setOpenDDSettings(false);
 		}
+	};
+	const handleDDPromotions = () => {
+		setOpenDDPromotions(!openDDPromotions);
 	};
 
 	// DARK MODE
@@ -544,12 +551,89 @@ const Layout = (props) => {
 						</List>
 					</Collapse>
 
-					<ListItem button>
+					<ListItem button onClick={handleDDPromotions}>
 						<ListItemIcon>
 							<AssistantIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Promotions" />
+						{openDDPromotions ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
+					<Collapse
+						in={openDDPromotions}
+						timeout="auto"
+						unmountOnExit
+					>
+						<List component="div" disablePadding>
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Promote-Product"
+								}
+								component={Link}
+								to="/vendor/Promotion/Promote-Product"
+							>
+								<ListItemIcon>
+									<SurroundSoundIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Promote Product" />
+							</ListItem>
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Scheduled-Promotions"
+								}
+								component={Link}
+								to="/vendor/Promotion/Scheduled-Promotions"
+							>
+								<ListItemIcon>
+									<EventIcon className={classes.iconColor} />
+								</ListItemIcon>
+								<ListItemText primary="Scheduled Promotions" />
+							</ListItem>
+
+							{/* <ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Regular-Customers"
+								}
+								component={Link}
+								to="/vendor/Promotion/Regular-Customers"
+							>
+								<ListItemIcon>
+									<AccountCircleIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Regular Customers" />
+							</ListItem> */}
+
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Promoted-Products"
+								}
+								component={Link}
+								to="/vendor/Promotion/Promoted-Products"
+							>
+								<ListItemIcon>
+									<LocalActivityIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Advertised Products" />
+							</ListItem>
+						</List>
+					</Collapse>
 				</List>
 			</Drawer>
 
@@ -587,6 +671,18 @@ const Layout = (props) => {
 						path="/vendor/setting/store"
 						component={SettingsStore}
 					/>
+					<Route
+						path="/vendor/Promotion/Promote-Product"
+						component={PromoteProduct}
+					/>
+					{/* <Route
+						path="/vendor/Promotion/Scheduled-Promotions"
+						component={PromoteProduct}
+					/> */}
+					{/* <Route
+						path="/vendor/Promotion/Promoted-Products"
+						component={PromoteProduct}
+					/> */}
 				</SwitchRouter>
 			</main>
 		</div>
