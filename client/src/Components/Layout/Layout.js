@@ -76,6 +76,8 @@ import Transactions from "../Pages/Payment/Transactions";
 import SettingsProfile from "../Pages/Setting/SettingsProfile";
 import SettingsStore from "../Pages/Setting/SettingsStore";
 import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
+import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProducts";
+import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -199,16 +201,13 @@ const Layout = (props) => {
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
-			)
-				.then((res) => console.log("Activating the profile again!"))
-				.catch((error) => console.log("ERROR: " + error));
+			).catch((error) => console.log("ERROR: " + error));
 		};
 		activateAccount();
 		// eslint-disable-next-line
 	}, [token]);
 
 	return (
-		// <Router>
 		<div className={classes.root}>
 			{isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
 			<CssBaseline />
@@ -581,21 +580,6 @@ const Layout = (props) => {
 								</ListItemIcon>
 								<ListItemText primary="Promote Product" />
 							</ListItem>
-							<ListItem
-								button
-								className={classes.dropdown}
-								selected={
-									pathname ===
-									"/vendor/Promotion/Scheduled-Promotions"
-								}
-								component={Link}
-								to="/vendor/Promotion/Scheduled-Promotions"
-							>
-								<ListItemIcon>
-									<EventIcon className={classes.iconColor} />
-								</ListItemIcon>
-								<ListItemText primary="Scheduled Promotions" />
-							</ListItem>
 
 							{/* <ListItem
 								button
@@ -614,7 +598,21 @@ const Layout = (props) => {
 								</ListItemIcon>
 								<ListItemText primary="Regular Customers" />
 							</ListItem> */}
-
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Scheduled-Promotions"
+								}
+								component={Link}
+								to="/vendor/Promotion/Scheduled-Promotions"
+							>
+								<ListItemIcon>
+									<EventIcon className={classes.iconColor} />
+								</ListItemIcon>
+								<ListItemText primary="Scheduled Promotions" />
+							</ListItem>
 							<ListItem
 								button
 								className={classes.dropdown}
@@ -675,14 +673,14 @@ const Layout = (props) => {
 						path="/vendor/Promotion/Promote-Product"
 						component={PromoteProduct}
 					/>
-					{/* <Route
-						path="/vendor/Promotion/Scheduled-Promotions"
-						component={PromoteProduct}
-					/> */}
-					{/* <Route
+					<Route
 						path="/vendor/Promotion/Promoted-Products"
-						component={PromoteProduct}
-					/> */}
+						component={PromotedProducts}
+					/>
+					<Route
+						path="/vendor/Promotion/Scheduled-Promotions"
+						component={ScheduledPromotions}
+					/>
 				</SwitchRouter>
 			</main>
 		</div>

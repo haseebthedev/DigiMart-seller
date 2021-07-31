@@ -34,6 +34,10 @@ const loginVendor = async (req, res, next) => {
     try{
         const isStoreRegistered = false
         const vendor=await Vendor.findByCredientials(req.body.email,req.body.password)
+        //check if account bloecked then send error message
+        if(vendor.isAccountBlocked){
+            throw new Error('Your account has been blocked by admin !')
+        }
         const token=await vendor.generateAuthToken()
         // if store then activate store and vendor profile
         if(req.store){
@@ -285,20 +289,20 @@ const forgetAccountPassword = async(req, res, next) => {
 const updateProfile = async(req, res, next) => {
     try{
         const updates=Object.keys(req.body)
-        const allowedUpdated=['name','email','password','gender','phoneNumber','birthday','CNIC',
-        'isStoreRegistered','profilePic','isNotificationsEnabled','isDarkModeEnabled']
-        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-        if(!isValidOperation || updates.length == 0){
-            throw new Error('Invalid Keys! Please enter valid keys.')
-        }
+        // const allowedUpdated=['name','email','password','gender','phoneNumber','birthday','CNIC',
+        // 'isStoreRegistered','profilePic','isNotificationsEnabled','isDarkModeEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
         const user = req.user
         //we use bracket notation to update property dynamically
         //bcz we dont know user is going to update name,email etc
-        updates.forEach((update) => user[update]=req.body[update])
-        await user.save()
         if(!user){
             throw new Error('User not found!')
         }
+        updates.forEach((update) => user[update]=req.body[update])
+        await user.save()
         //send email here
         return res.status(200).json({
             message:`User Profile has been updated successfully.`,
@@ -500,6 +504,97 @@ const registerStore = async (req, res, next) => {
     }
 }
 
+const blockVendorById = async (req, res, next) => {
+    try{
+        const _id = req.params.id
+        const user = await Vendor.findById(_id)
+        user.isAccountBlocked = true
+        await user.save()
+        return res.status(200).json({
+            message:`User blocked successfully!.`,
+            data:{
+                user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const unblockVendorById = async (req, res, next) => {
+    try{
+        const _id = req.params.id
+        const user = await Vendor.findById(_id)
+        user.isAccountBlocked = false
+        await user.save()
+        return res.status(200).json({
+            message:`User unblocked successfully!.`,
+            data:{
+                user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const editVendorById = async(req, res, next) => {
+    try{
+        const updates=Object.keys(req.body)
+        const _id = req.params.id
+        // const allowedUpdated=['name','email','password','gender','phoneNumber','birthday','CNIC',
+        // 'isStoreRegistered','profilePic','isNotificationsEnabled','isDarkModeEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
+        const user = await Vendor.findById(_id)
+        //we use bracket notation to update property dynamically
+        //bcz we dont know user is going to update name,email etc
+        if(!user){
+            throw new Error('User not found!')
+        }
+        updates.forEach((update) => user[update]=req.body[update])
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`User updated successfully.`,
+            data:{
+                vendor: user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const viewVendorById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const user = await Vendor.findById(_id)
+        if(!user){
+            throw new Error('User not found!')
+        }
+        return res.status(200).json({
+            message:`User fetched successfully.`,
+            data:{
+                vendor: user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
 module.exports={
     //for vendor
     registerVendor,
@@ -519,5 +614,9 @@ module.exports={
     registerStore,
     //for admin
     getAllVendorsDetails,
-    getTotalNumberOfVendors
+    getTotalNumberOfVendors,
+    blockVendorById,
+    unblockVendorById,
+    editVendorById,
+    viewVendorById
 }

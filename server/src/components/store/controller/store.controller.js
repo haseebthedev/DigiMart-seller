@@ -1,5 +1,6 @@
 const Store = require('../model/store.model')
 const Product = require('../../products/model/product.model')
+const Vendor = require('../../users/vendor/models/vendor.model')
 
 const registerStore = async(req, res, next) => {
     req.body['name'] = req.user.storeName
@@ -38,14 +39,14 @@ const getStoreDetails = async(req, res, next) => {
 const updateStore = async(req, res, next) => {
     try{
         const updates=Object.keys(req.body)
-        const allowedUpdated=['name','category','city','counrty','type','warehouseAddress',
-        'buissnessAddress','isApprovedPromotionTool','logo','activityStatus','biography','isApproved',
-        'transactionLimit']
-        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // const allowedUpdated=['name','category','city','counrty','type','warehouseAddress',
+        // 'buissnessAddress','isApprovedPromotionTool','logo','activityStatus','biography','isApproved',
+        // 'transactionLimit']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
         const isStoreNameChanged = updates.includes('name')
-        if(!isValidOperation){
-            throw new Error('Invalid Keys! Please enter valid keys.')
-        }
         const user = req.user
         const store = req.store
         updates.forEach((update) => store[update] = req.body[update])
@@ -183,6 +184,86 @@ const disableMarketingService = async(req, res, next) => {
     }
 }
 
+const viewAllStores = async(req, res, next) => {
+    try{
+        const stores = await Store.find({})
+        return res.status(200).json({
+            message:`Stores fetched !`,
+            data:{
+                stores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const editStoreById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const updates=Object.keys(req.body)
+        // const allowedUpdated=['name','category','city','counrty','type','warehouseAddress',
+        // 'buissnessAddress','isApprovedPromotionTool','logo','activityStatus','biography','isApproved',
+        // 'transactionLimit']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
+        const isStoreNameChanged = updates.includes('name')
+        const store = await Store.findById(_id)
+        const user = await Vendor.findOne({storeName: store.name})
+        if(!user){
+            throw new Error('No user found!')
+        }
+        if(!store){
+            throw new Error('No store found!')
+        }
+        updates.forEach((update) => store[update] = req.body[update])
+        await store.save()
+        if(isStoreNameChanged){
+            user.storeName = store.name
+            await user.save()  
+        }
+        if(!user){
+            throw new Error('User not found!')
+        }
+        return res.status(200).json({
+            message:`Store and Vendor updated successfully.`,
+            data:{
+                vendor: user,
+                store
+            }
+        })
+    }
+    catch(err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewStoreById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const store = await Store.findById(_id)
+        const user = await Vendor.find({storeName: store.name})
+        return res.status(200).json({
+            message:`Store and Vendor fetched successfully.`,
+            data:{
+                store,
+                vendor: user
+            }
+        })
+    }
+    catch(err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
+
  
 module.exports = {
     //for store owner
@@ -195,5 +276,8 @@ module.exports = {
     approveStore,
     disApproveStore,
     enableMarketingService,
-    disableMarketingService
+    disableMarketingService,
+    viewAllStores,
+    editStoreById,
+    viewStoreById
 }

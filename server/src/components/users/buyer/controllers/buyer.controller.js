@@ -9,7 +9,7 @@ const registerBuyer = async (req,res,next) => {
     const buyer=new Buyer(req.body)
     try{
         await buyer.save()
-        const token=await buyer.generateAuthToken()
+        const token = await buyer.generateAuthToken()
         //send registration mail
         const subject = 'Digi-Mart Customer Registration Email'
         const message = `Thank you for creating your account on Digi-Mart.<br>
@@ -33,6 +33,10 @@ const registerBuyer = async (req,res,next) => {
 const loginBuyer = async (req, res, next) => {
     try{
         const buyer=await Buyer.findByCredientials(req.body.email,req.body.password)
+        //check if buyer blocked then send error
+        if(buyer.isAccountBlocked == true){
+            throw new Error('Your account has been blocked by Admin !')
+        }
         const token=await buyer.generateAuthToken()
         buyer.isAccountActive = true
         await buyer.save()
@@ -262,6 +266,103 @@ const getTotalNumberOfBuyers = async(req, res, next) => {
     }
 }
 
+const blockBuyerById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const buyer = await Buyer.findById(_id)
+        if(buyer.length == 0){
+            throw new Error('No buyer find of this id !')
+        }
+        buyer.isAccountBlocked = true
+        //logout buyer from all devices
+        buyer.tokens = []
+        await buyer.save()
+        res.status(200).json({
+            message:`Buyer blocked successfully!.`,
+            data:{
+                buyer
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
+const unBlockBuyerById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const buyer = await Buyer.findById(_id)
+        if(buyer.length == 0){
+            throw new Error('No buyer find of this id !')
+        }
+        buyer.isAccountBlocked = false
+        await buyer.save()
+        res.status(200).json({
+            message:`Buyer unblocked successfully!.`,
+            data:{
+                buyer
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const viewBuyerById = async (req, res, next) => {
+    try{
+        const _id = req.params.id
+        const buyer = await Buyer.find({_id: _id})
+        if(buyer.length == 0){
+            throw new Error('No buyer find of this id !')
+        }
+        res.status(200).json({
+            message:`Buyer fetched successfully!.`,
+            data:{
+                buyer
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const editBuyerById = async(req, res, next) => {
+    try{
+        const id = req.params.id
+        const updates=Object.keys(req.body)
+        // const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
+        // 'accountNumber','profilePic','isNotificationsEnabled','isDarkModeEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
+        const user = await Buyer.findById(id)
+        if(user.length == 0){
+            throw new Error('No buyer find of this id !')
+        }
+        updates.forEach((update) => user[update] = req.body[update])
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`Buyer Profile has been updated successfully.`,
+            data:{
+                buyer: user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 module.exports = {
     registerBuyer,
@@ -275,5 +376,9 @@ module.exports = {
     changePassword,
     //for admin
     getAllBuyersDetails,
-    getTotalNumberOfBuyers
+    getTotalNumberOfBuyers,
+    blockBuyerById,
+    unBlockBuyerById,
+    viewBuyerById,
+    editBuyerById
 }

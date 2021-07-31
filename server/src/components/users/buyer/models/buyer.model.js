@@ -83,6 +83,10 @@ const buyerSchema=new mongoose.Schema({
     isAccountActive:{
         type:Boolean
     },
+    isAccountBlocked:{
+        type: Boolean,
+        default: false
+    },
     subscribedStores:[{
         type: [mongoose.Schema.Types.ObjectId],
         ref:'Store'

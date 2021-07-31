@@ -74,6 +74,7 @@ const loginAdmin = async(req, res, next) => {
 
 const logoutAdmin = async(req, res, next) => {
     try{
+        const admin = req.user
         // it remove the token of device from which u logged in
         req.user.tokens=req.user.tokens.filter((tokens)=>{
             //if tokens.token !== req.token it returns false filtering it out
@@ -305,6 +306,91 @@ const unBlockOtherAdmin = async(req, res, next) => {
     }
 }
 
+const getAllAdmins = async(req, res, next) => {
+    try{
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const admins = await Admin.find({})
+        return res.status(200).json({
+            message:`Fetched Admins`,
+            data:{
+                admins
+            }
+        })
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const viewAdminById = async(req, res, next) => {
+    try{
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const admin = await Admin.find({_id: req.params.id})
+        return res.status(200).json({
+            message:`Fetched Admin`,
+            data:{
+                admin
+            }
+        })
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getTotalNumberOfAdmins = async(req, res, next) => {
+    try{
+        console.log(req.user)
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const admins = await Admin.count({})
+        res.status(200).json({
+            message:`Fetched total Admins !`,
+            data:{
+                count: admins
+            }
+        })
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const getAdminDetailsByRole = async(req, res, next) => {
+    try{
+        if(!req.user.roles.includes('SuperAdmin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const role = req.params.role
+        const admins = await Admin.find({roles: { $all: [role] }})
+        if(!admins){
+            throw new Error('No admin found on this role !')
+        }
+        res.status(200).json({
+            message:`Fetched Admins !`,
+            data:{
+                admins
+            }
+        })
+
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 module.exports = {
     //for admin's own profile
     registerAdmin,
@@ -319,5 +405,10 @@ module.exports = {
     //for super admin to acess other admins
     editOtherAdminProfile,
     blockOtherAdmin,
-    unBlockOtherAdmin
+    unBlockOtherAdmin,
+    getAllAdmins,
+    viewAdminById,
+    getTotalNumberOfAdmins,
+    getAdminDetailsByRole
+
 }

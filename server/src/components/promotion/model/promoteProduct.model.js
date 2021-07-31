@@ -3,9 +3,20 @@ const validator=require('validator')
 
 const promoteProductSchema = new mongoose.Schema({
     productId:{
-        type: String,
-        required: [true,'Please enter productId !'],
-        ref: 'Product'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+    },
+    productName:{
+        type: String
+    },
+    description:{
+        type: String
+    },
+    storeId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Store',
+        required: true
     },
     promoCode:{
         type: String
@@ -18,14 +29,28 @@ const promoteProductSchema = new mongoose.Schema({
         required: [true,'Please enter promotion message !']
     },
     //refrence ID from promoted audience schema
-    promotedAudience:{
-        type: String
+    promotedAudienceId:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'PromotionAudience'
     },
     promotionSource:{
         type: String,
+        lowercase:true,
         required:[true, "Please enter source of promotion !"]
     },
-    productShortenedURL:{
+    urlCode: String,
+    longUrl: String,
+    shortUrl: String,
+    isPromotionScheduled:{
+        type: Boolean,
+        default: false
+    },
+    promotion_date:{
+        type: Date,
+        default: Date.now()
+    },
+    promotion_Time:{
         type: String
     }
 },{

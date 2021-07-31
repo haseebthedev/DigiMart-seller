@@ -129,6 +129,10 @@ const vendorSchema=new mongoose.Schema({
     profilePic:{
         type: String
     },
+    isAccountBlocked:{
+        type: Boolean,
+        default: false
+    },
     isAccountActive:{
         type: Boolean,
         default: false

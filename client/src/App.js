@@ -8,6 +8,7 @@ import Register from "./Components/Pages/Register/Register";
 
 // context
 import { useUserContext } from "./context/UserContext";
+import "./App.css";
 
 function App() {
 	const { store } = useUserContext();

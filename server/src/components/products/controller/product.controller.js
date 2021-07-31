@@ -14,7 +14,7 @@ const addProduct = async(req, res, next) => {
         }
 
         req.body['storeID'] = req.store._id
-        req.body['storeName'] = req.store.name
+        //req.body['storeName'] = req.store.name
         const product = new Product(req.body)
         await product.save()
         res.status(201).json({
@@ -203,6 +203,26 @@ const blockProduct = async(req, res, next) => {
     }
 }
 
+const unblockProduct = async(req, res, next) => {
+    try{
+        
+        const productID = req.params.id
+        const product = await Product.findOne({_id:productID})
+        product['isVisibilityEnabled'] = true
+        await product.save()
+        res.status(200).json({
+            message:`un blocked !`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const getTotalNumberOfProducts = async(req, res, next) => {
     try{
         const totalNumberOfProducts = await Product.estimatedDocumentCount()
@@ -219,6 +239,55 @@ const getTotalNumberOfProducts = async(req, res, next) => {
     }
 }
 
+const editProductById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const updates = Object.keys(req.body)
+        //validations
+        // const allowedUpdated = ['name','category','description','manufactureDate','stockAvailable','price',
+        // 'weight','discountPercentage','manufacturer','warranty','images','colors','isVisibilityEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
+        const productID = await Product.findById(_id)
+        const product = await Product.findOne({_id:productID})
+        //console.log(product)
+        updates.forEach((update) => product[update] = req.body[update])
+        await product.save()
+        res.status(200).json({
+            message:`Product has been updated successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const deleteProductById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const product = await Product.findOneAndDelete({_id:_id})
+        if(!product){
+            throw new Error('Product not found!')
+        }
+        res.status(200).json({
+            message:`Product has been deleted successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 
 module.exports = {
     //VENDOR
@@ -232,5 +301,8 @@ module.exports = {
     viewProductDetails,
     viewProductsOfStore,
     blockProduct,
-    getTotalNumberOfProducts
+    unblockProduct,
+    getTotalNumberOfProducts,
+    editProductById,
+    deleteProductById
 }

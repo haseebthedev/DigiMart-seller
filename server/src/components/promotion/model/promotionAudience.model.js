@@ -4,29 +4,30 @@ const validator=require('validator')
 const promotionAudienceSchema = new mongoose.Schema({
     //All products ID's which are promoted using this audience
     productsID:{
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'Product',
-        required: [true,'Please enter ID of promoted product']
     },
-    //Category of product, which is promoted
+    //Category of products, which can be promoted using this audience
     productCategory:{
-        type: String,
-        required: [true,'Please enter category of promoted product']
+        type: [String],
     },
     //category in which audience is interested i.e category from which data is scrapped
     audienceInterestCategory:{
-        type: String
+        type: String,
+        unique:[true,'This audience interest category already exits!'],
     },
-    audienceNames:{
-        type: [String]
+    promotionSource:{
+        type: String,
+        lowercase:true,
+        required:[true, "Please enter source of promotion !"]
     },
-    audienceNumbers:{
-        type: [String]
-    },
-    audienceEmail:{
-        type: [String]
-    }
-
+    //audience data
+    promotionData:[{
+        name: String,
+        email: String,
+        number: String
+    }],
+    
 },{
     timestamps: true
 })

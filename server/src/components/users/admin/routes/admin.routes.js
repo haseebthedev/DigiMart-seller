@@ -19,5 +19,11 @@ router.patch('/admin/updatePassword', adminAuth, adminController.changePassword)
 router.patch('/superAdmin/updateAdmin/:id', adminAuth, adminController.editOtherAdminProfile )
 router.patch('/superAdmin/blockAdmin/:id', adminAuth, adminController.blockOtherAdmin)
 router.patch('/superAdmin/unBlockAdmin/:id', adminAuth, adminController.unBlockOtherAdmin)
+router.get('/superAdmin/admins', adminAuth, adminController.getAllAdmins )
+router.get('/superAdmin/admin/:id', adminAuth, adminController.viewAdminById )
+router.get('/superAdmin/admin/role/:role', adminAuth, adminController.getAdminDetailsByRole )
+router.get('/superAdmin/admins/number', adminAuth, adminController.getTotalNumberOfAdmins )
+
+
 
 module.exports = router

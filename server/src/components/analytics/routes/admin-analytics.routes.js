@@ -4,6 +4,6 @@ const adminAnalyticsController = require('../controller/admin-analytics.controll
 const auth = require('../../users/auth')
 
 //Analytics related to database
-router.get('/admin/viewDatabaseUsage', auth.admin, adminAnalyticsController.viewDatabaseUsage)
+router.get('/admin/database/details', auth.admin, adminAnalyticsController.viewDatabaseUsage)
 
 module.exports = router
