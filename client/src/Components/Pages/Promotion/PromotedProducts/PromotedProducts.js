@@ -19,7 +19,8 @@ export default function PromotedProducts() {
 		{ title: "PID", field: "productId" },
 		{ title: "PNAME", field: "productName" },
 		{ title: "Discount", field: "discount" },
-		{ title: "Promoted W.", field: "promotionSource" },
+		{ title: "Promo Code", field: "promoCode" },
+		{ title: "P. Medium", field: "promotionSource" },
 		{ title: "Product URL", field: "shortUrl" },
 		{
 			title: "Promoted On",

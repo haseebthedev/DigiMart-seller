@@ -91,16 +91,31 @@ export default function ScheduledPromotions() {
 	};
 
 	const [selectedDate, setSelectedDate] = useState(new Date());
-
+	const [selectedTime, setSelectedTime] = useState(new Date());
 	const handleDateChange = (date) => {
 		setSelectedDate(date);
 	};
+	const handleTimeChange = (time) => {
+		setSelectedTime(time);
+	};
+
+	const [SPdetails, setSPdetails] = useState({});
+
+	// const handleDateChange = (date) => {
+	// 	setSPdetails({ ...SPdetails, promotion_date: date });
+	// };
+	// const handleTimeChange = (time) => {
+	// 	setSPdetails({ ...SPdetails, promotion_Time: time });
+	// };
 
 	const handlerUpdatePP = async () => {
-		let dateAndTime = new Date(selectedDate).toLocaleString();
-		let promotion_date = dateAndTime.split(", ")[0];
-		let promotion_Time = dateAndTime.split(", ")[1];
+		let date = selectedDate.toLocaleString().split(", ")[0];
+		let time = selectedTime.toLocaleTimeString();
 
+		// let dateAndTime = new Date(selectedDate).toLocaleString();
+		// console.log("dateAndTime", dateAndTime);
+		// let promotion_date = dateAndTime.split(", ")[0];
+		// let promotion_Time = dateAndTime.split(", ")[1];
 		// console.log("promotion_Time ", promotion_Time);
 		// console.log("promotion_date ", promotion_date);
 
@@ -108,14 +123,14 @@ export default function ScheduledPromotions() {
 			.patch(
 				`/seller/store/product/promote/schedule/${pid}`,
 				{
-					promotion_Time,
-					promotion_date,
+					promotion_Time: time,
+					promotion_date: date,
 				},
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
 			)
-			.then((res) => console.log("Updated."))
+			.then((res) => console.log(res))
 			.catch((error) => console.log("ERROR: " + error));
 	};
 
@@ -146,6 +161,7 @@ export default function ScheduledPromotions() {
 							tooltip: "Edit",
 							onClick: (event, rowData) => {
 								setPid(rowData._id);
+								setSPdetails(rowData);
 								handleEditModalOpen();
 							},
 						}),
@@ -213,8 +229,8 @@ export default function ScheduledPromotions() {
 											<KeyboardTimePicker
 												margin="normal"
 												label="Select New Time"
-												value={selectedDate}
-												onChange={handleDateChange}
+												value={selectedTime}
+												onChange={handleTimeChange}
 											/>
 										</MuiPickersUtilsProvider>
 									</Grid>

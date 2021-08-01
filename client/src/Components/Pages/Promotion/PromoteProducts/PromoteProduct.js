@@ -61,7 +61,11 @@ export default function AddProduct() {
 		setModelSP(false);
 	};
 
-	const [selectedDate, setSelectedDate] = useState(new Date());
+	// =======================================================
+
+	const [selectedDate, setSelectedDate] = useState(
+		new Date().toLocaleString()
+	);
 	const handleDateChange = (date) => {
 		setSelectedDate(date);
 	};
@@ -71,253 +75,131 @@ export default function AddProduct() {
 	const [PPAudiencedetails, setPPAudiencedetails] = useState([]);
 	const [productList, setProductList] = useState([]);
 	const [PPdetails, setPPdetails] = useState({
-		category: "",
 		productName: "",
+		category: "",
 		description: "",
 		discount: 0,
-		promotionMessage: "",
 		promoCode: "-",
-	});
-	const [URLs, setURLs] = useState({
 		longUrl: "",
 		shortUrl: "",
 		urlCode: "",
-		isUrlAlreadyCreated: null,
-	});
-	const [ScheduledPP, setSchedulePP] = useState({
+		isUrlAlreadyCreated: false,
 		isScheduled: false,
 	});
 
-	const handleSchedule = (input) => (e) => {
-		setSchedulePP({
-			...ScheduledPP,
-			[input]: e.target.checked,
-		});
+	const handlePPSchedule = (input) => (e) => {
+		setPPdetails({ ...PPdetails, [input]: e.target.checked });
 	};
 
 	const handlePPdetails = (input) => (e) => {
 		setPPdetails({ ...PPdetails, [input]: e.target.value });
 	};
 
-	const selectProductForPromo = (id) => {
-		setPid(id);
-	};
+	const selectProductForPromo = async (id) => {
+		await api
+			.get(`/seller/store/product/promote/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				const { isProductValidForPromotion } = res.data.data;
 
-	const addProductForPromotion = async () => {
-		let promotedAudienceId = "";
-		let promotionSource = "";
-		PPAudiencedetails.map((el) => {
-			promotedAudienceId = el._id;
-			promotionSource = el.promotionSource;
-			return el;
-		});
-		let promotionMessage = `Buy exciting '${PPdetails.category}' from ${storeName}. Enter our Promo Code '${PPdetails.promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${URLs.shortUrl}`;
-		let dateAndTime = new Date(selectedDate).toLocaleString();
-		let promotion_date = dateAndTime.split(", ")[0];
-		let promotion_Time = dateAndTime.split(", ")[1];
-
-		if (ScheduledPP.isScheduled === true) {
-			if (URLs.isUrlAlreadyCreated === true) {
-				await api
-					.post(
-						"/seller/store/product/promote/schedule",
-						{
-							...PPdetails,
-							...URLs,
-							productId: pid,
-							promotedAudienceId,
-							promotionSource,
-							promotionMessage,
-							promotion_date,
-							promotion_Time,
-						},
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
-					)
-					.then(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "success",
-							message:
-								"SUCCESS: Your Product has been Scheduled for Promotion!",
-							open: true,
-						})
-					)
-					.catch(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "error",
-							message:
-								"ERROR: System is busy or something went wrong!",
-							open: true,
-						})
-					);
-			} else {
-				await api
-					.post(
-						"/seller/store/product/promote/schedule",
-						{
-							...PPdetails,
-							URLs,
-							productId: pid,
-							promotedAudienceId,
-							promotionSource,
-							promotionMessage,
-							promotion_date,
-							promotion_Time,
-						},
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
-					)
-					.then(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "success",
-							message:
-								"SUCCESS: Your Product has been Scheduled for Promotion!",
-							open: true,
-						})
-					)
-					.catch(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "error",
-							message:
-								"ERROR: System is busy or something went wrong!",
-							open: true,
-						})
-					);
-			}
-		} else {
-			if (URLs.isUrlAlreadyCreated === true) {
-				await api
-					.post(
-						"/seller/store/product/promote",
-						{
-							...PPdetails,
-							productId: pid,
-							promotedAudienceId,
-							promotionSource,
-							promotionMessage,
-						},
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
-					)
-					.then(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "success",
-							message:
-								"SUCCESS: Your Product has been added for Promotion!",
-							open: true,
-						})
-					)
-					.catch(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "error",
-							message:
-								"ERROR: System is busy or something went wrong!",
-							open: true,
-						})
-					);
-			} else {
-				await api
-					.post(
-						"/seller/store/product/promote",
-						{
-							...PPdetails,
-							URLs,
-							productId: pid,
-							promotedAudienceId,
-							promotionSource,
-							promotionMessage,
-						},
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
-					)
-					.then(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "success",
-							message:
-								"SUCCESS: Your Product has been added for Promotion!",
-							open: true,
-						})
-					)
-					.catch(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "error",
-							message:
-								"ERROR: System is busy or something went wrong!",
-							open: true,
-						})
-					);
-			}
-		}
+				if (isProductValidForPromotion === false) {
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message: res.data.message,
+						open: true,
+					});
+				} else {
+					setPid(id);
+				}
+			})
+			.catch((error) => console.log(error));
 	};
 
 	const getCoupon = () => {
 		var coupon = "-";
 		if (PPdetails.discount > 0) {
 			const words = [
+				PPdetails.discount,
 				"Best",
 				"Buy",
 				"Sale",
 				"Shop",
 				"Xtreme",
 				"2021",
-				PPdetails.discount,
 			];
 			coupon =
 				words[Math.floor(Math.random() * words.length)] +
 				"" +
 				words[Math.floor(Math.random() * words.length)];
+			setPPdetails({ ...PPdetails, promoCode: coupon });
+			setSnackBar({
+				...snackBarstate,
+				type: "success",
+				message: "SUCCESS: Discount Coupon has been generated!",
+				open: true,
+			});
+		} else {
+			setSnackBar({
+				...snackBarstate,
+				type: "warning",
+				message: "Kindly, Enter some discount to generate Coupon Code!",
+				open: true,
+			});
 		}
-		setPPdetails({ ...PPdetails, promoCode: coupon });
-		setSnackBar({
-			...snackBarstate,
-			type: "success",
-			message: "SUCCESS: Discount Coupon has been generated!",
-			open: true,
-		});
 	};
 
 	const getProductURL = () => {
-		setURLs({
+		setPPdetails({
+			...PPdetails,
 			longUrl: `https://digi-mart.com/products/${pid}`,
 		});
 		setModelSP(false);
 	};
 
 	const generateShortURL = async () => {
-		if (URLs.longUrl !== "") {
+		if (PPdetails.longUrl !== "") {
 			await api
 				.post(
 					"/seller/store/product/url/shorten",
 					{
-						longUrl: URLs.longUrl,
+						longUrl: PPdetails.longUrl,
 					},
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
 				.then((res) => {
-					setURLs({
-						...URLs,
-						...res.data.data,
-					});
-					setSnackBar({
-						...snackBarstate,
-						type: "success",
-						message: "SUCCESS: Short URL has been generated!",
-						open: true,
-					});
+					if (res.data.data.isUrlAlreadyCreated === true) {
+						setPPdetails({
+							...PPdetails,
+							shortUrl: res.data.data.shortUrl,
+							isUrlAlreadyCreated: true,
+						});
+
+						setSnackBar({
+							...snackBarstate,
+							type: "warning",
+							message: res.data.message,
+							open: true,
+						});
+					}
+					if (res.data.data.isUrlAlreadyCreated === false) {
+						setPPdetails({
+							...PPdetails,
+							longUrl: res.data.data.longUrl,
+							shortUrl: res.data.data.shortUrl,
+							urlCode: res.data.data.urlCode,
+							isUrlAlreadyCreated: false,
+						});
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message: "SUCCESS: " + res.data.message,
+							open: true,
+						});
+					}
 				})
 				.catch(() =>
 					setSnackBar({
@@ -396,6 +278,8 @@ export default function AddProduct() {
 		}
 	};
 
+	// =======================================================
+
 	useEffect(() => {
 		getPPAudienceByCategory();
 		// eslint-disable-next-line
@@ -406,6 +290,105 @@ export default function AddProduct() {
 		getAllProducts();
 		// eslint-disable-next-line
 	}, []);
+
+	const addProductForPromotion = async () => {
+		let promotedAudienceId = "";
+		let promotionSource = "";
+		PPAudiencedetails.map((el) => {
+			promotedAudienceId = el._id;
+			promotionSource = el.promotionSource;
+			return el;
+		});
+		let promotionMessage = `Buy exciting '${PPdetails.category}' from ${storeName}. Enter our Promo Code '${PPdetails.promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${PPdetails.shortUrl}`;
+		let dateAndTime = new Date(selectedDate).toLocaleString();
+		let promotion_date = dateAndTime.split(", ")[0];
+		let promotion_Time = dateAndTime.split(", ")[1];
+
+		var {
+			isUrlAlreadyCreated,
+			productName,
+			category,
+			description,
+			discount,
+			promoCode,
+			longUrl,
+			shortUrl,
+			urlCode,
+			isScheduled,
+		} = PPdetails;
+
+		var dataToSend = {
+			productId: pid,
+			promotionMessage,
+			promotedAudienceId,
+			promotionSource,
+		};
+
+		if (isUrlAlreadyCreated === false) {
+			dataToSend["productName"] = productName;
+			dataToSend["category"] = category;
+			dataToSend["description"] = description;
+			dataToSend["discount"] = discount;
+			dataToSend["promoCode"] = promoCode;
+			dataToSend["longUrl"] = longUrl;
+			dataToSend["shortUrl"] = shortUrl;
+			dataToSend["urlCode"] = urlCode;
+		} else {
+			dataToSend["productName"] = productName;
+			dataToSend["category"] = category;
+			dataToSend["description"] = description;
+			dataToSend["discount"] = discount;
+			dataToSend["promoCode"] = promoCode;
+			dataToSend["shortUrl"] = shortUrl;
+		}
+
+		if (isScheduled === true) {
+			dataToSend["promotion_date"] = promotion_date;
+			dataToSend["promotion_Time"] = promotion_Time;
+			console.log("Scheduled");
+		}
+
+		var error = shortUrl === "" ? true : false;
+		var URL = isScheduled === true ? "promote/schedule" : "promote";
+
+		if (error === false) {
+			await api
+				.post(
+					`/seller/store/product/${URL}`,
+					{
+						...dataToSend,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() =>
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message:
+							"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+						open: true,
+					})
+				)
+				.catch(() =>
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message:
+							"ERROR: Kindly enter Valid Product Details to Promote!",
+						open: true,
+					})
+				);
+		} else {
+			setSnackBar({
+				...snackBarstate,
+				type: "error",
+				message: "ERROR: Kindly generate Short URL first!",
+				open: true,
+			});
+		}
+	};
 
 	return (
 		<Grid container className={classes.root}>
@@ -427,6 +410,7 @@ export default function AddProduct() {
 											fullWidth
 											label="Product Name"
 											name="productName"
+											value={PPdetails.productName}
 											onChange={handlePPdetails(
 												"productName"
 											)}
@@ -473,6 +457,7 @@ export default function AddProduct() {
 											rows={4}
 											label="Description"
 											name="description"
+											value={PPdetails.description}
 											onChange={handlePPdetails(
 												"description"
 											)}
@@ -491,6 +476,7 @@ export default function AddProduct() {
 											fullWidth
 											label="Discount (%)"
 											name="discount"
+											value={PPdetails.discount}
 											onChange={handlePPdetails(
 												"discount"
 											)}
@@ -573,7 +559,7 @@ export default function AddProduct() {
 											fullWidth
 											label="Product URL"
 											name="productURL"
-											value={URLs.longUrl}
+											value={PPdetails.longUrl}
 										/>
 									</Grid>
 									<Grid item xs={6} sm={6} md={4} lg={4}>
@@ -594,7 +580,7 @@ export default function AddProduct() {
 								>
 									<Grid item xs={12} sm={12} md={12} lg={12}>
 										<Typography color="primary">
-											{URLs.shortUrl}
+											{PPdetails.shortUrl}
 										</Typography>
 									</Grid>
 								</Grid>
@@ -607,9 +593,9 @@ export default function AddProduct() {
 													<Checkbox
 														color="primary"
 														checked={
-															ScheduledPP.isScheduled
+															PPdetails.isScheduled
 														}
-														onChange={handleSchedule(
+														onChange={handlePPSchedule(
 															"isScheduled"
 														)}
 													/>
@@ -632,7 +618,7 @@ export default function AddProduct() {
 									</FormGroup>
 								</Grid>
 
-								{ScheduledPP.isScheduled === true ? (
+								{PPdetails.isScheduled === true ? (
 									<Grid
 										container
 										spacing={2}
@@ -818,14 +804,14 @@ export default function AddProduct() {
 												>
 													<Button
 														size="small"
-														color="default"
+														color="primary"
 														variant="outlined"
 													>
 														VIEW
 													</Button>
 													<Button
 														size="small"
-														color="default"
+														color="primary"
 														variant="outlined"
 														onClick={() =>
 															selectProductForPromo(
