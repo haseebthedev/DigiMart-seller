@@ -12,7 +12,7 @@ const addPromotionAudience = async(req, res, next) => {
         })
     }
     catch (err){
-        err.status = 204
+        err.status = 424
         next(err)
     }
 }
@@ -29,10 +29,11 @@ const updatePromotionAudienceByCategory = async(req, res, next) => {
         if(!addPromotionsData){
             throw new Error('No audience found of this category!')
         }
+        const promotionAudience = await PromotionAudience.find({productCategory: { $in: [category] }});
         res.status(200).json({
             message:`Promotion audience updated successfully!!`,
             data:{
-                addPromotionsData
+                promotionAudience
             }
         })
     }
@@ -83,9 +84,115 @@ const getPromotionAudienceOfProductCategory = async(req, res, next) => {
     }
 }
 
+const updateAudienceInterestCategoryById = async(req, res, next) => {
+    try{
+        const id = req.params.id
+        const promotionAudience = await PromotionAudience.findOne({_id: id});
+        if(!promotionAudience){
+            throw new Error('No audience found !')
+        }
+        promotionAudience.audienceInterestCategory = req.body.audienceInterestCategory
+        await promotionAudience.save()
+        res.status(200).json({
+            message:`Updated successfully!`,
+            data:{
+                promotionAudience
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getPromotionAudienceOfAllCategories = async(req, res, next) => {
+    try{
+        const promotionAudience = await PromotionAudience.find({});
+        if(promotionAudience.length == 0){
+            throw new Error('No audience found !')
+        }
+        res.status(200).json({
+            message:`Fetched audience successfully!`,
+            data:{
+                promotionAudience
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const addProductCategoriesInPromotionAudienceById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const categories = req.body.productCategory
+        //adding data in promotionData Array
+        const addProductCategory = await PromotionAudience.findOneAndUpdate(
+            {_id: _id}, 
+            { $push: { productCategory: categories} 
+            })
+        if(!addProductCategory){
+            throw new Error('No audience found of this category!')
+        }
+        const promotionAudience = await PromotionAudience.findById(_id);
+        res.status(200).json({
+            message:`Product categories updated successfully!!`,
+            data:{
+                promotionAudience
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const deleteProductCategoriesInPromotionAudienceById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const productCategories = req.body.productCategory
+        if(!productCategories){
+            throw new Error('Please enter product categories !')
+        }
+        const promotionAudience = await PromotionAudience.findOne({_id: _id})
+        if(!promotionAudience){
+            throw new Error('No audience found of this category!')
+        }
+        productCategories.forEach(function(productCategory) {
+            promotionAudience.productCategory = promotionAudience.productCategory.filter((category) => {
+                return category != productCategory
+            })
+        })
+        await promotionAudience.save() 
+        res.status(200).json({
+            message:`Product categories deleted successfully!!`,
+            data:{
+                promotionAudience
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 module.exports = {
+    //ADMIN
     addPromotionAudience,
     updatePromotionAudienceByCategory,
     deletePromotionAudienceByCategory,
-    getPromotionAudienceOfProductCategory
+    getPromotionAudienceOfProductCategory,
+    updateAudienceInterestCategoryById,
+    getPromotionAudienceOfAllCategories,
+    addProductCategoriesInPromotionAudienceById,
+    deleteProductCategoriesInPromotionAudienceById
+
+    //SELLER
+    //getPromotionAudienceOfProductCategory,
 }

@@ -1,6 +1,7 @@
 const PromoteProduct = require("../model/promoteProduct.model");
 const validUrl = require("valid-url");
 const shortid = require("shortid");
+const sendSMS = require("../sendSMS");
 
 const addPromotedProduct = async (req, res, next) => {
 	try {
@@ -29,7 +30,7 @@ const checkIfProductPromotedBefore = async (req, res, next) => {
 		const productId = req.params.productId;
 		const isProductPresent = await PromoteProduct.findOne({ productId });
 		//if product not prsent in promoted product DB then send response OK
-		console.log(isProductPresent);
+		//console.log(isProductPresent)
 		if (!isProductPresent) {
 			res.status(200).json({
 				message: `Product Valid For Promotion.`,
@@ -82,6 +83,11 @@ const scheduleProductPromotion = async (req, res, next) => {
 
 		req.body["storeId"] = req.store._id;
 		req.body["isPromotionScheduled"] = true;
+		if (req.body.promotion_date) {
+			req.body.promotion_date = new Date(
+				Date.parse(req.body.promotion_date + " GMT")
+			).toISOString();
+		}
 		const product = new PromoteProduct(req.body);
 		await product.save();
 		res.status(201).json({
@@ -100,11 +106,19 @@ const editScheduledPromotionById = async (req, res, next) => {
 	try {
 		const updates = Object.keys(req.body);
 		const _id = req.params.id;
-		const promotion = await PromoteProduct.findById(_id);
-		if (promotion.length == 0) {
+		const promotion = await PromoteProduct.findOne({ _id: _id });
+		// console.log('p',promotion)
+		if (!promotion) {
 			throw new Error("Scheduled Product Promotion not found !");
 		}
+		if (req.body.promotion_date) {
+			req.body.promotion_date = new Date(
+				Date.parse(req.body.promotion_date + " GMT")
+			).toISOString();
+		}
+		console.log("p", req.body.promotion_date);
 		updates.forEach((update) => (promotion[update] = req.body[update]));
+
 		await promotion.save();
 		res.status(200).json({
 			message: `Product promotion schedule updated successfully!`,
@@ -268,8 +282,31 @@ const redirectToLongUrl = async (req, res, next) => {
 		}
 	} catch (err) {
 		// exception handler
-		console.error(err);
-		res.status(500).json("Server Error");
+		err.status = 404;
+		next(err);
+	}
+};
+
+const sendPromotionMessage = async (req, res, next) => {
+	try {
+		messageBody = req.body.message;
+		recieverNumber = req.body.number;
+		const sentSMSId = sendSMS.message(recieverNumber, messageBody);
+		if (sentSMSId) {
+			res.status(200).json({
+				message: `Message sent !`,
+				data: {
+					recieverNumber,
+					messageBody,
+					//sentSMSId
+				},
+			});
+		} else {
+			throw new Error("Message could not be sent !");
+		}
+	} catch (err) {
+		err.status = 404;
+		next(err);
 	}
 };
 
@@ -285,6 +322,7 @@ module.exports = {
 	editScheduledPromotionById,
 	deleteScheduledPromotionById,
 	viewScheduledPromotionById,
+	sendPromotionMessage,
 	//FOR ADMIN
 	getAllPromotedProducts,
 };

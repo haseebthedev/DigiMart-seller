@@ -63,9 +63,7 @@ export default function AddProduct() {
 
 	// =======================================================
 
-	const [selectedDate, setSelectedDate] = useState(
-		new Date().toLocaleString()
-	);
+	const [selectedDate, setSelectedDate] = useState(new Date());
 	const handleDateChange = (date) => {
 		setSelectedDate(date);
 	};
@@ -345,8 +343,10 @@ export default function AddProduct() {
 		if (isScheduled === true) {
 			dataToSend["promotion_date"] = promotion_date;
 			dataToSend["promotion_Time"] = promotion_Time;
-			console.log("Scheduled");
 		}
+
+		console.log("promotion_date", promotion_date);
+		console.log("promotion_Time", promotion_Time);
 
 		var error = shortUrl === "" ? true : false;
 		var URL = isScheduled === true ? "promote/schedule" : "promote";
@@ -362,14 +362,15 @@ export default function AddProduct() {
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
-				.then(() =>
-					setSnackBar({
-						...snackBarstate,
-						type: "success",
-						message:
-							"CONGRATULATIONS: Your Product has been Added into Promotion List!",
-						open: true,
-					})
+				.then((res) =>
+					// setSnackBar({
+					// 	...snackBarstate,
+					// 	type: "success",
+					// 	message:
+					// 		"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+					// 	open: true,
+					// })
+					console.log("res ", res)
 				)
 				.catch(() =>
 					setSnackBar({
@@ -640,7 +641,7 @@ export default function AddProduct() {
 													label="Select Date"
 													format="MM/dd/yyyy"
 													value={selectedDate}
-													minDate={new Date()}
+													minDate={new Date().toLocaleString()}
 													onChange={handleDateChange}
 												/>
 											</MuiPickersUtilsProvider>

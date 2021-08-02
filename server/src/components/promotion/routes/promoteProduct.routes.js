@@ -13,6 +13,7 @@ router.get('/seller/store/products/promote', auth.vendor, promoteProductControll
 router.patch('/seller/store/product/promote/schedule/:id', auth.vendor, promoteProductController.editScheduledPromotionById)
 router.delete('/seller/store/product/promote/schedule/:id', auth.vendor, promoteProductController.deleteScheduledPromotionById)
 router.get('/seller/store/product/promote/schedule/:id', auth.vendor, promoteProductController.viewScheduledPromotionById)
+router.post('/seller/store/product/promotion/message', auth.vendor, promoteProductController.sendPromotionMessage)
 //first make short URL then pass its data to add or schedule product promotion
 router.post('/seller/store/product/url/shorten', auth.vendor, promoteProductController.generateShortURL)
 //redirect route of short URL to long URL
