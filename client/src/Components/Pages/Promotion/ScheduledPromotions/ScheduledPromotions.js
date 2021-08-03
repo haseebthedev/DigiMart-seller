@@ -99,25 +99,11 @@ export default function ScheduledPromotions() {
 		setSelectedTime(time);
 	};
 
-	const [SPdetails, setSPdetails] = useState({});
-
-	// const handleDateChange = (date) => {
-	// 	setSPdetails({ ...SPdetails, promotion_date: date });
-	// };
-	// const handleTimeChange = (time) => {
-	// 	setSPdetails({ ...SPdetails, promotion_Time: time });
-	// };
-
+	const [setSPdetails] = useState({});
+	
 	const handlerUpdatePP = async () => {
 		let date = selectedDate.toLocaleString().split(", ")[0];
 		let time = selectedTime.toLocaleTimeString();
-
-		// let dateAndTime = new Date(selectedDate).toLocaleString();
-		// console.log("dateAndTime", dateAndTime);
-		// let promotion_date = dateAndTime.split(", ")[0];
-		// let promotion_Time = dateAndTime.split(", ")[1];
-		// console.log("promotion_Time ", promotion_Time);
-		// console.log("promotion_date ", promotion_date);
 
 		await api
 			.patch(

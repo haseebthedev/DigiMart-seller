@@ -6,6 +6,7 @@ const auth = require('../../users/auth')
 //ROUTES FOR AUTHENTICATED VENDOR
 router.post('/seller/store/product', auth.vendor, productController.addProduct)
 router.patch('/seller/store/product/:id', auth.vendor, productController.updateProduct)
+router.delete('/seller/store/product/sizeAndStock/:id', auth.vendor, productController.deleteSizeAndStockById)
 router.delete('/seller/store/product/:id', auth.vendor, productController.deleteProduct)
 router.get('/seller/store/products', auth.vendor, productController.viewMyStoreProducts)
 router.get('/seller/store/product/:id', auth.vendor, productController.viewMyStoreProduct)

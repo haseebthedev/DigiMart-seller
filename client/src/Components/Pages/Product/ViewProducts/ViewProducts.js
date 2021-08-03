@@ -46,9 +46,9 @@ export default function ViewProducts() {
 
 	const columns = [
 		{ title: "Name", field: "name" },
-		{ title: "Manufacturer", field: "manufacturer" },
+		{ title: "Brand", field: "brand" },
 		{ title: "Category", field: "category" },
-		{ title: "Price", field: "price" },
+		{ title: "Price", field: "salePrice" },
 		{
 			title: "StockAvailable",
 			field: "stockAvailable",

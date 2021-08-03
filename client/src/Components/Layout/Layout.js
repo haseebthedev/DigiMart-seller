@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import api from "../../Axios/api";
 import { Redirect } from "react-router-dom";
@@ -193,19 +193,19 @@ const Layout = (props) => {
 	};
 
 	// activating profile again
-	useEffect(() => {
-		const activateAccount = () => {
-			api.patch(
-				"/seller/activateAccount",
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			).catch((error) => console.log("ERROR: " + error));
-		};
-		activateAccount();
-		// eslint-disable-next-line
-	}, [token]);
+	// useEffect(() => {
+	// 	const activateAccount = () => {
+	// 		api.patch(
+	// 			"/seller/activateAccount",
+	// 			{},
+	// 			{
+	// 				headers: { Authorization: `Bearer ${token}` },
+	// 			}
+	// 		).catch((error) => console.log("ERROR: " + error));
+	// 	};
+	// 	activateAccount();
+	// 	// eslint-disable-next-line
+	// }, []);
 
 	return (
 		<div className={classes.root}>

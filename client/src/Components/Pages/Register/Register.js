@@ -7,11 +7,9 @@ import {
 	Typography,
 	Grid,
 	TextField,
-	FormControlLabel,
 	Button,
-	Radio,
-	RadioGroup,
-	FormLabel,
+	Select,
+	MenuItem,
 } from "@material-ui/core";
 import { withRouter, Redirect } from "react-router-dom";
 import { useStyles } from "./styles";
@@ -21,40 +19,35 @@ import Logo from "../../../assets/images/logo.png";
 
 const Register = () => {
 	const classes = useStyles();
-
-	// context
 	const { dispatch } = useUserContext();
-	// const token = store.data.token;
 
 	const [isRegistered, setIsRegistered] = React.useState(false);
 	const [name, setName] = React.useState("Haseeb Ahmed");
 	const [cnic, setCnic] = React.useState("34601-0385037-7");
 	const [email, setEmail] = React.useState("haseeb@gmail.com");
-	const [birthday, setBirthday] = React.useState("11/06/2003");
+	const [birthday, setBirthday] = React.useState("01/01/2000");
 	const [phoneNumber, setPhoneNumber] = React.useState("+923455488213");
 	const [password, setPassword] = React.useState("haseeb123");
 	const [gender, setGender] = React.useState("male");
-	const [storeName, setstoreName] = React.useState("Gucci");
+	const [city, setCity] = React.useState("Islamabad");
+	const [address, setAddress] = React.useState(
+		"H# 123, Satellite Town, Rawalpindi"
+	);
 
 	const handleRegisterVendor = (e) => {
 		e.preventDefault();
 
-		api.post(
-			"/seller/register",
-			{
-				name,
-				email,
-				CNIC: cnic,
-				phoneNumber,
-				gender,
-				birthday,
-				password,
-				storeName,
-			}
-			// {
-			// 	headers: { Authorization: `Bearer ${token}` },
-			// }
-		)
+		api.post("/seller/register", {
+			name,
+			email,
+			CNIC: cnic,
+			phoneNumber,
+			gender,
+			birthday,
+			password,
+			city,
+			address,
+		})
 			.then(function (res) {
 				setTimeout(() => setIsRegistered(true), [1000]);
 				return registerUser(
@@ -91,9 +84,11 @@ const Register = () => {
 					<Typography variant="h6" spacing={3} gutterBottom>
 						Personal Details
 					</Typography>
-					<Grid container spacing={3}>
-						<Grid item xs={12} sm={6}>
+					<Grid container>
+						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								required
 								name="Name"
 								label="Name"
@@ -103,8 +98,10 @@ const Register = () => {
 								onChange={(e) => setName(e.target.value)}
 							/>
 						</Grid>
-						<Grid item xs={12} sm={6}>
+						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								required
 								name="cnic"
 								label="Cnic"
@@ -115,8 +112,10 @@ const Register = () => {
 							/>
 						</Grid>
 
-						<Grid item xs={12} sm={6}>
+						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								name="email"
 								label="Email"
 								autoComplete="email"
@@ -125,8 +124,10 @@ const Register = () => {
 								onChange={(e) => setEmail(e.target.value)}
 							/>
 						</Grid>
-						<Grid item xs={12} sm={6}>
+						{/* <Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								name="date"
 								label="Date of Birth"
 								autoComplete="dateofBirth"
@@ -135,9 +136,11 @@ const Register = () => {
 								value={birthday}
 								onChange={(e) => setBirthday(e.target.value)}
 							/>
-						</Grid>
-						<Grid item xs={12} sm={6}>
+						</Grid> */}
+						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								required
 								name="phoneNumber"
 								label="Phone Number"
@@ -147,8 +150,10 @@ const Register = () => {
 								onChange={(e) => setPhoneNumber(e.target.value)}
 							/>
 						</Grid>
-						<Grid item xs={12} sm={6}>
+						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								required
 								name="password"
 								label="Password"
@@ -157,42 +162,58 @@ const Register = () => {
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</Grid>
-
 						<Grid item xs={12}>
 							<TextField
+								variant="outlined"
+								margin="normal"
 								required
-								name="storeName"
-								label="Store Name"
+								name="city"
+								label="City"
 								fullWidth
-								value={storeName}
-								onChange={(e) => setstoreName(e.target.value)}
+								value={city}
+								onChange={(e) => setCity(e.target.value)}
 							/>
 						</Grid>
 						<Grid item xs={12}>
-							<FormLabel>Gender</FormLabel>
-							<RadioGroup
-								row
-								value={gender}
+							<TextField
+								variant="outlined"
+								margin="normal"
+								required
+								name="address"
+								label="Address"
+								fullWidth
+								value={address}
+								onChange={(e) => setAddress(e.target.value)}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<Select
+								variant="outlined"
+								fullWidth
+								label="Category"
+								name="category"
+								style={{ marginTop: 8 }}
+								defaultValue={"DEFAULT"}
 								onChange={(e) => setGender(e.target.value)}
 							>
-								<FormControlLabel
-									value="male"
-									control={<Radio color="primary" />}
-									label="Male"
-								/>
-								<FormControlLabel
-									value="female"
-									control={<Radio color="primary" />}
-									label="Female"
-								/>
-								<FormControlLabel
-									value="other"
-									control={<Radio color="primary" />}
-									label="Other"
-								/>
-							</RadioGroup>
+								<MenuItem value="DEFAULT" disabled>
+									Choose your Gender
+								</MenuItem>
+								<MenuItem value="male">Male</MenuItem>
+								<MenuItem value="female">Female</MenuItem>
+								<MenuItem value="other">Other</MenuItem>
+							</Select>
 						</Grid>
+
 						<Grid item xs={12} className={classes.buttons}>
+							{/* <Button
+								variant="outlined"
+								color="primary"
+								onClick={}
+								style={{ marginRight: 10 }}
+							>
+								Login
+							</Button> */}
 							<Button
 								variant="contained"
 								color="primary"

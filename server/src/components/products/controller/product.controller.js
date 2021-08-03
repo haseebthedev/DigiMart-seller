@@ -14,7 +14,6 @@ const addProduct = async(req, res, next) => {
         }
 
         req.body['storeID'] = req.store._id
-        //req.body['storeName'] = req.store.name
         const product = new Product(req.body)
         await product.save()
         res.status(201).json({
@@ -44,13 +43,62 @@ const updateProduct = async(req, res, next) => {
         const storeID = req.store._id
         
         const product = await Product.findOne({_id:productID,storeID:storeID})
-        //console.log(product)
-        updates.forEach((update) => product[update] = req.body[update])
+        const sizeAndStockArray = req.body.sizeAndStock
+        //update sizeAndStock array of product
+        if(sizeAndStockArray){
+            //console.log('size')
+                let isItemAlreadyPresent = false
+                sizeAndStockArray.forEach(async (sizeAndStock) => {
+                    isItemAlreadyPresent = false
+                    //loop on each sizeAndStock item of product
+                    product.sizeAndStock.forEach((item) => {
+                        //if already presnt item
+                        if(sizeAndStock.size == item.size){
+                            item.stock = sizeAndStock.stock 
+                            isItemAlreadyPresent = true
+                        }
+                    })
+                    if(!isItemAlreadyPresent)
+                    product.sizeAndStock.push(sizeAndStock)
+                })
+
+        }
+        updates.forEach((update) => {
+            if(update !== 'sizeAndStock')
+            product[update] = req.body[update]
+        })
         await product.save()
         res.status(200).json({
             message:`Your product has been updated successfully!`,
             data:{
                 product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const deleteSizeAndStockById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const product = await Product.findOne({
+            sizeAndStock:{$elemMatch :{_id: _id}}
+        })
+        if(!product){
+            throw new Error('Product not found !')
+        }
+        //filter sizeAndStock
+        product['sizeAndStock'] = product['sizeAndStock'].filter(function(item){
+            return item._id != _id; 
+        });
+        await product.save()
+        res.status(200).json({
+            message:`Product has been updated successfully!`,
+            data:{
+                product
             }
         })
     }
@@ -252,8 +300,30 @@ const editProductById = async(req, res, next) => {
         // }
         const productID = await Product.findById(_id)
         const product = await Product.findOne({_id:productID})
-        //console.log(product)
-        updates.forEach((update) => product[update] = req.body[update])
+        const sizeAndStockArray = req.body.sizeAndStock
+        //update sizeAndStock array of product
+        if(sizeAndStockArray){
+            //console.log('size')
+                let isItemAlreadyPresent = false
+                sizeAndStockArray.forEach(async (sizeAndStock) => {
+                    isItemAlreadyPresent = false
+                    //loop on each sizeAndStock item of product
+                    product.sizeAndStock.forEach((item) => {
+                        //if already presnt item
+                        if(sizeAndStock.size == item.size){
+                            item.stock = sizeAndStock.stock 
+                            isItemAlreadyPresent = true
+                        }
+                    })
+                    if(!isItemAlreadyPresent)
+                    product.sizeAndStock.push(sizeAndStock)
+                })
+
+        }
+        updates.forEach((update) => {
+            if(update !== 'sizeAndStock')
+            product[update] = req.body[update]
+        })
         await product.save()
         res.status(200).json({
             message:`Product has been updated successfully!`,
@@ -296,6 +366,7 @@ module.exports = {
     deleteProduct,
     viewMyStoreProducts,
     viewMyStoreProduct,
+    deleteSizeAndStockById,
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,

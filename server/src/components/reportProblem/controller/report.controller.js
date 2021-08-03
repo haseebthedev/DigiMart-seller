@@ -85,8 +85,118 @@ const reportAdminProblem = async(req, res, next) => {
     }
 }
 
+const viewReportedProblemsOfVendor = async(req, res, next) => {
+    try{
+        const problems = await ReportProblem.find({ "vendorID": { "$ne": null }, "isProblemResolved": false })
+        if(problems.length == 0){
+            res.status(200).json({
+                message:`No problems found !`,
+                data:{
+                }
+            })
+        }
+        else{
+            res.status(200).json({
+                message:`Problems fetched !`,
+                data:{
+                    problems
+                }
+            })
+        }
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewReportedProblemsOfAdmin = async(req, res, next) => {
+    try{
+        const problems = await ReportProblem.find({ "adminID": { "$ne": null }, "isProblemResolved": false  })
+        if(problems.length == 0){
+            res.status(200).json({
+                message:`No problems found !`,
+                data:{
+                }
+            })
+        }
+        else{
+            res.status(200).json({
+                message:`Problems fetched !`,
+                data:{
+                    problems
+                }
+            })
+        }
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewReportedProblemsOfBuyer = async(req, res, next) => {
+    try{
+        const problems = await ReportProblem.find({ "buyerID": { "$ne": null }, "isProblemResolved": false })
+        if(problems.length == 0){
+            res.status(200).json({
+                message:`No problems found !`,
+                data:{
+                }
+            })
+        }
+        else{
+            res.status(200).json({
+                message:`Problems fetched !`,
+                data:{
+                    problems
+                }
+            })
+        }
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const changeProblemStatusById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const problem = await ReportProblem.findById(_id)
+        if(!problem){
+            throw new Error('No problem Found !')
+        }
+        else{
+            problem.isProblemResolved = true
+            await problem.save()
+            res.status(200).json({
+                message:`Problem status changed !`,
+                data:{
+                    problem
+                }
+            })
+        }
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 module.exports = {
     reportVendorProblem,
     reportBuyerProblem,
-    reportAdminProblem
+    reportAdminProblem,
+    //FOR ADMIN
+    viewReportedProblemsOfVendor,
+    viewReportedProblemsOfBuyer,
+    changeProblemStatusById,
+    //FOR SUPER ADMIN
+    viewReportedProblemsOfAdmin
 }

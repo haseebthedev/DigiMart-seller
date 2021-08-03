@@ -59,6 +59,7 @@ const Login = () => {
 			...loginData,
 		})
 			.then(function (res) {
+				console.log("res ", res);
 				setTimeout(() => setIsLoggedIn(true), [1000]);
 				return loginUser(
 					dispatch,

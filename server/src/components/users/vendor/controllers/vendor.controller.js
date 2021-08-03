@@ -12,7 +12,7 @@ const registerVendor = async(req, res, next) => {
         //send registration mail
         const subject = 'Digi-Mart Seller Registration Email'
         const message = `You have successfully registered your Email ${vendor.email} with Digi-Mart.
-        To sell products and make money, register your store '${vendor.storeName}' on Digi-Mart by providing necessary details and be part of Digi-Mart seller family.
+        To sell products and make money, register your store on Digi-Mart by providing necessary details and be part of Digi-Mart seller family.
         <br><strong>Thank you for your time.</strong>`
         notification.sendNotificationMail(vendor.email,subject,message,vendor.name)
         res.status(201).json({
@@ -93,6 +93,7 @@ const deleteMyAccount = async(req, res, next) => {
         if(!req.store)
         throw new Error('Store is not registered yet! Please register your store.')
         const store = req.store
+        const storeName = req.store.name
         await req.user.remove()
         //later add this if vendor delete its reviews etc.
         //if vendor delete .. delete its store, products, reviews etc.
@@ -104,7 +105,7 @@ const deleteMyAccount = async(req, res, next) => {
         const subject = 'Account Deletion Email'
         const message = `Your seller account registered on ${vendor.email} has been removed from Digi-Mart. 
         We recieved your reason behind account deletion and our team will work on it. Our customers will miss your store
-        '${vendor.storeName}' products. Hope you will soon be part of Digi-Mart family again.
+        '${storeName}' products. Hope you will soon be part of Digi-Mart family again.
         <br><strong>Thank you for your time.</strong>`
         notification.sendNotificationMail(vendor.email,subject,message,vendor.name)
 

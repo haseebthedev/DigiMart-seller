@@ -11,11 +11,13 @@ const auth=async(req,res,next)=>{
             throw new Error()
         }
         //here write code to query store and get store details by 
-        //using store name and put req.store = store
+        //using store _id and put req.store = store
         req.user = user
         req.token = token
-        const store = await Store.findOne({name: user.storeName})
-        req.store = store
+        if(user.storeId){
+            const store = await Store.findOne({_id: user.storeId})
+            req.store = store
+        }
         next()
     }
     catch(e){

@@ -345,9 +345,6 @@ export default function AddProduct() {
 			dataToSend["promotion_Time"] = promotion_Time;
 		}
 
-		console.log("promotion_date", promotion_date);
-		console.log("promotion_Time", promotion_Time);
-
 		var error = shortUrl === "" ? true : false;
 		var URL = isScheduled === true ? "promote/schedule" : "promote";
 
@@ -362,15 +359,16 @@ export default function AddProduct() {
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
-				.then((res) =>
-					// setSnackBar({
-					// 	...snackBarstate,
-					// 	type: "success",
-					// 	message:
-					// 		"CONGRATULATIONS: Your Product has been Added into Promotion List!",
-					// 	open: true,
-					// })
-					console.log("res ", res)
+				.then(
+					(res) =>
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message:
+								"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+							open: true,
+						})
+					// console.log("res ", res)
 				)
 				.catch(() =>
 					setSnackBar({
@@ -398,12 +396,12 @@ export default function AddProduct() {
 					<Grid container spacing={4}>
 						<Grid item xs={12} sm={12} md={12} lg={8}>
 							<Typography variant="h4" gutterBottom>
-								Add Product Details
+								Add Promotion Details
 							</Typography>
 							<Divider />
 							<form className={classes.form}>
 								<Grid container spacing={2}>
-									<Grid item xs={12} sm={6} md={6} lg={6}>
+									<Grid item xs={12}>
 										<TextField
 											margin="dense"
 											variant="outlined"
@@ -417,7 +415,7 @@ export default function AddProduct() {
 											)}
 										/>
 									</Grid>
-									<Grid item xs={12} sm={6} md={6} lg={6}>
+									<Grid item xs={12}>
 										<Select
 											variant="outlined"
 											margin="dense"
@@ -448,7 +446,7 @@ export default function AddProduct() {
 									</Grid>
 								</Grid>
 								<Grid container spacing={2}>
-									<Grid item xs={12} sm={12} md={12} lg={12}>
+									<Grid item xs={12}>
 										<TextField
 											margin="dense"
 											variant="outlined"
@@ -744,125 +742,139 @@ export default function AddProduct() {
 										overflowY: "scroll",
 										maxHeight: "410px",
 									}}
-									align="center"
 									spacing={3}
+									justify="center"
 								>
-									{productList.map((prod) => (
-										<Grid
-											item
-											xs={12}
-											sm={3}
-											md={3}
-											key={prod._id}
-										>
-											<Card
-												style={{
-													position: "relative",
-												}}
+									{productList.length > 0 ? (
+										productList.map((prod) => (
+											<Grid
+												item
+												xs={12}
+												sm={3}
+												md={3}
+												key={prod._id}
 											>
-												<CardMedia
-													className={classes.media}
-													image={
-														prod.images.length > 0
-															? prod.images[0]
-															: ImageNotAvailable
-													}
-													title="Contemplative Reptile"
-												/>
-												<CardContent
+												<Card
 													style={{
-														padding: 4,
+														position: "relative",
 													}}
 												>
-													<Typography
-														variant="body1"
-														style={{
-															marginTop: 4,
-														}}
-														gutterBottom
-													>
-														{prod.name}
-													</Typography>
-													<Typography
-														variant="caption"
-														style={{
-															color: "rgb(74 74 74)",
-															background:
-																"rgb(205 205 205 / 49%)",
-															padding: "2px 6px",
-															borderRadius: 4,
-														}}
-													>
-														{prod.category}
-													</Typography>
-												</CardContent>
-
-												<CardActions
-													style={{
-														justifyContent:
-															"center",
-													}}
-												>
-													<Button
-														size="small"
-														color="primary"
-														variant="outlined"
-													>
-														VIEW
-													</Button>
-													<Button
-														size="small"
-														color="primary"
-														variant="outlined"
-														onClick={() =>
-															selectProductForPromo(
-																prod._id
-															)
+													<CardMedia
+														className={
+															classes.media
 														}
-													>
-														SELECT
-													</Button>
-													<div
+														image={
+															prod.images.length >
+															0
+																? prod.images[0]
+																: ImageNotAvailable
+														}
+														title="Contemplative Reptile"
+													/>
+													<CardContent
 														style={{
-															position:
-																"absolute",
-															top: 0,
-															right: 0,
+															padding: 4,
 														}}
 													>
-														<Checkbox
-															className={
-																classes.root
-															}
-															checkedIcon={
-																<span
-																	className={clsx(
-																		classes.icon,
-																		classes.checkedIcon
-																	)}
-																/>
-															}
-															icon={
-																<span
-																	className={
-																		classes.icon
-																	}
-																/>
-															}
-															checked={
-																prod._id === pid
-															}
-															onChange={() =>
+														<Typography
+															variant="body1"
+															style={{
+																marginTop: 4,
+															}}
+															gutterBottom
+														>
+															{prod.name}
+														</Typography>
+														<Typography
+															variant="caption"
+															style={{
+																color: "rgb(74 74 74)",
+																background:
+																	"rgb(205 205 205 / 49%)",
+																padding:
+																	"2px 6px",
+																borderRadius: 4,
+															}}
+														>
+															{prod.category}
+														</Typography>
+													</CardContent>
+
+													<CardActions
+														style={{
+															justifyContent:
+																"center",
+														}}
+													>
+														<Button
+															size="small"
+															color="primary"
+															variant="outlined"
+														>
+															VIEW
+														</Button>
+														<Button
+															size="small"
+															color="primary"
+															variant="outlined"
+															onClick={() =>
 																selectProductForPromo(
 																	prod._id
 																)
 															}
-														/>
-													</div>
-												</CardActions>
-											</Card>
+														>
+															SELECT
+														</Button>
+														<div
+															style={{
+																position:
+																	"absolute",
+																top: 0,
+																right: 0,
+															}}
+														>
+															<Checkbox
+																className={
+																	classes.root
+																}
+																checkedIcon={
+																	<span
+																		className={clsx(
+																			classes.icon,
+																			classes.checkedIcon
+																		)}
+																	/>
+																}
+																icon={
+																	<span
+																		className={
+																			classes.icon
+																		}
+																	/>
+																}
+																checked={
+																	prod._id ===
+																	pid
+																}
+																onChange={() =>
+																	selectProductForPromo(
+																		prod._id
+																	)
+																}
+															/>
+														</div>
+													</CardActions>
+												</Card>
+											</Grid>
+										))
+									) : (
+										<Grid item xs={12}>
+											<Typography>
+												There are No Products uploaded
+												yet!
+											</Typography>
 										</Grid>
-									))}
+									)}
 								</Grid>
 							</form>
 						</Grid>

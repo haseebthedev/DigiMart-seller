@@ -21,6 +21,16 @@ export default function Store(props) {
 				Store Details
 			</Typography>
 			<Grid container spacing={3}>
+				<Grid item xs={12}>
+					<TextField
+						required
+						name="StoreName"
+						label="Store Name"
+						fullWidth
+						defaultValue={values.name}
+						onChange={handleChange("name")}
+					/>
+				</Grid>
 				<Grid item xs={12} sm={6}>
 					<FormControl fullWidth>
 						<InputLabel>Category</InputLabel>

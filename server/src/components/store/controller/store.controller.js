@@ -3,10 +3,12 @@ const Product = require('../../products/model/product.model')
 const Vendor = require('../../users/vendor/models/vendor.model')
 
 const registerStore = async(req, res, next) => {
-    req.body['name'] = req.user.storeName
-    const store = new Store(req.body)
     try{
+        const user = req.user
+        const store = new Store(req.body)
         await store.save()
+        user.storeId = store._id
+        await user.save()
         res.status(201).json({
             message:`Your request for registration has been sent successfully. You will be informed soon.`,
             data:{
@@ -46,22 +48,12 @@ const updateStore = async(req, res, next) => {
         // if(!isValidOperation){
         //     throw new Error('Invalid Keys! Please enter valid keys.')
         // }
-        const isStoreNameChanged = updates.includes('name')
-        const user = req.user
         const store = req.store
         updates.forEach((update) => store[update] = req.body[update])
         await store.save()
-        if(isStoreNameChanged){
-            user.storeName = store.name
-            await user.save()
-        }
-        if(!user){
-            throw new Error('User not found!')
-        }
         return res.status(200).json({
             message:`Store has been updated successfully.`,
             data:{
-                user: req.user,
                 store: req.store
             }
         })
@@ -211,28 +203,15 @@ const editStoreById = async(req, res, next) => {
         // if(!isValidOperation){
         //     throw new Error('Invalid Keys! Please enter valid keys.')
         // }
-        const isStoreNameChanged = updates.includes('name')
         const store = await Store.findById(_id)
-        const user = await Vendor.findOne({storeName: store.name})
-        if(!user){
-            throw new Error('No user found!')
-        }
         if(!store){
             throw new Error('No store found!')
         }
         updates.forEach((update) => store[update] = req.body[update])
         await store.save()
-        if(isStoreNameChanged){
-            user.storeName = store.name
-            await user.save()  
-        }
-        if(!user){
-            throw new Error('User not found!')
-        }
         return res.status(200).json({
             message:`Store and Vendor updated successfully.`,
             data:{
-                vendor: user,
                 store
             }
         })
@@ -247,12 +226,10 @@ const viewStoreById = async(req, res, next) => {
     try{
         const _id = req.params.id
         const store = await Store.findById(_id)
-        const user = await Vendor.find({storeName: store.name})
         return res.status(200).json({
-            message:`Store and Vendor fetched successfully.`,
+            message:`Store fetched successfully.`,
             data:{
-                store,
-                vendor: user
+                store
             }
         })
     }

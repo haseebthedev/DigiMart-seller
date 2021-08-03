@@ -36,6 +36,7 @@ export default function CompleteRegister(props) {
 
 	// states
 	const [state, setState] = useState({
+		name: "",
 		category: "sports",
 		biography: "A place to have trust.",
 		warehouseAddress: "Street No. 231, 2484  Fairfield Road",
@@ -70,6 +71,7 @@ export default function CompleteRegister(props) {
 			props.setCompleteRegis(false);
 
 			const {
+				name,
 				category,
 				biography,
 				warehouseAddress,
@@ -89,6 +91,7 @@ export default function CompleteRegister(props) {
 				.post(
 					"/seller/store/register",
 					{
+						name,
 						category,
 						biography,
 						warehouseAddress,

@@ -112,11 +112,9 @@ const vendorSchema=new mongoose.Schema({
             }
         }
     },
-    storeName:{
-        type: String,
-        ref:'Store',
-        unique:[true, 'Sorry the store with this name already exists. Try new name!'],
-        required: [true,'Please enter name of your store.']
+    storeId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Store'
     },
     isStoreRegistered:{
         type:Boolean,
@@ -136,6 +134,12 @@ const vendorSchema=new mongoose.Schema({
     isAccountActive:{
         type: Boolean,
         default: false
+    },
+    city:{
+        type: String
+    },
+    address:{
+        type: String
     },
     isNotificationsEnabled:{
         type: Boolean,
