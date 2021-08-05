@@ -568,7 +568,7 @@ export default function AddProduct() {
 											label="Weight Unit"
 											name="weightUnits"
 											style={{ marginTop: 8 }}
-											defaultValue={weightUnits}
+											value={weightUnits}
 											onChange={handleWeightUnit}
 										>
 											<MenuItem value="Kg">

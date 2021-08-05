@@ -16,7 +16,6 @@ import {
 	MenuItem,
 	Button,
 	LinearProgress,
-	Chip,
 } from "@material-ui/core";
 import CSVReader from "react-csv-reader";
 import { useUserContext } from "../../../../context/UserContext";
@@ -24,6 +23,8 @@ import { useUserContext } from "../../../../context/UserContext";
 import Pal from "../../../../themes/palette";
 import useStyles from "./styles";
 import DeleteProduct from "../../../FormDialog/DeleteProduct";
+
+import ImgNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
 
 export default function ViewProducts() {
 	const classes = useStyles();
@@ -46,33 +47,107 @@ export default function ViewProducts() {
 	const [details, setDetails] = useState([]);
 
 	const columns = [
-		{ title: "#", field: "tableData.id" },
-		{ title: "Name", field: "name" },
-		{ title: "Brand", field: "brand" },
-		{ title: "Category", field: "category" },
-		{ title: "Price", field: "salePrice" },
 		{
-			title: "Stock Available",
-			field: "sizeAndStock",
-			render: ({ sizeAndStock }) =>
-				sizeAndStock.map((el, index) => (
-					<Chip
-						key={index}
-						size="small"
-						label={
-							sizeAndStock.length > 1
-								? el.size + " (" + el.stock + ")"
-								: el.stock
-						}
-						style={{ margin: 2 }}
-					/>
-				)),
+			title: "ID",
+			field: "tableData.id",
+			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
+			hidden: false,
+			export: false,
+			cellstyle: { whiteSpace: "nowrap" },
 		},
 		{
-			title: "DiscountPercentage",
+			title: "Image",
+			field: "images",
+			render: ({ images }) => (
+				<img
+					src={images.length > 0 ? images[0] : ImgNotAvailable}
+					alt="ProductImage"
+					style={{ width: 40, height: 40, borderRadius: "50%" }}
+				/>
+			),
+			hidden: false,
+			export: false,
+		},
+		{ title: "Name", field: "name", hidden: false, export: true },
+		{
+			title: "description",
+			field: "description",
+			hidden: true,
+			export: true,
+		},
+		{ title: "Brand", field: "brand", hidden: false, export: true },
+		{ title: "Category", field: "category", hidden: false, export: true },
+		{
+			title: "purchasePrice",
+			field: "purchasePrice",
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "SalePrice",
+			field: "salePrice",
+			hidden: false,
+			export: true,
+		},
+		{
+			title: "State",
+			field: "state",
+			hidden: false,
+			export: true,
+		},
+		{
+			title: "StockAvailable",
+			field: "stockAvailable",
+			hidden: false,
+			export: true,
+		},
+		{
+			title: "discountPercentage",
 			field: "discountPercentage",
+			hidden: true,
+			export: true,
 		},
-		{ title: "Warranty", field: "warranty" },
+		{ title: "Warranty", field: "warranty", hidden: false, export: true },
+		{
+			title: "Colors",
+			field: "colors",
+			render: ({ colors }) => <div>{colors[0]}</div>,
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "isVisibilityEnabled",
+			field: "isVisibilityEnabled",
+			render: ({ isVisibilityEnabled }) => (
+				<div>{isVisibilityEnabled}</div>
+			),
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "manufactureDate",
+			field: "manufactureDate",
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "shippingCost",
+			field: "shippingCost",
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "dimensions",
+			field: "dimensions",
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "weight",
+			field: "weight",
+			hidden: true,
+			export: true,
+		},
 	];
 
 	// category list retrive from DB
@@ -267,51 +342,41 @@ export default function ViewProducts() {
 			setProgressCSV("determinate");
 		}, 1000);
 
-		const newProducList = data.map((prod) =>
-			prod.colors === undefined
-				? {
-						...prod,
-						colors: [],
-						images: [],
-						manufactureDate: "01/01/2000",
-						weight: 20,
-				  }
-				: prod
-		);
-		setIPdata(newProducList);
+		setIPdata(data);
 	};
 
 	const handeStartImport = async () => {
-		for (let i = 0; i < IPdata.length; i++) {
-			await api
-				.post(
-					"/seller/store/product",
-					{
-						...IPdata[i],
-					},
-					{
+		try {
+			var hasError = false;
+			for (let i = 0; i < IPdata.length; i++) {
+				await api
+					.post("/seller/store/product", IPdata[i], {
 						headers: { Authorization: `Bearer ${token}` },
-					}
-				)
-				.then(() => {
-					setSnackBar({
-						...snackBarstate,
-						type: "success",
-						message: "Products have been added successfully!",
-						open: true,
-					});
-					setTimeout(() => {
-						window.location.reload();
-					}, 1000);
-				})
-				.catch((error) =>
-					setSnackBar({
-						...snackBarstate,
-						message: "ERROR: Something went wrong!!",
-						type: "error",
-						open: true,
 					})
-				);
+					// eslint-disable-next-line
+					.catch(() => {
+						hasError = true;
+						new Error("ERROR");
+					});
+			}
+			if (hasError === false) {
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "Products have been added successfully!",
+					open: true,
+				});
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
+			}
+		} catch (error) {
+			setSnackBar({
+				...snackBarstate,
+				type: "error",
+				message: "Datafile contains wrong format!",
+				open: true,
+			});
 		}
 	};
 
@@ -322,6 +387,8 @@ export default function ViewProducts() {
 		skipEmptyLines: true,
 		transformHeader: (header) =>
 			header.charAt(0).toLowerCase().concat(header.slice(1)),
+
+		//header.charAt(0).toLowerCase().concat(header.slice(1)),
 	};
 
 	const retrivingAllProducts = async () => {
@@ -384,18 +451,6 @@ export default function ViewProducts() {
 		// eslint-disable-next-line
 	}, [productDetails.category]);
 
-	// const downloadCsv = (data, fileName) => {
-	// 	const finalFileName = fileName.endsWith(".csv")
-	// 		? fileName
-	// 		: `${fileName}.csv`;
-	// 	const a = document.createElement("a");
-	// 	a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
-	// 	a.setAttribute("download", finalFileName);
-	// 	document.body.appendChild(a);
-	// 	a.click();
-	// 	document.body.removeChild(a);
-	// };
-
 	return (
 		<Grid container className={classes.root}>
 			<Grid
@@ -444,41 +499,13 @@ export default function ViewProducts() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
-							whiteSpace: "nowrap",
 						},
 						exportButton: true,
-						// exportCsv: (columns, data) => {
-						// 	// const headerRow = columns.map((col) => col.title);
-
-						// 	// const dataRows = data.map(({ tableData, ...row }) =>
-						// 	// 	Object.values(row)
-						// 	// );
-
-						// 	const headerRow = Object.keys(details[0]);
-						// 	headerRow.filter(el => el.includes("_id") )
-
-						// 	const dataRows = data.map(
-						// 		({ tableData, ...row }) => {
-						// 			delete row["images"];
-						// 			delete row["colors"];
-						// 			delete row["sizeAndStock"];
-						// 			delete row["_id"];
-						// 			delete row["__v"];
-						// 			return Object.values(row);
-						// 		}
-						// 	);
-
-						// 	const delimiter = ",";
-
-						// 	const csvContent = [headerRow, ...dataRows]
-						// 		.map((e) => e.join(delimiter))
-						// 		.join("\n");
-
-						// 	let csvFileName = "AllProducts";
-
-						// 	// Allow user to download file as .csv
-						// 	downloadCsv(csvContent, csvFileName);
-						// },
+					}}
+					localization={{
+						pagination: {
+							labelRowsSelect: "Rows per page",
+						},
 					}}
 				/>
 				<Snackbar
