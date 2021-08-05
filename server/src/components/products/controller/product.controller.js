@@ -1,3 +1,4 @@
+const Store = require('../../store/model/store.model')
 const Product = require('../model/product.model')
 
 const addProduct = async(req, res, next) => {
@@ -43,28 +44,8 @@ const updateProduct = async(req, res, next) => {
         const storeID = req.store._id
         
         const product = await Product.findOne({_id:productID,storeID:storeID})
-        const sizeAndStockArray = req.body.sizeAndStock
-        //update sizeAndStock array of product
-        if(sizeAndStockArray){
-            //console.log('size')
-                let isItemAlreadyPresent = false
-                sizeAndStockArray.forEach(async (sizeAndStock) => {
-                    isItemAlreadyPresent = false
-                    //loop on each sizeAndStock item of product
-                    product.sizeAndStock.forEach((item) => {
-                        //if already presnt item
-                        if(sizeAndStock.size == item.size){
-                            item.stock = sizeAndStock.stock 
-                            isItemAlreadyPresent = true
-                        }
-                    })
-                    if(!isItemAlreadyPresent)
-                    product.sizeAndStock.push(sizeAndStock)
-                })
-
-        }
+        
         updates.forEach((update) => {
-            if(update !== 'sizeAndStock')
             product[update] = req.body[update]
         })
         await product.save()
@@ -81,32 +62,6 @@ const updateProduct = async(req, res, next) => {
     }
 }
 
-const deleteSizeAndStockById = async(req, res, next) => {
-    try{
-        const _id = req.params.id
-        const product = await Product.findOne({
-            sizeAndStock:{$elemMatch :{_id: _id}}
-        })
-        if(!product){
-            throw new Error('Product not found !')
-        }
-        //filter sizeAndStock
-        product['sizeAndStock'] = product['sizeAndStock'].filter(function(item){
-            return item._id != _id; 
-        });
-        await product.save()
-        res.status(200).json({
-            message:`Product has been updated successfully!`,
-            data:{
-                product
-            }
-        })
-    }
-    catch (err){
-        err.status = 404
-        next(err)
-    }
-}
 
 const deleteProduct = async(req, res, next) => {
     try{
@@ -300,28 +255,8 @@ const editProductById = async(req, res, next) => {
         // }
         const productID = await Product.findById(_id)
         const product = await Product.findOne({_id:productID})
-        const sizeAndStockArray = req.body.sizeAndStock
-        //update sizeAndStock array of product
-        if(sizeAndStockArray){
-            //console.log('size')
-                let isItemAlreadyPresent = false
-                sizeAndStockArray.forEach(async (sizeAndStock) => {
-                    isItemAlreadyPresent = false
-                    //loop on each sizeAndStock item of product
-                    product.sizeAndStock.forEach((item) => {
-                        //if already presnt item
-                        if(sizeAndStock.size == item.size){
-                            item.stock = sizeAndStock.stock 
-                            isItemAlreadyPresent = true
-                        }
-                    })
-                    if(!isItemAlreadyPresent)
-                    product.sizeAndStock.push(sizeAndStock)
-                })
-
-        }
+        
         updates.forEach((update) => {
-            if(update !== 'sizeAndStock')
             product[update] = req.body[update]
         })
         await product.save()
@@ -358,6 +293,36 @@ const deleteProductById = async(req, res, next) => {
     }
 }
 
+const addProductByStoreId = async(req, res, next) => {
+
+    try{
+        const storeId = req.params.id
+        const store = await Store.findOne({_id: storeId})
+        //check if product name added before in this store DB
+        if(!store){
+            throw new Error('Please register your store to add Product.')
+        }
+        const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:storeId})
+        if(isProductNamePresent){
+            throw new Error('Product with this name already added before.')
+        }
+
+        req.body['storeID'] = storeId
+        const product = new Product(req.body)
+        await product.save()
+        res.status(201).json({
+            message:`Product has been added successfully to store!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 
 module.exports = {
     //VENDOR
@@ -366,7 +331,6 @@ module.exports = {
     deleteProduct,
     viewMyStoreProducts,
     viewMyStoreProduct,
-    deleteSizeAndStockById,
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,
@@ -375,5 +339,6 @@ module.exports = {
     unblockProduct,
     getTotalNumberOfProducts,
     editProductById,
-    deleteProductById
+    deleteProductById,
+    addProductByStoreId
 }

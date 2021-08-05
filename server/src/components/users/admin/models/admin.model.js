@@ -85,11 +85,11 @@ const adminSchema = new mongoose.Schema({
         }
     },
     //It select roles you want to assign to Admin. i.e only read app data, read-write both, write only
-    authority:{
-        type:String,
-        required:[true,'Please select authority you want to assign to Admin.'],
-        enum:['read-write', 'read', 'write']
-    },
+    // authority:{
+    //     type:String,
+    //     required:[true,'Please select authority you want to assign to Admin.'],
+    //     enum:['read-write', 'read', 'write']
+    // },
     roles:{
         type: [String],
         required: [true,'Please select roles you want to assign to Admin!']

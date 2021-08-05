@@ -4,7 +4,6 @@ const adminController = require('../controllers/admin.controller')
 const adminAuth = require('../middlewares/adminAuth')
 
 //ROUTES FOR ADMIN's OWN PROFILE
-router.post('/admin/register', adminController.registerAdmin)
 router.post('/admin/login', adminController.loginAdmin)
 router.get('/admin/me', adminAuth ,adminController.getMyDetails)
 router.post('/admin/logout', adminAuth , adminController.logoutAdmin)
@@ -16,6 +15,7 @@ router.patch('/admin/updatePassword', adminAuth, adminController.changePassword)
 
 //ROUTES FOR SUPER ADMIN
 //(to apply operations on other admins)
+router.post('/admin/register', adminAuth , adminController.registerAdmin)
 router.patch('/superAdmin/updateAdmin/:id', adminAuth, adminController.editOtherAdminProfile )
 router.patch('/superAdmin/blockAdmin/:id', adminAuth, adminController.blockOtherAdmin)
 router.patch('/superAdmin/unBlockAdmin/:id', adminAuth, adminController.unBlockOtherAdmin)

@@ -4,8 +4,12 @@ const notification = require('../../../notifications/account')
 
 //FOR ADMIN's OWN PROFILE
 const registerAdmin = async(req, res, next) => {
-    const admin = new Admin(req.body)
+
     try{
+        if(!req.user.roles.includes('Super Admin')){
+            throw new Error('Not authorized as a super Admin!')
+        }
+        const admin = new Admin(req.body)
         await admin.save()
         const token = await admin.generateAuthToken()
 
@@ -225,26 +229,45 @@ const changePassword = async(req, res, next) => {
 const editOtherAdminProfile = async(req, res, next) => {
     try{
 
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
             const adminID = req.params.id
             const admin = await Admin.findOne({_id: adminID})
             const updates=Object.keys(req.body)
 
-            if(updates.length == 0)
-            throw new Error('Invalid Keys! Please enter valid keys.')
+            // if(updates.length == 0)
+            // throw new Error('Invalid Keys! Please enter valid keys.')
 
-            const allowedUpdated=['name','email','password','gender','phoneNumber',
-            'accountNumber','routingNumber','bankHolderName','bankName','CNIC', 'roles',
-            'profilePic','isNotificationsEnabled','isDarkModeEnabled','isAccountActive','isAccountBlock']
-            const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-            if(!isValidOperation || updates.length == 0){
-                throw new Error('Invalid Keys! Please enter valid keys.')
+            // const allowedUpdated=['name','email','password','gender','phoneNumber',
+            // 'accountNumber','routingNumber','bankHolderName','bankName','CNIC', 'roles',
+            // 'profilePic','isNotificationsEnabled','isDarkModeEnabled','isAccountActive','isAccountBlock']
+            // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+            // if(!isValidOperation || updates.length == 0){
+            //     throw new Error('Invalid Keys! Please enter valid keys.')
+            // }
+
+            const updatedRoles = req.body.roles
+            //check if role is updated
+            if(updatedRoles){
+                let isRoleAlreadyPresent = false
+                updatedRoles.forEach((updatedRole) => {
+                    isRoleAlreadyPresent = false
+                    admin.roles.forEach((role) => {
+                        if(role == updatedRole){
+                            isRoleAlreadyPresent = true
+                        }
+                    })
+                    if(!isRoleAlreadyPresent){
+                        admin.roles.push(updatedRole)
+                    }
+                })
             }
-
             //update admin
-            updates.forEach((update) => admin[update]=req.body[update])
+            updates.forEach((update) => {
+                if(update !== 'roles')
+                admin[update]=req.body[update]
+            })
             await admin.save()
             return res.status(200).json({
                 message:`updated`,
@@ -262,7 +285,7 @@ const editOtherAdminProfile = async(req, res, next) => {
 
 const blockOtherAdmin = async(req, res, next) => {
     try{
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const adminID = req.params.id
@@ -285,7 +308,7 @@ const blockOtherAdmin = async(req, res, next) => {
 
 const unBlockOtherAdmin = async(req, res, next) => {
     try{
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const adminID = req.params.id
@@ -308,7 +331,7 @@ const unBlockOtherAdmin = async(req, res, next) => {
 
 const getAllAdmins = async(req, res, next) => {
     try{
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const admins = await Admin.find({})
@@ -328,7 +351,7 @@ const getAllAdmins = async(req, res, next) => {
 
 const viewAdminById = async(req, res, next) => {
     try{
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const admin = await Admin.find({_id: req.params.id})
@@ -349,7 +372,7 @@ const viewAdminById = async(req, res, next) => {
 const getTotalNumberOfAdmins = async(req, res, next) => {
     try{
         console.log(req.user)
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const admins = await Admin.count({})
@@ -369,7 +392,7 @@ const getTotalNumberOfAdmins = async(req, res, next) => {
 
 const getAdminDetailsByRole = async(req, res, next) => {
     try{
-        if(!req.user.roles.includes('SuperAdmin')){
+        if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
         const role = req.params.role
@@ -393,7 +416,6 @@ const getAdminDetailsByRole = async(req, res, next) => {
 
 module.exports = {
     //for admin's own profile
-    registerAdmin,
     getMyDetails,
     loginAdmin,
     logoutAdmin,
@@ -403,6 +425,7 @@ module.exports = {
     updateProfile,
     changePassword,
     //for super admin to acess other admins
+    registerAdmin,
     editOtherAdminProfile,
     blockOtherAdmin,
     unBlockOtherAdmin,

@@ -28,12 +28,10 @@ const storeSchema = new mongoose.Schema({
     },
     warehouseAddress:{
         type: String,
-        required: true,
-        required: [true,'Please enter physical address of store!']
     },
     buissnessAddress:{
         type: String,
-        default: this.warehouseAddress
+        required: [true,'Please enter business address of store!']
     },
     isApprovedPromotionTool:{
         type: Boolean,

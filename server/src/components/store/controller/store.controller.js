@@ -64,6 +64,21 @@ const updateStore = async(req, res, next) => {
     }
 }
 
+const getStoreCategory = async(req, res, next) => {
+    try{
+        const store = req.store
+        res.status(200).json({
+            message: `Store category fetched Successfully!`,
+            data: {
+                category : store.category
+            }
+        })
+    }
+    catch(err){
+        err.status = 404
+        next(err)
+    }
+}
 //ROUTES FOR ADMIN
 
 const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
@@ -239,6 +254,27 @@ const viewStoreById = async(req, res, next) => {
     }
 }
 
+const addStoreOfVendorById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const user = await Vendor.findById(_id)
+        const store = new Store(req.body)
+        await store.save()
+        user.storeId = store._id
+        await user.save()
+        res.status(201).json({
+            message:`Your request for registration has been sent successfully. You will be informed soon.`,
+            data:{
+                store: store
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 
 
  
@@ -247,6 +283,7 @@ module.exports = {
     registerStore,
     getStoreDetails,
     updateStore,
+    getStoreCategory,
     //for admin
     getTotalNumberOfStoreApprovals,
     getTotalNumberOfStoresApproved,
@@ -256,5 +293,6 @@ module.exports = {
     disableMarketingService,
     viewAllStores,
     editStoreById,
-    viewStoreById
+    viewStoreById,
+    addStoreOfVendorById
 }

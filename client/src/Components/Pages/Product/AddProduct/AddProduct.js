@@ -7,8 +7,6 @@ import {
 	Paper,
 	Select,
 	MenuItem,
-	FormGroup,
-	Checkbox,
 	FormControlLabel,
 	Switch,
 	Chip,
@@ -17,6 +15,9 @@ import {
 import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+
+import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
+
 import useStyles from "./styles";
 import { useUserContext } from "../../../../context/UserContext";
 
@@ -57,19 +58,20 @@ export default function AddProduct() {
 		isOnSale: false,
 		discountPercentage: 10,
 		discountPrice: 0,
-		hasSizes: false,
-		sizeAndStock: [],
+		stockAvailable: 0,
+		dimensions: "",
 	});
 	const [colors, setColors] = useState([]);
-	const [sizeAndStock, setSizeAndStock] = useState({
-		size: "",
-		stock: 0,
+	const [dimensions, setDimensions] = useState({
+		length: 0,
+		width: 0,
+		height: 0,
+		unit: "in",
 	});
-	const [dimensions, setDimensions] = useState({});
 	const [warranty, setWarranty] = useState("");
-	const [warrantySpan, setWarrantySpan] = useState("");
+	const [warrantySpan, setWarrantySpan] = useState("year");
 	const [weight, setWeight] = useState("");
-	const [weightUnits, setWeightUnits] = useState("");
+	const [weightUnits, setWeightUnits] = useState("Kg");
 
 	const handlerColor = () => (e) => {
 		var newColor = e.target.value;
@@ -86,9 +88,6 @@ export default function AddProduct() {
 
 	// updating BankDetails usestate
 	const handleProductDetails = (input) => (e) => {
-		if (input === "subCategory") {
-			console.log(e.target.value);
-		}
 		setProductDetails({ ...productDetails, [input]: e.target.value });
 	};
 
@@ -96,25 +95,9 @@ export default function AddProduct() {
 		setProductDetails({ ...productDetails, isOnSale: e.target.checked });
 	};
 
-	const HanderSizesChecked = (e) => {
-		setProductDetails({ ...productDetails, hasSizes: e.target.checked });
-	};
-
-	const handlerSize = (input) => (e) => {
-		setSizeAndStock({ ...sizeAndStock, [input]: e.target.value });
-	};
-
-	const HandlerAddStockAndSize = () => {
-		setProductDetails({
-			...productDetails,
-			sizeAndStock: [...productDetails.sizeAndStock, sizeAndStock],
-		});
-	};
-
 	const handleWarranty = (e) => {
 		setWarranty(e.target.value);
 	};
-
 	const handleWarrantySpan = (e) => {
 		setWarrantySpan(e.target.value);
 	};
@@ -122,13 +105,12 @@ export default function AddProduct() {
 	const handleWeight = (e) => {
 		setWeight(e.target.value);
 	};
-
 	const handleWeightUnit = (e) => {
 		setWeightUnits(e.target.value);
 	};
 
 	const handlerDimension = (input) => (e) => {
-		setDimensions({ ...dimensions, input: e.target.value });
+		setDimensions({ ...dimensions, [input]: e.target.value });
 	};
 
 	const handlerDiscount = (input) => (e) => {
@@ -147,34 +129,33 @@ export default function AddProduct() {
 		console.log(productDetails);
 	};
 
-	const handleDeleteSizeStock = (chipToDelete) => () => {
-		console.log(chipToDelete);
-		const filteredData = productDetails.sizeAndStock.filter(
-			(el) =>
-				el.stock !== chipToDelete.stock && el.size !== chipToDelete.size
-		);
-
-		setProductDetails({
-			...productDetails,
-			sizeAndStock: filteredData,
-		});
-		console.log(productDetails.sizeAndStock);
-	};
-
 	const addProductHandler = (e) => {
 		e.preventDefault();
 
-		console.log("productDetails ", productDetails);
-		console.log("colors ", colors);
+		let pWarranty = warranty + " " + warrantySpan;
+		let pWeight = weight + " " + weightUnits;
+
+		let pDimensions =
+			dimensions.length +
+			"" +
+			dimensions.unit +
+			" " +
+			dimensions.width +
+			"" +
+			dimensions.unit +
+			" " +
+			dimensions.height +
+			"" +
+			dimensions.unit;
 
 		api.post(
 			"/seller/store/product",
 			{
 				...productDetails,
 				colors,
-				dimensions,
-				warranty: warranty + " " + warrantySpan,
-				weight: weight + " " + weightUnits,
+				dimensions: pDimensions,
+				warranty: pWarranty,
+				weight: pWeight,
 			},
 			{
 				headers: { Authorization: `Bearer ${token}` },
@@ -187,6 +168,7 @@ export default function AddProduct() {
 					message: "Product has been added successfully!",
 					open: true,
 				});
+				console.log(res);
 			})
 			.catch((error) =>
 				setSnackBar({
@@ -211,13 +193,26 @@ export default function AddProduct() {
 		});
 
 	const fileHandler = async (event) => {
-		const files = event.target.files;
-		const temp = [];
+		let prevImages = productDetails.images;
+		let files = event.target.files;
+		let temp = [];
+
 		for (let i = 0; i < files.length; i++) {
-			let file64 = await toBase64(files[i]);
+			var file64 = await toBase64(files[i]);
 			temp.push(file64);
 		}
-		setProductDetails({ ...productDetails, images: temp });
+
+		if (prevImages.length > 0) {
+			setProductDetails({
+				...productDetails,
+				images: [...prevImages, ...temp],
+			});
+		} else {
+			setProductDetails({
+				...productDetails,
+				images: temp,
+			});
+		}
 	};
 
 	const getAllCategory = async () => {
@@ -227,17 +222,6 @@ export default function AddProduct() {
 		})
 			.then((res) => {
 				const categoryList = res.data.data.categories;
-
-				// Removing all repeating categories
-				// let uniqueCategories = [
-				// 	...new Map(
-				// 		categoryList.map((item) => [
-				// 			item["parentCategoryName"],
-				// 			item,
-				// 		])
-				// 	).values(),
-				// ];
-				// setProductCategories(uniqueCategories);
 				setProductCategories(categoryList);
 			})
 			.catch((error) => console.log("Error: " + error));
@@ -261,6 +245,17 @@ export default function AddProduct() {
 				})
 				.catch((error) => console.log("Error: " + error));
 		}
+	};
+
+	const handlerDeletePImage = (index) => {
+		const pImages = productDetails.images.filter(
+			(el, eindex) => eindex !== index
+		);
+
+		setProductDetails({
+			...productDetails,
+			images: pImages,
+		});
 	};
 
 	// Retriving List from Categories from API
@@ -469,134 +464,21 @@ export default function AddProduct() {
 									)}
 
 									<Grid item xs={12}>
-										<FormGroup row>
-											<FormControlLabel
-												control={
-													<Checkbox
-														color="primary"
-														checked={
-															productDetails.hasSizes
-														}
-														onChange={
-															HanderSizesChecked
-														}
-													/>
-												}
-												label="Add Diferent Sizes of Product"
-											/>
-										</FormGroup>
-									</Grid>
-
-									{productDetails.hasSizes ? (
-										<>
-											<Grid item xs={4}>
-												<Select
-													variant="outlined"
-													margin="dense"
-													required
-													fullWidth
-													label="Category"
-													name="category"
-													style={{ marginTop: 8 }}
-													defaultValue={"DEFAULT"}
-													onChange={handlerSize(
-														"size"
-													)}
-												>
-													<MenuItem
-														value="DEFAULT"
-														disabled
-													>
-														Select Product Size
-													</MenuItem>
-													<MenuItem value="S">
-														Small (S)
-													</MenuItem>
-													<MenuItem value="M">
-														Medium (M)
-													</MenuItem>
-													<MenuItem value="L">
-														Large (L)
-													</MenuItem>
-													<MenuItem value="XL">
-														Extra Large (XL)
-													</MenuItem>
-													<MenuItem value="XXL">
-														Extra Extra Large (XXL)
-													</MenuItem>
-												</Select>
-											</Grid>
-
-											<Grid item xs={4}>
-												<TextField
-													variant="outlined"
-													margin="dense"
-													required
-													fullWidth
-													name="stock"
-													label="Stock / Quantity"
-													value={sizeAndStock.stock}
-													onChange={handlerSize(
-														"stock"
-													)}
-												/>
-											</Grid>
-
-											<Grid item xs={4}>
-												<Button
-													variant="outlined"
-													color="primary"
-													fullWidth
-													style={{ marginTop: 9 }}
-													onClick={
-														HandlerAddStockAndSize
-													}
-												>
-													Add
-												</Button>
-											</Grid>
-
-											{productDetails.sizeAndStock
-												.length > 0 ? (
-												<Grid item xs={12}>
-													{productDetails.sizeAndStock.map(
-														(el, index) => (
-															<Chip
-																label={
-																	el.size +
-																	" (" +
-																	el.stock +
-																	")"
-																}
-																key={index}
-																onDelete={handleDeleteSizeStock(
-																	el
-																)}
-																style={{
-																	margin: "2px 4px",
-																}}
-															/>
-														)
-													)}
-												</Grid>
-											) : (
-												""
+										<TextField
+											variant="outlined"
+											margin="dense"
+											required
+											fullWidth
+											name="stock"
+											label="Stock / Quantity"
+											value={
+												productDetails.stockAvailable
+											}
+											onChange={handleProductDetails(
+												"stockAvailable"
 											)}
-										</>
-									) : (
-										<Grid item xs={12}>
-											<TextField
-												variant="outlined"
-												margin="dense"
-												required
-												fullWidth
-												name="stock"
-												label="Stock / Quantity"
-												value={sizeAndStock.stock}
-												onChange={handlerSize("stock")}
-											/>
-										</Grid>
-									)}
+										/>
+									</Grid>
 
 									<Grid item xs={9}>
 										<TextField
@@ -619,7 +501,7 @@ export default function AddProduct() {
 											label="WarrantySpan"
 											name="WarrantySpan"
 											style={{ marginTop: 8 }}
-											defaultValue={"year"}
+											value={warrantySpan}
 											onChange={handleWarrantySpan}
 										>
 											<MenuItem value="year">
@@ -686,14 +568,16 @@ export default function AddProduct() {
 											label="Weight Unit"
 											name="weightUnits"
 											style={{ marginTop: 8 }}
-											defaultValue={"KG"}
+											defaultValue={weightUnits}
 											onChange={handleWeightUnit}
 										>
-											<MenuItem value="KG">
+											<MenuItem value="Kg">
 												Kilograms
 											</MenuItem>
-											<MenuItem value="G">Grams</MenuItem>
-											<MenuItem value="MG">
+											<MenuItem value="grams">
+												Grams
+											</MenuItem>
+											<MenuItem value="mg">
 												Milligrams
 											</MenuItem>
 										</Select>
@@ -739,7 +623,7 @@ export default function AddProduct() {
 											)}
 										/>
 									</Grid>
-									<Grid item xs={4}>
+									<Grid item xs={3}>
 										<TextField
 											variant="outlined"
 											margin="dense"
@@ -753,7 +637,7 @@ export default function AddProduct() {
 											)}
 										/>
 									</Grid>
-									<Grid item xs={4}>
+									<Grid item xs={3}>
 										<TextField
 											variant="outlined"
 											margin="dense"
@@ -765,7 +649,7 @@ export default function AddProduct() {
 											onChange={handlerDimension("width")}
 										/>
 									</Grid>
-									<Grid item xs={4}>
+									<Grid item xs={3}>
 										<TextField
 											variant="outlined"
 											margin="dense"
@@ -779,10 +663,32 @@ export default function AddProduct() {
 											)}
 										/>
 									</Grid>
+									<Grid item xs={3}>
+										<Select
+											variant="outlined"
+											margin="dense"
+											required
+											fullWidth
+											label="Weight Unit"
+											name="weightUnits"
+											style={{ marginTop: 8 }}
+											value={dimensions.unit}
+											onChange={handlerDimension("unit")}
+										>
+											<MenuItem value="m">Metre</MenuItem>
+											<MenuItem value="in">
+												Inches
+											</MenuItem>
+											<MenuItem value="cm">
+												Centimetres
+											</MenuItem>
+										</Select>
+									</Grid>
 								</Grid>
 								<div
 									style={{
 										display: "flex",
+										justifyContent: "center",
 										alignItems: "center",
 										marginTop: 20,
 										marginBottom: 20,
@@ -820,36 +726,49 @@ export default function AddProduct() {
 											</div>
 										</Grid>
 									</Grid>
-									<Grid container justify="center">
-										<div
-											style={{
-												display: "flex",
-											}}
-										>
-											{productDetails.images.length >
-											0 ? (
-												productDetails.images.map(
-													(img, index) => (
-														<Grid item key={index}>
-															<img
-																src={img}
-																alt="product-images"
-																height="60px"
+									<Grid
+										container
+										justify="center"
+										spacing={2}
+									>
+										{productDetails.images.length > 0 ? (
+											productDetails.images.map(
+												(img, index) => (
+													<Grid
+														item
+														key={index}
+														align="center"
+													>
+														<img
+															src={img}
+															alt="product-images"
+															width="50px"
+															height="50px"
+															style={{
+																border: "2px solid #e1e1e1",
+																padding: "2px",
+															}}
+														/>
+														<div>
+															<HighlightOffRoundedIcon
+																onClick={() =>
+																	handlerDeletePImage(
+																		index
+																	)
+																}
 																style={{
-																	border: "1px solid black",
-																	marginRight:
-																		"20px",
+																	color: "grey",
 																}}
 															/>
-														</Grid>
-													)
+														</div>
+													</Grid>
 												)
-											) : (
-												<Typography>
-													Upload Product Images
-												</Typography>
-											)}
-										</div>
+											)
+										) : (
+											<Typography>
+												Upload Product Images
+											</Typography>
+										)}
 									</Grid>
 								</div>
 								<Grid container spacing={2}>

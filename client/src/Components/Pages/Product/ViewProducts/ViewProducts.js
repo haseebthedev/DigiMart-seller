@@ -16,6 +16,7 @@ import {
 	MenuItem,
 	Button,
 	LinearProgress,
+	Chip,
 } from "@material-ui/core";
 import CSVReader from "react-csv-reader";
 import { useUserContext } from "../../../../context/UserContext";
@@ -45,13 +46,27 @@ export default function ViewProducts() {
 	const [details, setDetails] = useState([]);
 
 	const columns = [
+		{ title: "#", field: "tableData.id" },
 		{ title: "Name", field: "name" },
 		{ title: "Brand", field: "brand" },
 		{ title: "Category", field: "category" },
 		{ title: "Price", field: "salePrice" },
 		{
-			title: "StockAvailable",
-			field: "stockAvailable",
+			title: "Stock Available",
+			field: "sizeAndStock",
+			render: ({ sizeAndStock }) =>
+				sizeAndStock.map((el, index) => (
+					<Chip
+						key={index}
+						size="small"
+						label={
+							sizeAndStock.length > 1
+								? el.size + " (" + el.stock + ")"
+								: el.stock
+						}
+						style={{ margin: 2 }}
+					/>
+				)),
 		},
 		{
 			title: "DiscountPercentage",
@@ -67,7 +82,7 @@ export default function ViewProducts() {
 		name: "Feeder",
 		description: "Amazing Product",
 		manufactureDate: "11/06/2003",
-		category: "Electronics",
+		category: "",
 		subCategory: "",
 		price: "1000",
 		stockAvailable: 10,
@@ -332,36 +347,27 @@ export default function ViewProducts() {
 		})
 			.then((res) => {
 				const categoryList = res.data.data.categories;
-
-				// Removing all repeating categories
-				let uniqueCategories = [
-					...new Map(
-						categoryList.map((item) => [
-							item["parentCategoryName"],
-							item,
-						])
-					).values(),
-				];
-				setProductCategories(uniqueCategories);
+				setProductCategories(categoryList);
 			})
 			.catch((error) => console.log("Error: " + error));
 	};
+
 	const getSubCategory = async () => {
-		await api
-			.get(`/seller/subCategories/${productDetails.category}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			.then((res) => {
-				const categoryList = res.data.data.categories;
-				// Removing all repeating categories
-				let uniqueCategories = [
-					...new Map(
-						categoryList.map((item) => [item["name"], item])
-					).values(),
-				];
-				setProductSubCategories(uniqueCategories);
-			})
-			.catch((error) => console.log("Error: " + error));
+		if (productDetails.category !== "") {
+			await api
+				.get(
+					`/seller/subCategories/brands/${productDetails.category}`,
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then((res) => {
+					let categoryList = res.data.data.categories;
+					let subCat = categoryList.map((el) => el.subCategory);
+					setProductSubCategories(subCat[0]);
+				})
+				.catch((error) => console.log("Error: " + error));
+		}
 	};
 
 	useEffect(() => {
@@ -377,6 +383,18 @@ export default function ViewProducts() {
 		getSubCategory();
 		// eslint-disable-next-line
 	}, [productDetails.category]);
+
+	// const downloadCsv = (data, fileName) => {
+	// 	const finalFileName = fileName.endsWith(".csv")
+	// 		? fileName
+	// 		: `${fileName}.csv`;
+	// 	const a = document.createElement("a");
+	// 	a.href = URL.createObjectURL(new Blob([data], { type: "text/csv" }));
+	// 	a.setAttribute("download", finalFileName);
+	// 	document.body.appendChild(a);
+	// 	a.click();
+	// 	document.body.removeChild(a);
+	// };
 
 	return (
 		<Grid container className={classes.root}>
@@ -429,7 +447,38 @@ export default function ViewProducts() {
 							whiteSpace: "nowrap",
 						},
 						exportButton: true,
-						// tableLayout: "fixed",
+						// exportCsv: (columns, data) => {
+						// 	// const headerRow = columns.map((col) => col.title);
+
+						// 	// const dataRows = data.map(({ tableData, ...row }) =>
+						// 	// 	Object.values(row)
+						// 	// );
+
+						// 	const headerRow = Object.keys(details[0]);
+						// 	headerRow.filter(el => el.includes("_id") )
+
+						// 	const dataRows = data.map(
+						// 		({ tableData, ...row }) => {
+						// 			delete row["images"];
+						// 			delete row["colors"];
+						// 			delete row["sizeAndStock"];
+						// 			delete row["_id"];
+						// 			delete row["__v"];
+						// 			return Object.values(row);
+						// 		}
+						// 	);
+
+						// 	const delimiter = ",";
+
+						// 	const csvContent = [headerRow, ...dataRows]
+						// 		.map((e) => e.join(delimiter))
+						// 		.join("\n");
+
+						// 	let csvFileName = "AllProducts";
+
+						// 	// Allow user to download file as .csv
+						// 	downloadCsv(csvContent, csvFileName);
+						// },
 					}}
 				/>
 				<Snackbar

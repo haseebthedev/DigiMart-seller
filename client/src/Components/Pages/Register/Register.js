@@ -25,7 +25,7 @@ const Register = () => {
 	const [name, setName] = React.useState("Haseeb Ahmed");
 	const [cnic, setCnic] = React.useState("34601-0385037-7");
 	const [email, setEmail] = React.useState("haseeb@gmail.com");
-	const [birthday, setBirthday] = React.useState("01/01/2000");
+	const [birthday] = React.useState("01/01/2000");
 	const [phoneNumber, setPhoneNumber] = React.useState("+923455488213");
 	const [password, setPassword] = React.useState("haseeb123");
 	const [gender, setGender] = React.useState("male");
