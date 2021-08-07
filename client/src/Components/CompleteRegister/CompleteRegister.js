@@ -93,12 +93,12 @@ export default function CompleteRegister(props) {
 					{
 						name,
 						category,
-						biography,
-						warehouseAddress,
-						physicalAddress,
 						city,
 						country,
 						type,
+						warehouseAddress,
+						buissnessAddress: physicalAddress,
+						biography,
 					},
 					{
 						headers: { Authorization: `Bearer ${token}` },
@@ -129,7 +129,12 @@ export default function CompleteRegister(props) {
 			await api
 				.patch(
 					"/seller/store/register",
-					{},
+					{
+						name,
+						city,
+						category,
+						warehouseAddress,
+					},
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}

@@ -16,8 +16,10 @@ import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 
+import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 
+import addProduct from "../../../../assets/images/ProductIllustration.svg";
 import useStyles from "./styles";
 import { useUserContext } from "../../../../context/UserContext";
 
@@ -480,7 +482,7 @@ export default function AddProduct() {
 										/>
 									</Grid>
 
-									<Grid item xs={9}>
+									<Grid item xs={6}>
 										<TextField
 											variant="outlined"
 											margin="dense"
@@ -492,7 +494,7 @@ export default function AddProduct() {
 											onChange={handleWarranty}
 										/>
 									</Grid>
-									<Grid item sm={3}>
+									<Grid item sm={6}>
 										<Select
 											variant="outlined"
 											margin="dense"
@@ -546,7 +548,7 @@ export default function AddProduct() {
 										/>
 									</Grid>
 
-									<Grid item xs={9}>
+									<Grid item xs={6}>
 										<TextField
 											variant="outlined"
 											margin="dense"
@@ -559,7 +561,7 @@ export default function AddProduct() {
 											onChange={handleWeight}
 										/>
 									</Grid>
-									<Grid item sm={3}>
+									<Grid item sm={6}>
 										<Select
 											variant="outlined"
 											margin="dense"
@@ -685,47 +687,20 @@ export default function AddProduct() {
 										</Select>
 									</Grid>
 								</Grid>
+
 								<div
 									style={{
 										display: "flex",
 										justifyContent: "center",
 										alignItems: "center",
 										marginTop: 20,
-										marginBottom: 20,
+										marginBottom: 5,
 										padding: 20,
+										height: 120,
 										border: "1px solid #c4c4c4",
 										borderRadius: 6,
 									}}
 								>
-									<Grid
-										container
-										spacing={2}
-										justify="center"
-										style={{ margin: "10px 0" }}
-									>
-										<Grid item>
-											<div>
-												<label htmlFor="contained-button-file">
-													<Button
-														size="small"
-														variant="outlined"
-														color="primary"
-														component="span"
-													>
-														Select Images
-													</Button>
-												</label>
-												<input
-													id="contained-button-file"
-													type="file"
-													multiple
-													accept="image/png, image/jpeg"
-													onChange={fileHandler}
-													hidden
-												/>
-											</div>
-										</Grid>
-									</Grid>
 									<Grid
 										container
 										justify="center"
@@ -742,10 +717,10 @@ export default function AddProduct() {
 														<img
 															src={img}
 															alt="product-images"
-															width="50px"
-															height="50px"
+															width="60px"
+															height="60px"
 															style={{
-																border: "2px solid #e1e1e1",
+																border: "3px solid #e1e1e1",
 																padding: "2px",
 															}}
 														/>
@@ -771,6 +746,32 @@ export default function AddProduct() {
 										)}
 									</Grid>
 								</div>
+								<Grid item style={{ marginBottom: 20 }}>
+									<div>
+										<label htmlFor="contained-button-file">
+											<Button
+												size="small"
+												startIcon={
+													<AddPhotoAlternateIcon />
+												}
+												variant="outlined"
+												color="primary"
+												component="span"
+											>
+												Upload Images
+											</Button>
+										</label>
+										<input
+											id="contained-button-file"
+											type="file"
+											multiple
+											accept="image/png, image/jpeg"
+											onChange={fileHandler}
+											hidden
+										/>
+									</div>
+								</Grid>
+
 								<Grid container spacing={2}>
 									<Grid item xs={4}>
 										<div
@@ -864,7 +865,34 @@ export default function AddProduct() {
 							</form>
 						</Grid>
 						<Grid item xs={12} sm={12} md={12} lg={4}>
-							<Typography>Right Side</Typography>
+							<div
+								style={{
+									border: "1px solid rgb(224 224 224)",
+									borderRadius: 6,
+									padding: 15,
+									marginBottom: 10,
+								}}
+							>
+								<img
+									src={addProduct}
+									alt="product"
+									style={{
+										maxWidth: "300px",
+										marginBottom: 20,
+									}}
+								/>
+								<Typography variant="h5">
+									DO YOU KNOW?
+								</Typography>
+								<Typography
+									variant="body2"
+									style={{ textAlign: "justify" }}
+								>
+									In order to make more sales, Write an
+									eye-catching and short name for Product and
+									upload its high-quality images.
+								</Typography>
+							</div>
 						</Grid>
 					</Grid>
 				</div>

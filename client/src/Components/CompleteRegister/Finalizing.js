@@ -75,6 +75,7 @@ export default function Finalizing(props) {
 						<FormControlLabel
 							control={
 								<Checkbox
+									color="primary"
 									checked={values.checkAgreement}
 									onChange={handleChange("checkAgreement")}
 								/>

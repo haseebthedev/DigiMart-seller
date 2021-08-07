@@ -29,6 +29,7 @@ import {
 } from "@material-ui/pickers";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import promotion from "../../../../assets/images/promotion.svg";
 import ImageNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
 import { useUserContext } from "../../../../context/UserContext";
 import useStyles from "./styles";
@@ -705,6 +706,11 @@ export default function AddProduct() {
 									marginBottom: 20,
 								}}
 							>
+								<img
+									src={promotion}
+									alt="Product promotion"
+									style={{ maxWidth: "400px" }}
+								/>
 								<Typography variant="h5">Note:</Typography>
 								<Typography variant="body2">
 									All the details of Product entered here will
