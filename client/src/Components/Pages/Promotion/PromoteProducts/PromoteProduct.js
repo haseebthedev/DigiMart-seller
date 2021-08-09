@@ -218,15 +218,7 @@ export default function AddProduct() {
 		})
 			.then((res) => {
 				const categoryList = res.data.data.categories;
-				let uniqueCategories = [
-					...new Map(
-						categoryList.map((item) => [
-							item["parentCategoryName"],
-							item,
-						])
-					).values(),
-				];
-				setAllCategories(uniqueCategories);
+				setAllCategories(categoryList);
 			})
 			.catch(() =>
 				setSnackBar({
@@ -425,7 +417,7 @@ export default function AddProduct() {
 											label="Category"
 											name="category"
 											style={{ marginTop: 8 }}
-											defaultValue={"DEFAULT"}
+											defaultValue="DEFAULT"
 											onChange={handlePPdetails(
 												"category"
 											)}
@@ -435,12 +427,10 @@ export default function AddProduct() {
 											</MenuItem>
 											{AllCategories.map((el, index) => (
 												<MenuItem
-													value={
-														el.parentCategoryName
-													}
+													value={el.name}
 													key={index}
 												>
-													{el.parentCategoryName}
+													{el.name}
 												</MenuItem>
 											))}
 										</Select>

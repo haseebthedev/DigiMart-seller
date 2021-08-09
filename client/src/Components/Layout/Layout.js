@@ -78,6 +78,7 @@ import SettingsStore from "../Pages/Setting/SettingsStore";
 import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
 import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProducts";
 import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
+import Orders from "../Pages/Orders/Orders";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -441,7 +442,12 @@ const Layout = (props) => {
 						<ListItemText primary="Sales" />
 					</ListItem>
 
-					<ListItem button>
+					<ListItem
+						button
+						selected={pathname === "/vendor/Orders"}
+						component={Link}
+						to="/vendor/Orders"
+					>
 						<ListItemIcon>
 							<InboxIcon className={classes.iconColor} />
 						</ListItemIcon>
@@ -653,6 +659,7 @@ const Layout = (props) => {
 						path="/vendor/products/view-products"
 						component={ViewProducts}
 					/>
+					<Route path="/vendor/Orders" component={Orders} />
 					<Route
 						path="/vendor/payments/PaymentMethod"
 						component={PaymentMethod}

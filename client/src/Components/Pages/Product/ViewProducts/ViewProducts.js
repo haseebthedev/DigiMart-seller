@@ -59,7 +59,6 @@ export default function ViewProducts() {
 			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
 			hidden: false,
 			export: false,
-			cellstyle: { whiteSpace: "nowrap" },
 		},
 		{
 			title: "Image",
@@ -92,6 +91,7 @@ export default function ViewProducts() {
 		{
 			title: "SalePrice",
 			field: "salePrice",
+			render: ({ salePrice }) => <div>{"$" + salePrice}</div>,
 			hidden: false,
 			export: true,
 		},
@@ -119,7 +119,7 @@ export default function ViewProducts() {
 			field: "colors",
 			render: ({ colors }) => <div>{colors[0]}</div>,
 			hidden: true,
-			export: true,
+			export: false,
 		},
 		{
 			title: "isVisibilityEnabled",
@@ -276,21 +276,22 @@ export default function ViewProducts() {
 			}
 		)
 			.then((res) => {
-				try {
-					const newDetails = details.map((prod) =>
-						prod._id === productDetails._id ? productDetails : prod
-					);
-					setDetails(newDetails);
-					handleClose();
-					setSnackBar({
-						...snackBarstate,
-						type: "success",
-						message: "SUCCESS: Product has been Updated!",
-						open: true,
-					});
-				} catch (error) {}
+				const newDetails = details.map((prod) =>
+					prod._id === productDetails._id ? productDetails : prod
+				);
+				setDetails(newDetails);
+				handleClose();
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Product has been Updated!",
+					open: true,
+				});
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
 			})
-			.catch((error) => {
+			.catch(() => {
 				handleClose();
 				setSnackBar({
 					...snackBarstate,
@@ -698,8 +699,8 @@ export default function ViewProducts() {
 										label="Brand"
 										name="brand"
 										style={{ marginTop: 8 }}
-										defaultValue="DEFAULT"
 										value={productDetails.brand}
+										defaultValue="DEFAULT"
 										onChange={handleProductDetails("brand")}
 									>
 										<MenuItem value="DEFAULT" disabled>
