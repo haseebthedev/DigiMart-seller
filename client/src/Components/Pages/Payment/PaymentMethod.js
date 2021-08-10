@@ -291,29 +291,44 @@ export default function PaymentMethod() {
 						</Grid>
 					))}
 					<Grid item xs={12} sm={6} md={4}>
-						<Card className={classes.card}>
-							<CardContent
-								style={{
-									display: "flex",
-									flexDirection: "column",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<AddCircleOutlineIcon
-									className={classes.addIcon}
-									color="primary"
-								/>
-								<Link
+						<Link
+							color="error"
+							component="button"
+							variant="body2"
+							onClick={handleOpen}
+							style={{ textDecoration: "none" }}
+						>
+							<Card className={classes.card}>
+								<CardContent
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+								>
+									<AddCircleOutlineIcon
+										className={classes.addIcon}
+										color="primary"
+									/>
+									<Typography
+										variant="body2"
+										color="primary"
+										style={{ margin: 5 }}
+									>
+										Add New Method
+									</Typography>
+									{/* <Link
 									color="error"
 									component="button"
-									variant="body2"
+									
 									onClick={handleOpen}
 								>
 									Add New Method
-								</Link>
-							</CardContent>
-						</Card>
+								</Link> */}
+								</CardContent>
+							</Card>
+						</Link>
 					</Grid>
 				</Grid>
 			</Grid>

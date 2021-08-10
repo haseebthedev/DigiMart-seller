@@ -113,6 +113,25 @@ const getAllReviewsOfMyStore = async(req, res, next) => {
     }
 }
 
+const addResponseOfReviewById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const review = await Review.findById(_id)
+        review.response = req.body.response
+        await review.save()
+        res.status(201).json({
+            message:`Response added !`,
+            data:{
+                review
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const getAllReviewsOfBuyerById = async(req, res, next) => {
     try{
         const _id = req.params.id
@@ -201,4 +220,5 @@ module.exports = {
     getAllReviewsOfBuyerById,
     //for vendor only
     getAllReviewsOfMyStore,
+    addResponseOfReviewById
 }

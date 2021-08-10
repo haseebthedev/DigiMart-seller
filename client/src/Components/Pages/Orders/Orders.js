@@ -138,13 +138,23 @@ export default function Orders() {
 						height: 30,
 						width: 100,
 						display: "flex",
-						justifyContent: "center",
+						justifyContent: "right",
 						alignItems: "center",
 						background: checkStatusColor(status),
 						color: "#262626",
 						borderRadius: 4,
 					}}
 				>
+					<div
+						style={{
+							background: checkStatusColor(status),
+							width: 15,
+							height: 15,
+							borderRadius: 8,
+							marginRight: 5,
+							marginLeft: 5,
+						}}
+					></div>
 					{status}
 				</div>
 			),
@@ -161,11 +171,11 @@ export default function Orders() {
 			title: "Time",
 			field: "orderDateTime",
 			align: "center",
-
 			render: ({ orderDateTime }) => {
 				let time = new Date(orderDateTime);
 				return <div>{time.toLocaleTimeString()}</div>;
 			},
+			export: false,
 		},
 		{
 			field: "Actions",
@@ -190,6 +200,7 @@ export default function Orders() {
 					</Select>
 				</div>
 			),
+			export: false,
 		},
 	];
 
@@ -205,6 +216,7 @@ export default function Orders() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
+							fontWeight: "bold",
 						},
 						exportButton: true,
 					}}
@@ -308,7 +320,7 @@ export default function Orders() {
 											</Typography>
 											<Typography>
 												Delivery Address:{" "}
-												{rowData.deliveryAddress1}
+												{rowData.deliveryAddress}
 											</Typography>
 										</div>
 									</Grid>

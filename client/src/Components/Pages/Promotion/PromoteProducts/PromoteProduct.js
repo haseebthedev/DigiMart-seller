@@ -701,8 +701,13 @@ export default function AddProduct() {
 									alt="Product promotion"
 									style={{ maxWidth: "400px" }}
 								/>
-								<Typography variant="h5">Note:</Typography>
-								<Typography variant="body2">
+								<Typography variant="h5">
+									Promotion Tip:
+								</Typography>
+								<Typography
+									variant="body2"
+									style={{ textAlign: "justify" }}
+								>
 									All the details of Product entered here will
 									be send as SMS / Email to interested buyers.
 									So, kindly add valid details of Product

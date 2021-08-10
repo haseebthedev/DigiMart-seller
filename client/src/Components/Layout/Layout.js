@@ -46,7 +46,8 @@ import LiveHelpIcon from "@material-ui/icons/LiveHelp";
 import AssistantPhotoIcon from "@material-ui/icons/AssistantPhoto";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ProductIcon from "@material-ui/icons/Ballot";
-import SalesIcon from "@material-ui/icons/MonetizationOn";
+// import SalesIcon from "@material-ui/icons/MonetizationOn";
+import SpeakerNotesIcon from "@material-ui/icons/SpeakerNotes";
 import ChatIcon from "@material-ui/icons/Chat";
 import PaymentIcon from "@material-ui/icons/Payment";
 import AssessmentIcon from "@material-ui/icons/Assessment";
@@ -71,6 +72,8 @@ import useStyles from "./styles";
 import VendorAnalytics from "../VendorAnalytics/VendorAnalytics";
 import AddProduct from "../Pages/Product/AddProduct/AddProduct";
 import ViewProducts from "../Pages/Product/ViewProducts/ViewProducts";
+import Orders from "../Pages/Orders/Orders";
+import Reviews from "../Pages/Reviews/Reviews";
 import PaymentMethod from "../Pages/Payment/PaymentMethod";
 import Transactions from "../Pages/Payment/Transactions";
 import SettingsProfile from "../Pages/Setting/SettingsProfile";
@@ -78,7 +81,6 @@ import SettingsStore from "../Pages/Setting/SettingsStore";
 import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
 import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProducts";
 import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
-import Orders from "../Pages/Orders/Orders";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -435,12 +437,12 @@ const Layout = (props) => {
 						</List>
 					</Collapse>
 
-					<ListItem button selected={pathname === "/vendor/sales"}>
+					{/* <ListItem button selected={pathname === "/vendor/sales"}>
 						<ListItemIcon>
 							<SalesIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Sales" />
-					</ListItem>
+					</ListItem> */}
 
 					<ListItem
 						button
@@ -452,6 +454,18 @@ const Layout = (props) => {
 							<InboxIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Orders" />
+					</ListItem>
+
+					<ListItem
+						button
+						selected={pathname === "/vendor/reviews"}
+						component={Link}
+						to="/vendor/Reviews"
+					>
+						<ListItemIcon>
+							<SpeakerNotesIcon className={classes.iconColor} />
+						</ListItemIcon>
+						<ListItemText primary="Reviews" />
 					</ListItem>
 
 					<ListItem button>
@@ -604,21 +618,7 @@ const Layout = (props) => {
 								</ListItemIcon>
 								<ListItemText primary="Regular Customers" />
 							</ListItem> */}
-							<ListItem
-								button
-								className={classes.dropdown}
-								selected={
-									pathname ===
-									"/vendor/Promotion/Scheduled-Promotions"
-								}
-								component={Link}
-								to="/vendor/Promotion/Scheduled-Promotions"
-							>
-								<ListItemIcon>
-									<EventIcon className={classes.iconColor} />
-								</ListItemIcon>
-								<ListItemText primary="Scheduled Promotions" />
-							</ListItem>
+
 							<ListItem
 								button
 								className={classes.dropdown}
@@ -635,6 +635,22 @@ const Layout = (props) => {
 									/>
 								</ListItemIcon>
 								<ListItemText primary="Advertised Products" />
+							</ListItem>
+
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/vendor/Promotion/Scheduled-Promotions"
+								}
+								component={Link}
+								to="/vendor/Promotion/Scheduled-Promotions"
+							>
+								<ListItemIcon>
+									<EventIcon className={classes.iconColor} />
+								</ListItemIcon>
+								<ListItemText primary="Scheduled Promotions" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -660,6 +676,7 @@ const Layout = (props) => {
 						component={ViewProducts}
 					/>
 					<Route path="/vendor/Orders" component={Orders} />
+					<Route path="/vendor/Reviews" component={Reviews} />
 					<Route
 						path="/vendor/payments/PaymentMethod"
 						component={PaymentMethod}

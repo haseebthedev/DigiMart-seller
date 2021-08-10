@@ -547,6 +547,7 @@ export default function ViewProducts() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
+							fontWeight: "bold",
 						},
 						exportButton: true,
 					}}

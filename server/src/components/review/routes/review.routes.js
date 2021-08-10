@@ -15,6 +15,7 @@ router.get('/seller/store/products/reviews', auth.vendor, reviewController.getAl
 router.get('/seller/store/product/review/:id', auth.vendor, reviewController.getReviewById)
 router.get('/seller/store/reviews/product/:id', auth.vendor, reviewController.getAllReviewsOfProductById)
 router.get('/seller/store/reviews/buyer/:id', auth.vendor, reviewController.getAllReviewsOfBuyerById)
+router.patch('/seller/store/product/review/:id/response', auth.vendor, reviewController.addResponseOfReviewById)
 
 //FOR ADMINS
 router.patch('/admin/product/review/:id', auth.admin, reviewController.updateReviewById)

@@ -1,8 +1,11 @@
 const Vendor = require('../models/vendor.model')
 const passwordGenerator = require('generate-password');
 const bcrypt = require('bcryptjs')
-const Product = require('../../../products/model/product.model')
 const notification = require('../../../notifications/account');
+const Product = require('../../../products/model/product.model')
+const Review = require('../../../review/model/review.model')
+const Order = require('../../../orders/model/order.model')
+const PromoteProduct = require('../../../promotion/model/promoteProduct.model')
 
 const registerVendor = async(req, res, next) => {
     const vendor=new Vendor(req.body)
@@ -89,17 +92,19 @@ const logoutVendor = async(req, res, next) => {
 
 const deleteMyAccount = async(req, res, next) => {
     try{  
+        let storeName = ""
         const vendor = req.user
-        if(!req.store)
-        throw new Error('Store is not registered yet! Please register your store.')
-        const store = req.store
-        const storeName = req.store.name
+        if(req.store){
+            const store = req.store
+            storeName = req.store.name
+            //if store delete, then also delete its reviews, products, orders and promotions
+            const productsOfStore = await Product.deleteMany({storeId: store._id}, )
+            const reviewsOfStoreProducts = await Review.deleteMany({storeId: store._id})
+            const ordersOfStoreProducts = await Order.deleteMany({storeId: store._id}) 
+            const promotionsOfStoreProducts = await PromoteProduct.deleteMany({storeId: store._id}) 
+            await store.remove()
+        }
         await req.user.remove()
-        //later add this if vendor delete its reviews etc.
-        //if vendor delete .. delete its store, products, reviews etc.
-        const productsOfStore = await Product.find({storeID: store._id})
-        await productsOfStore.remove()
-        await store.remove()
 
         //send deletion mail
         const subject = 'Account Deletion Email'
