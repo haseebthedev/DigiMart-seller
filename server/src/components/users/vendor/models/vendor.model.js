@@ -39,29 +39,6 @@ const vendorSchema=new mongoose.Schema({
             }
         }
     },
-    gender:{
-        type:String,
-        required:[true,'select your gender!'],
-        enum: ['male','female','other']
-    },
-    birthday:{
-        type:String,
-        required:[true,'select your birthday!'],
-        validate(DOB){
-            var regexDOB = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
-            if(!DOB.match(regexDOB))
-            throw new Error('Please enter date in correct format e.g 1/12/2021')
-
-            if(DOB.match(regexDOB)){
-                var parts = DOB.split("/");
-                var dtDOB = new Date(parts[1] + "/" + parts[0] + "/" + parts[2]);
-                var dtCurrent = new Date();
-                if (dtCurrent.getFullYear() - dtDOB.getFullYear() < 18) {
-                    throw new Error('Age be at least 18 years to register!')
-                }
-            }
-        }
-    },
     password:{
         type:String,
         required:true,

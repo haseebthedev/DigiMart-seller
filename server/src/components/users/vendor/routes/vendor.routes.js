@@ -37,6 +37,7 @@ router.patch('/seller/updatePassword', vendorAuth, vendorController.changePasswo
 //ROUTES FOR ADMIN
 router.get('/admin/sellers/totalNumber', auth.admin, vendorController.getTotalNumberOfVendors)
 router.get('/admin/sellers', auth.admin, vendorController.getAllVendorsDetails)
+router.get('/admin/sellers/stores/unregistered', auth.admin, vendorController.viewAllVendorsWhoseStoresNotRegistered)
 router.patch('/admin/seller/block/:id', auth.admin, vendorController.blockVendorById)
 router.patch('/admin/seller/unblock/:id', auth.admin, vendorController.unblockVendorById)
 router.post('/admin/seller/register', auth.admin, vendorController.registerVendor)

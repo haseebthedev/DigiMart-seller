@@ -125,6 +125,26 @@ const viewMyStoreProduct = async(req, res, next) => {
     }
 }
 
+const countMyStoreProductsStock = async(req, res, next) => {
+    try{
+        const storeID = req.store._id
+        const productsStock = await Product.count({storeID: storeID})
+        if(!product){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Products stock count fetched successfully!`,
+            data:{
+                productsStock
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 //FOR ADMIN 
 
 const viewAllProductsInAllStores = async(req, res, next) => {
@@ -331,6 +351,7 @@ module.exports = {
     deleteProduct,
     viewMyStoreProducts,
     viewMyStoreProduct,
+    countMyStoreProductsStock,
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,

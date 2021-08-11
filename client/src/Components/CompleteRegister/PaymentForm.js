@@ -3,7 +3,7 @@ import { Typography, Grid, TextField } from "@material-ui/core";
 
 export default function PaymentForm(props) {
 	// coming from dashboard page
-	const { values, handleChange } = props;
+	const { values, handleChange, IFerrors } = props;
 
 	return (
 		<React.Fragment>
@@ -16,46 +16,70 @@ export default function PaymentForm(props) {
 				This information will be used to withdraw earnings from
 				accounts.
 			</Typography>
-			<Typography variant="subtitle1" align="center" gutterBottom>
+			<Typography variant="subtitle1" gutterBottom>
 				Linking a Foreign Bank Account
 			</Typography>
-			<Grid container spacing={3} style={{ marginBottom: "15px" }}>
+			<Grid
+				container
+				spacing={3}
+				style={{ marginTop: 10, marginBottom: "5px" }}
+			>
 				<Grid item xs={12} md={6}>
 					<TextField
+						variant="outlined"
 						required
-						label="Bank Holder Name"
+						label="Account Holder Name"
 						fullWidth
 						defaultValue={values.bankHolderName}
 						onChange={handleChange("bankHolderName")}
+						helperText={IFerrors.BankHolderNameError}
+						error={
+							IFerrors.BankHolderNameError.length > 0
+								? true
+								: false
+						}
 					/>
 				</Grid>
 				<Grid item xs={12} md={6}>
 					<TextField
+						variant="outlined"
 						required
 						label="Bank Name"
 						fullWidth
 						defaultValue={values.bankName}
 						onChange={handleChange("bankName")}
+						helperText={IFerrors.bankNameError}
+						error={IFerrors.bankNameError.length > 0 ? true : false}
 					/>
 				</Grid>
 				<Grid item xs={12} md={6}>
 					<TextField
+						variant="outlined"
 						required
 						id="iban"
 						label="Account Number"
 						fullWidth
 						defaultValue={values.accountNumber}
 						onChange={handleChange("accountNumber")}
+						helperText={IFerrors.accountNumberError}
+						error={
+							IFerrors.accountNumberError.length > 0
+								? true
+								: false
+						}
 					/>
 				</Grid>
 				<Grid item xs={12} md={6}>
 					<TextField
-						required
-						id="routingNumber"
-						label="Routing Number"
+						variant="outlined"
+						label="Branch Code"
 						fullWidth
-						defaultValue={values.routingNumber}
-						onChange={handleChange("routingNumber")}
+						defaultValue={values.branchCode}
+						onChange={handleChange("branchCode")}
+						helperText={IFerrors.branchCodeError}
+						error={
+							IFerrors.branchCodeError.length > 0 ? true : false
+						}
 					/>
 				</Grid>
 			</Grid>

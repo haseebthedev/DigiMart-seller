@@ -9,6 +9,7 @@ router.patch('/seller/store/product/:id', auth.vendor, productController.updateP
 router.delete('/seller/store/product/:id', auth.vendor, productController.deleteProduct)
 router.get('/seller/store/products', auth.vendor, productController.viewMyStoreProducts)
 router.get('/seller/store/product/:id', auth.vendor, productController.viewMyStoreProduct)
+router.get('/seller/store/products/stock/count', auth.vendor, productController.countMyStoreProductsStock)
 
 //ROUTES FOR ADMIN
 router.get('/admin/products', auth.admin , productController.viewAllProductsInAllStores)

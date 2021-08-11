@@ -1,17 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Paper from "@material-ui/core/Paper";
-// import Link from "@material-ui/core/Link";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-// import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-
 import api from "../../../Axios/api";
 import Logo from "../../../assets/images/logo.png";
 
@@ -21,26 +17,71 @@ import { useStyles } from "./styles";
 const ForgetPassword = () => {
 	const classes = useStyles();
 
-	const [userEmail, setuserEmail] = React.useState("haseeb@gmail.com");
-
-	const [state, setState] = React.useState({
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
 		open: false,
 		vertical: "top",
-		horizontal: "center",
+		horizontal: "right",
 	});
-
-	const { vertical, horizontal, open } = state;
-
-	const handleClose = () => {
-		setState({ ...state, open: false });
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
 	};
 
-	const getPassword = () => {
-		api.patch("/seller/forgetPassword", { email: userEmail })
-			.then((res) => console.log("Send Mail", res))
-			.catch((error) => console.log("ERROR" + error));
+	const [userEmail, setuserEmail] = useState("");
+	const [error, setError] = useState({
+		errorMessage: "",
+	});
 
-		setState({ open: true, vertical: "bottom", horizontal: "center" });
+	const InputValidation = () => {
+		var hasError = false;
+		const errors = {};
+
+		// eslint-disable-next-line
+		var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+		if (userEmail.match(mailformat)) {
+			hasError = false;
+			errors.errorMessage = "";
+		} else {
+			hasError = true;
+			errors.errorMessage = "Entered email is not valid!";
+		}
+
+		if (hasError) {
+			setError(errors);
+		} else {
+			setError({ errorMessage: "" });
+		}
+
+		return hasError;
+	};
+
+	const getPassword = async () => {
+		const errorExists = InputValidation();
+
+		if (errorExists === false) {
+			await api
+				.patch("/seller/forgetPassword", { email: userEmail })
+				.then((res) => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message:
+							"SUCCESS: An email containing Password Reset link has been sent!.",
+						open: true,
+					});
+					setuserEmail("");
+				})
+				.catch((error) => {
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message: "ERROR: This Email doesn't exists!",
+						open: true,
+					});
+				});
+		}
 	};
 
 	return (
@@ -65,8 +106,15 @@ const ForgetPassword = () => {
 									required
 									name="userEmail"
 									label="Your Email"
+									placeholder="Enter Email here"
 									fullWidth
 									value={userEmail}
+									error={
+										error.errorMessage.length > 0
+											? true
+											: false
+									}
+									helperText={error.errorMessage}
 									onChange={(e) =>
 										setuserEmail(e.target.value)
 									}
@@ -80,28 +128,29 @@ const ForgetPassword = () => {
 								>
 									Get Password
 								</Button>
-								<Snackbar
-									anchorOrigin={{ vertical, horizontal }}
-									open={open}
-									onClose={handleClose}
-									autoHideDuration={3000}
-									message="Your password has been sent!"
-									key={vertical + horizontal}
-									action={[
-										<IconButton
-											key="close"
-											color="inherit"
-											onClick={handleClose}
-										>
-											<CloseIcon />
-										</IconButton>,
-									]}
-								/>
 							</Grid>
 						</Grid>
 					</Paper>
 				</main>
 			</div>
+
+			{/*  Snackbar Alert */}
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical, horizontal }}
+				autoHideDuration={3000}
+				onClose={handleCloseSnackBar}
+				key={vertical + horizontal}
+			>
+				<MuiAlert
+					elevation={6}
+					variant="filled"
+					onClose={handleCloseSnackBar}
+					severity={snackBarstate.type}
+				>
+					{snackBarstate.message}
+				</MuiAlert>
+			</Snackbar>
 		</React.Fragment>
 	);
 };

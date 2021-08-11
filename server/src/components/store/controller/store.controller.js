@@ -98,6 +98,40 @@ const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
     }
 }
 
+const viewAllStoreApprovals = async(req, res, next) =>{
+    try{
+        const filters = {isApproved: false}
+        const totalNumberOfStores = await Store.find(filters)
+        return res.status(200).json({
+            message:` Stores for approval fetched successfully!.`,
+            data:{
+                stores: totalNumberOfStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const viewAllStoresApproved = async(req, res, next) =>{
+    try{
+        const filters = {isApproved: true}
+        const totalNumberOfStores = await Store.find(filters)
+        return res.status(200).json({
+            message:` Stores approved fetched successfully!.`,
+            data:{
+                stores: totalNumberOfStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 const getTotalNumberOfStoresApproved = async(req, res, next) =>{
     try{
         const filters = {isApproved: true}
@@ -294,5 +328,7 @@ module.exports = {
     viewAllStores,
     editStoreById,
     viewStoreById,
-    addStoreOfVendorById
+    addStoreOfVendorById,
+    viewAllStoreApprovals,
+    viewAllStoresApproved
 }

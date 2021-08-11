@@ -1,6 +1,7 @@
 const Order = require('../model/order.model')
+const Product = require('../../products/model/product.model')
 
-
+//for buyer
 const addOrder = async(req, res, next) => {
     //FOR FRONTEND:
     //first add all orders that buyer placed from different stores, in an array after buyer place order.
@@ -25,15 +26,33 @@ const addOrder = async(req, res, next) => {
     }
 }
 
+//for vendor
 const updateOrderById = async(req, res, next) => {
 
     try{
-        if(req.body.product){
+        if(req.body.products){
             throw new Error('Inavlid keys entered. Cannot update product details !')
         }
         const updates = Object.keys(req.body)
         const _id = req.params.id
         const order = await Order.findById(_id)
+        //check id order is delivered then subtract it from product available stock
+        if(req.body.status == "Delivered"){
+            let myProduct = ""
+            order.products.forEach(async(product) => {
+                myProduct = await Product.findOne({_id: product.productId})
+                if(myProduct){
+                    if(myProduct.stockAvailable){
+                        myProduct.stockAvailable = myProduct.stockAvailable - product.quantity
+                        // if(myProduct.stockAvailable <= 0){
+                        //     throw new Error('Ordered quantity is more than the available stock of product !')
+                        // }
+                        await myProduct.save()
+                    }
+                }
+                
+            })
+        }
         updates.forEach((update) => {
             order[update] = req.body[update]
         })
@@ -123,6 +142,25 @@ const getAllOrdersOfMyStore = async(req, res, next) => {
         next(err)
     }
 }
+
+const countTotalSalesOfStore= async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const sales = await Order.count({storeId: storeId, status:"Delivered"})
+
+        res.status(201).json({
+            message:`Count of Sales Fetched !`,
+            data:{
+                sales
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 
 //FOR ADMIN
 
@@ -260,6 +298,7 @@ module.exports = {
     getOrderDetailsById,
     getAllOrdersOfMyStore,
     getOrdersOfMyStoreByStatus,
+    countTotalSalesOfStore,
     //for admin
     getAllOrdersOfStoreById,
     getPendingOrdersOfStoreById,

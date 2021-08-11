@@ -20,6 +20,8 @@ router.patch('/admin/disApproveStore/:id', auth.admin, storeController.disApprov
 router.patch('/admin/enableMarketingTool/:id', auth.admin, storeController.enableMarketingService)
 router.patch('/admin/disableMarketingTool/:id', auth.admin, storeController.disableMarketingService)
 router.get('/admin/stores', auth.admin, storeController.viewAllStores)
+router.get('/admin/stores/approvals', auth.admin, storeController.viewAllStoreApprovals)
+router.get('/admin/stores/approved', auth.admin, storeController.viewAllStoresApproved)
 router.get('/admin/store/:id', auth.admin, storeController.viewStoreById)
 router.patch('/admin/store/:id', auth.admin, storeController.editStoreById)
 

@@ -27,4 +27,7 @@ router.get('/admin/orders/returned/store/:id', auth.admin, orderController.getRe
 router.get('/admin/orders/completed/store/:id', auth.admin, orderController.getCompletedOrdersOfStoreById)
 router.get('/admin/orders/stores', auth.admin, orderController.getAllOrdersInAllStores)
 
+//ANALYTICS FOR VENDOR
+router.get('/seller/store/sales/count', auth.vendor, orderController.countTotalSalesOfStore)
+
 module.exports = router

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Paper } from "@material-ui/core";
 
 // complete registration
@@ -20,9 +20,11 @@ const VendorAnalytics = () => {
 	const { store } = useUserContext();
 	// const token = store.data.token;
 
-	const [showCompleteRegis, setCompleteRegis] = useState(
-		store.data.data.isStoreRegistered
-	);
+	const [showCompleteRegis, setCompleteRegis] = useState(true);
+
+	useEffect(() => {
+		setCompleteRegis(store.data.data.isStoreRegistered);
+	}, [store.data.data.isStoreRegistered]);
 
 	return (
 		<Paper className={classes.Paper}>

@@ -33,22 +33,38 @@ export default function CompleteRegister(props) {
 
 	// context
 	const { store, dispatch } = useUserContext();
+	const token = store.data.token;
 
 	// states
 	const [state, setState] = useState({
 		name: "",
-		category: "sports",
+		category: "DEFAULT",
 		biography: "A place to have trust.",
 		warehouseAddress: "Street No. 231, 2484  Fairfield Road",
 		physicalAddress: "Street No. 231, 2484  Fairfield Road",
 		city: "Islamabad",
 		country: "Pakistan",
 		type: "individual",
+
 		bankHolderName: "Haseeb Ahmed",
 		bankName: "Meezan Bank Ltd.",
+		branchCode: "PK1234",
 		accountNumber: "213213123612312",
-		routingNumber: "21312312",
 		checkAgreement: false,
+	});
+
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		categoryError: "",
+		biographyError: "",
+		cityError: "",
+		countryError: "",
+		warehouseAddressError: "",
+		physicalAddressError: "",
+		BankHolderNameError: "",
+		bankNameError: "",
+		branchCodeError: "",
+		accountNumberError: "",
 	});
 
 	const handleChange = (input) => (e) => {
@@ -58,105 +74,227 @@ export default function CompleteRegister(props) {
 		setState({ ...state, [input]: e.target.checked });
 	};
 
-	const handleNext = async () => {
-		setActiveStep(activeStep + 1);
+	const StoreInputValidation = () => {
+		const errors = {};
+		var hasError = false;
 
-		// Saving Store/Payment data to Server
-		if (activeStep === steps.length - 1) {
-			const isStoreRegistered = true;
-			const vendorData = { ...store.data.data, isStoreRegistered };
-			const token = store.data.token;
-
-			completeRegistration(dispatch, vendorData, token);
-			props.setCompleteRegis(false);
-
-			const {
-				name,
-				category,
-				biography,
-				warehouseAddress,
-				physicalAddress,
-				city,
-				country,
-				type,
-				bankHolderName,
-				bankName,
-				accountNumber,
-				routingNumber,
-				checkAgreement,
-			} = state;
-
-			// SAVING STORE DETAILS INTO DATABASE
-			await api
-				.post(
-					"/seller/store/register",
-					{
-						name,
-						category,
-						city,
-						country,
-						type,
-						warehouseAddress,
-						buissnessAddress: physicalAddress,
-						biography,
-					},
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				)
-				.then((res) => console.log("Store Saved. RES: ", res))
-				.catch((error) => console.log("Error: " + error));
-
-			// SAVING PAYMENT DETAILS INTO DATABASE
-			await api
-				.patch(
-					"/seller/addPaymentAccount",
-					{
-						// change this name
-						AccountHolderName: bankHolderName,
-						bankName,
-						accountNumber,
-						routingNumber,
-						isStoreRegistered: checkAgreement,
-					},
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				)
-				.then((res) => console.log("Payment Saved", res))
-				.catch((error) => console.log("Error: " + error));
-
-			await api
-				.patch(
-					"/seller/store/register",
-					{
-						name,
-						city,
-						category,
-						warehouseAddress,
-					},
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				)
-				.then((res) => console.log("Stored Registerd!!"))
-				.catch((error) => console.log("Error: " + error));
-
-			console.log("Registration has been completed...");
+		// store name
+		var noSpecial = /^[^*|":<>[\]{}`\\'();@&$]+$/;
+		if (state.name.match(noSpecial)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError = "Name cannot contains Special Characters!";
 		}
+
+		// store category
+		if (state.category.match("DEFAULT")) {
+			hasError = true;
+			errors.categoryError = "Please Choose a Store Category!";
+		} else {
+			errors.categoryError = "";
+		}
+
+		// biography
+		var bioFormat = /^[a-zA-Z0-9-@#!&$,.{1}\s]*$/;
+		if (state.biography.match(bioFormat) && state.biography.length > 10) {
+			errors.biographyError = "";
+		} else {
+			hasError = true;
+			errors.biographyError = "Kindly enter a short Biography.";
+		}
+
+		// city
+		var cityFormat = /^[a-zA-Z]*$/;
+		if (state.city.match(cityFormat) && state.city.length > 3) {
+			errors.cityError = "";
+		} else {
+			hasError = true;
+			errors.cityError = "Kindly Enter Valid City Name!";
+		}
+
+		// Country
+		var countryFormat = /^[a-zA-Z]*$/;
+		if (state.country.match(countryFormat) && state.country.length > 3) {
+			errors.countryError = "";
+		} else {
+			hasError = true;
+			errors.countryError = "Kindly Enter Valid Country Name!";
+		}
+
+		// Warehouse/Physical Address
+		var addressFormat = /^[a-zA-Z0-9.,@#&\s]*$/;
+
+		if (
+			state.physicalAddress.match(addressFormat) &&
+			state.physicalAddress.length > 10
+		) {
+			errors.physicalAddressError = "";
+		} else {
+			hasError = true;
+			errors.physicalAddressError =
+				"Kindly Enter a Valid Physical Address!";
+		}
+
+		if (state.warehouseAddress.match(addressFormat)) {
+			errors.warehouseAddressError = "";
+		} else {
+			hasError = true;
+			errors.warehouseAddressError =
+				"Kindly Enter a Valid Warehouse Address!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
 	};
 
-	const handleBack = () => {
-		setActiveStep(activeStep - 1);
+	const PaymentInputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// Account Holder name
+		var noSpecAndNum = /^[^0-9*|?^#!"-:<>[\]{}`\\'();@&$]+$/;
+		if (state.bankHolderName.match(noSpecAndNum)) {
+			errors.BankHolderNameError = "";
+		} else {
+			hasError = true;
+			errors.BankHolderNameError =
+				"Please enter your Valid Account Holder Name.";
+		}
+
+		// Bank name
+		if (state.bankName.match(noSpecAndNum)) {
+			errors.bankNameError = "";
+		} else {
+			hasError = true;
+			errors.bankNameError = "Please enter your Valid Bank Name.";
+		}
+
+		// Account No.
+		var accountFormat = /^[0-9]*/;
+		if (state.accountNumber.match(accountFormat)) {
+			errors.accountNumberError = "";
+		} else {
+			hasError = true;
+			errors.accountNumberError =
+				"Please enter your Valid Bank Account Number (IBAN)";
+		}
+
+		// Account No.
+		var branchCodeFormat = /^[A-Za-z]{4}[a-zA-Z0-9]*/;
+		if (state.branchCode.match(branchCodeFormat)) {
+			errors.branchCodeError = "";
+		} else {
+			hasError = true;
+			errors.branchCodeError =
+				"Please enter your Valid Branch Code or Contact your Bank!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
+	const handleNext = async () => {
+		var errorExists = StoreInputValidation();
+
+		if (errorExists === false) {
+			// SAVING STORE DETAILS INTO DATABASE
+			if (activeStep === 1) {
+				setActiveStep(activeStep + 1);
+
+				const {
+					name,
+					category,
+					biography,
+					warehouseAddress,
+					physicalAddress,
+					city,
+					country,
+					type,
+				} = state;
+
+				await api
+					.post(
+						"/seller/store/register",
+						{
+							name,
+							category,
+							city,
+							country,
+							type,
+							warehouseAddress,
+							buissnessAddress: physicalAddress,
+							biography,
+						},
+						{
+							headers: { Authorization: `Bearer ${token}` },
+						}
+					)
+					.then((res) => console.log("res", res))
+					.catch((error) => console.log("Error: " + error));
+
+				console.log("store saved!");
+			}
+
+			var PayErrorExists = PaymentInputValidation();
+
+			if (PayErrorExists === false) {
+				// SAVING PAYMENT DETAILS INTO DATABASE
+				setActiveStep(activeStep + 1);
+				if (activeStep === steps.length - 1) {
+					const isStoreRegistered = true;
+					const vendorData = {
+						...store.data.data,
+						isStoreRegistered,
+					};
+					const token = store.data.token;
+
+					completeRegistration(dispatch, vendorData, token);
+					props.setCompleteRegis(false);
+
+					const { bankHolderName, bankName, accountNumber } = state;
+
+					await api
+						.patch(
+							"/seller/addPaymentAccount",
+							{
+								// change this name
+								AccountHolderName: bankHolderName,
+								bankName,
+								accountNumber,
+								paymentMethod: "BANK",
+								isPrimaryAccount: true,
+							},
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						)
+						.then((res) => console.log("Payment Saved", res))
+						.catch((error) => console.log("Error: " + error));
+
+					console.log("Registration has been completed...");
+				}
+			}
+		}
 	};
 
 	const getStepContent = (step) => {
 		switch (step) {
 			case 1:
-				return <Store values={state} handleChange={handleChange} />;
+				return (
+					<Store
+						values={state}
+						handleChange={handleChange}
+						IFerrors={IFerrors}
+					/>
+				);
 			case 2:
 				return (
-					<PaymentForm values={state} handleChange={handleChange} />
+					<PaymentForm
+						values={state}
+						handleChange={handleChange}
+						IFerrors={IFerrors}
+					/>
 				);
 			case 3:
 				return (
@@ -203,14 +341,14 @@ export default function CompleteRegister(props) {
 					<React.Fragment>
 						{getStepContent(activeStep)}
 						<div className={classes.buttons}>
-							{activeStep !== 1 && (
+							{/* {activeStep !== 1 && (
 								<Button
 									onClick={handleBack}
 									className={classes.button}
 								>
 									Back
 								</Button>
-							)}
+							)} */}
 							<Button
 								disabled={
 									activeStep === steps.length - 1 &&
@@ -224,8 +362,8 @@ export default function CompleteRegister(props) {
 								className={classes.button}
 							>
 								{activeStep === steps.length - 1
-									? "Save"
-									: "Next"}
+									? "FINISH"
+									: "SAVE"}
 							</Button>
 						</div>
 					</React.Fragment>

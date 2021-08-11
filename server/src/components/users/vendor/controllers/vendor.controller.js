@@ -600,6 +600,26 @@ const viewVendorById = async(req, res, next) => {
     }
 }
 
+const viewAllVendorsWhoseStoresNotRegistered = async(req, res, next) => {
+    try{
+        const users = await Vendor.find({storeId: null})
+        if(!users){
+            throw new Error('User not found!')
+        }
+        return res.status(200).json({
+            message:`Vendors whose stores are Un-registered fetched successfully.`,
+            data:{
+                vendors: users
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
 
 module.exports={
     //for vendor
@@ -624,5 +644,6 @@ module.exports={
     blockVendorById,
     unblockVendorById,
     editVendorById,
-    viewVendorById
+    viewVendorById,
+    viewAllVendorsWhoseStoresNotRegistered
 }
