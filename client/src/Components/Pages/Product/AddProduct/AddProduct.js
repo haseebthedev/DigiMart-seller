@@ -52,22 +52,23 @@ export default function AddProduct() {
 		subCategory: "",
 		brand: "",
 		manufactureDate: "11/06/2003",
-		purchasePrice: "1000",
-		salePrice: "1000",
-		state: "New",
-		shippingCost: "20",
+		purchasePrice: "",
+		salePrice: "",
+		state: "",
+		shippingCost: "",
 		images: [],
 		isOnSale: false,
-		discountPercentage: 10,
-		discountPrice: 0,
-		stockAvailable: 0,
+		discountPercentage: "",
+		discountPrice: "0",
+		stockAvailable: "",
 		dimensions: "",
 	});
+
 	const [colors, setColors] = useState([]);
 	const [dimensions, setDimensions] = useState({
-		length: 0,
-		width: 0,
-		height: 0,
+		length: "",
+		width: "",
+		height: "",
 		unit: "in",
 	});
 	const [warranty, setWarranty] = useState("");
@@ -127,63 +128,6 @@ export default function AddProduct() {
 			[input]: e.target.value,
 			discountPrice,
 		});
-
-		console.log(productDetails);
-	};
-
-	const addProductHandler = (e) => {
-		e.preventDefault();
-
-		let pWarranty = warranty + " " + warrantySpan;
-		let pWeight = weight + " " + weightUnits;
-
-		let pDimensions =
-			dimensions.length +
-			"" +
-			dimensions.unit +
-			" " +
-			dimensions.width +
-			"" +
-			dimensions.unit +
-			" " +
-			dimensions.height +
-			"" +
-			dimensions.unit;
-
-		api.post(
-			"/seller/store/product",
-			{
-				...productDetails,
-				colors,
-				dimensions: pDimensions,
-				warranty: pWarranty,
-				weight: pWeight,
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
-			.then((res) => {
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "Product has been added successfully!",
-					open: true,
-				});
-				console.log(res);
-			})
-			.catch((error) =>
-				setSnackBar({
-					...snackBarstate,
-					message:
-						"ERROR: " +
-						JSON.stringify(
-							error.response.data.error.message
-						).replace(/"/g, ""),
-					type: "error",
-					open: true,
-				})
-			);
 	};
 
 	const toBase64 = (file) =>
@@ -260,6 +204,258 @@ export default function AddProduct() {
 		});
 	};
 
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		descriptionError: "",
+		categoryError: "",
+		subCategoryError: "",
+		brandError: "",
+		purchasePriceError: "",
+		salePriceError: "",
+		stateError: "",
+		shippingCostError: "",
+		stockError: "",
+		warrantyError: "",
+		weightError: "",
+		dimensionsErrorL: "",
+		dimensionsErrorW: "",
+		dimensionsErrorH: "",
+		discountPercentageError: "",
+	});
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
+		if (productDetails.name.match(nameFormat)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError =
+				"Invalid Input. Name cannot contains several Special Characters!";
+		}
+
+		// description
+		var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		if (productDetails.description.match(descFormat)) {
+			errors.descriptionError = "";
+		} else {
+			hasError = true;
+			errors.descriptionError =
+				"Description contains several characters that aren't allowed!";
+		}
+
+		// Product category
+		if (productDetails.category.length === 0) {
+			hasError = true;
+			errors.categoryError = "Please Choose a Category for Product!";
+		} else {
+			errors.categoryError = "";
+		}
+
+		// subcategory
+		if (productDetails.subCategory.length === 0) {
+			hasError = true;
+			errors.subCategoryError = "Please Choose Sub-Category for Product!";
+		} else {
+			errors.subCategoryError = "";
+		}
+
+		// subcategory
+		if (productDetails.brand.length === 0) {
+			hasError = true;
+			errors.brandError = "Please Choose the Product brand!";
+		} else {
+			errors.brandError = "";
+		}
+
+		// state
+		if (productDetails.state.length === 0) {
+			hasError = true;
+			errors.stateError = "Please Choose the Product State!";
+		} else {
+			errors.stateError = "";
+		}
+
+		// stock
+		var stockFormat = /^[1-9]\d*$/;
+		if (productDetails.stockAvailable.match(stockFormat)) {
+			errors.stockError = "";
+		} else {
+			hasError = true;
+			errors.stockError = "Entered stock amount is invalid.";
+		}
+
+		// Shipping cost
+		var shippingFormat = /^[1-9]\d*$/;
+		if (productDetails.shippingCost.match(shippingFormat)) {
+			errors.shippingCostError = "";
+		} else {
+			hasError = true;
+			errors.shippingCostError = "Entered Shipping Amount is invalid.";
+		}
+
+		// price
+		var PriceFormat = /^\d+(.\d{1,2})?$/;
+		if (productDetails.purchasePrice.match(PriceFormat)) {
+			errors.purchasePriceError = "";
+		} else {
+			hasError = true;
+			errors.purchasePriceError = "Entered Amount is invalid.";
+		}
+
+		if (productDetails.salePrice.match(PriceFormat)) {
+			errors.salePriceError = "";
+		} else {
+			hasError = true;
+			errors.salePriceError = "Entered Amount is invalid.";
+		}
+
+		// warranty
+		var warrantyFormat = /^\d+(.\d{1,2})?$/;
+		if (warranty.match(warrantyFormat)) {
+			errors.warrantyError = "";
+		} else {
+			hasError = true;
+			errors.warrantyError = "Entered Warranty is invalid.";
+		}
+
+		// weight
+		var weightFormat = /^\d+(.\d{1,2})?$/;
+		if (weight.match(weightFormat)) {
+			errors.weightError = "";
+		} else {
+			hasError = true;
+			errors.weightError = "Entered Weight Amount is invalid.";
+		}
+
+		if (productDetails.isOnSale === true) {
+			// discountFormat
+			var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
+			if (productDetails.discountPercentage.match(discountFormat)) {
+				errors.discountError = "";
+			} else {
+				hasError = true;
+				errors.discountError = "Entered Discount Amount is invalid.";
+			}
+		}
+
+		// dimension
+		var dimensionFormat = /^\d+(.\d{1,2})?$/;
+		if (dimensions.length.match(dimensionFormat)) {
+			errors.dimensionsErrorL = "";
+		} else {
+			hasError = true;
+			errors.dimensionsErrorL = "Entered Length is invalid.";
+		}
+		if (dimensions.width.match(dimensionFormat)) {
+			errors.dimensionsErrorW = "";
+		} else {
+			hasError = true;
+			errors.dimensionsErrorW = "Entered Width is invalid.";
+		}
+		if (dimensions.height.match(dimensionFormat)) {
+			errors.dimensionsErrorH = "";
+		} else {
+			hasError = true;
+			errors.dimensionsErrorH = "Entered Height is invalid.";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
+	const resetInputFiels = () => {
+		setWeight("");
+		setWarranty("");
+		setProductDetails({
+			name: "",
+			description: "",
+			category: "",
+			subCategory: "",
+			brand: "",
+			manufactureDate: "11/06/2003",
+			purchasePrice: "",
+			salePrice: "",
+			state: "",
+			shippingCost: "",
+			images: [],
+			isOnSale: false,
+			discountPercentage: "",
+			discountPrice: "",
+			stockAvailable: "",
+			dimensions: "",
+		});
+		setDimensions({
+			length: "",
+			width: "",
+			height: "",
+			unit: "in",
+		});
+		setColors([]);
+	};
+
+	const addProductHandler = (e) => {
+		e.preventDefault();
+
+		var hasError = InputValidation();
+
+		if (hasError === false) {
+			let pWarranty = warranty + " " + warrantySpan;
+			let pWeight = weight + " " + weightUnits;
+
+			let pDimensions =
+				dimensions.length +
+				"" +
+				dimensions.unit +
+				" " +
+				dimensions.width +
+				"" +
+				dimensions.unit +
+				" " +
+				dimensions.height +
+				"" +
+				dimensions.unit;
+
+			api.post(
+				"/seller/store/product",
+				{
+					...productDetails,
+					colors,
+					dimensions: pDimensions,
+					warranty: pWarranty,
+					weight: pWeight,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+				.then(() => {
+					resetInputFiels();
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "Product has been added successfully!",
+						open: true,
+					});
+				})
+				.catch((error) =>
+					setSnackBar({
+						...snackBarstate,
+						message:
+							"ERROR: " +
+							JSON.stringify(
+								error.response.data.error.message
+							).replace(/"/g, ""),
+						type: "error",
+						open: true,
+					})
+				);
+		}
+	};
+
 	// Retriving List from Categories from API
 	useEffect(() => {
 		getAllCategory();
@@ -292,6 +488,12 @@ export default function AddProduct() {
 											label="Name"
 											name="name"
 											value={productDetails.name}
+											helperText={IFerrors.nameError}
+											error={
+												IFerrors.nameError.length > 0
+													? true
+													: false
+											}
 											onChange={handleProductDetails(
 												"name"
 											)}
@@ -312,6 +514,15 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"description"
 											)}
+											helperText={
+												IFerrors.descriptionError
+											}
+											error={
+												IFerrors.descriptionError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -328,6 +539,12 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"category"
 											)}
+											error={
+												IFerrors.categoryError.length >
+												0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Choose a Product Category
@@ -356,6 +573,12 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"subCategory"
 											)}
+											error={
+												IFerrors.subCategoryError
+													.length > 0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Choose sub-category
@@ -385,6 +608,11 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"brand"
 											)}
+											error={
+												IFerrors.brandError.length > 0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Select Brand of Product
@@ -423,8 +651,7 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Category"
-											name="category"
+											label="Colors"
 											style={{ marginTop: 8 }}
 											value={"DEFAULT"}
 											defaultValue={"DEFAULT"}
@@ -471,7 +698,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											name="stock"
 											label="Stock / Quantity"
 											value={
 												productDetails.stockAvailable
@@ -479,6 +705,12 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"stockAvailable"
 											)}
+											helperText={IFerrors.stockError}
+											error={
+												IFerrors.stockError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 
@@ -492,6 +724,13 @@ export default function AddProduct() {
 											label="Warranty"
 											value={productDetails.warranty}
 											onChange={handleWarranty}
+											helperText={IFerrors.warrantyError}
+											error={
+												IFerrors.warrantyError.length >
+												0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item sm={6}>
@@ -531,6 +770,15 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"purchasePrice"
 											)}
+											helperText={
+												IFerrors.purchasePriceError
+											}
+											error={
+												IFerrors.purchasePriceError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={6}>
@@ -545,6 +793,13 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"salePrice"
 											)}
+											helperText={IFerrors.salePriceError}
+											error={
+												IFerrors.salePriceError.length >
+												0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 
@@ -559,6 +814,12 @@ export default function AddProduct() {
 											name="weight"
 											value={weight}
 											onChange={handleWeight}
+											helperText={IFerrors.weightError}
+											error={
+												IFerrors.weightError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item sm={6}>
@@ -598,6 +859,11 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"state"
 											)}
+											error={
+												IFerrors.stateError.length > 0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT">
 												Select the Product State
@@ -623,6 +889,15 @@ export default function AddProduct() {
 											onChange={handleProductDetails(
 												"shippingCost"
 											)}
+											helperText={
+												IFerrors.shippingCostError
+											}
+											error={
+												IFerrors.shippingCostError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -637,6 +912,15 @@ export default function AddProduct() {
 											onChange={handlerDimension(
 												"length"
 											)}
+											helperText={
+												IFerrors.dimensionsErrorL
+											}
+											error={
+												IFerrors.dimensionsErrorL
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -649,6 +933,15 @@ export default function AddProduct() {
 											name="dimensions"
 											value={dimensions.width}
 											onChange={handlerDimension("width")}
+											helperText={
+												IFerrors.dimensionsErrorW
+											}
+											error={
+												IFerrors.dimensionsErrorW
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -663,6 +956,15 @@ export default function AddProduct() {
 											onChange={handlerDimension(
 												"height"
 											)}
+											helperText={
+												IFerrors.dimensionsErrorH
+											}
+											error={
+												IFerrors.dimensionsErrorH
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -818,6 +1120,15 @@ export default function AddProduct() {
 												onChange={handlerDiscount(
 													"discountPercentage"
 												)}
+												helperText={
+													IFerrors.discountError
+												}
+												error={
+													IFerrors.discountError
+														.length > 0
+														? true
+														: false
+												}
 											/>
 										</Grid>
 									) : (
@@ -864,7 +1175,7 @@ export default function AddProduct() {
 								</Snackbar>
 							</form>
 						</Grid>
-						<Grid item xs={12} sm={12} md={12} lg={4}>
+						<Grid item xs={false} sm={false} md={false} lg={4}>
 							<div
 								style={{
 									border: "1px solid rgb(224 224 224)",

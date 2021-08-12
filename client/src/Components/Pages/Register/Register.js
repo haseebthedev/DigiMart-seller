@@ -125,7 +125,6 @@ const Register = () => {
 				"Entered Address is invalid. Special Characters not allowed i.e. /!$%^&*()";
 		}
 
-		console.log("hasError", hasError);
 		setIFerrors({ ...IFerrors, ...errors });
 		return hasError;
 	};
