@@ -30,6 +30,7 @@ export default function PaymentForm(props) {
 						required
 						label="Account Holder Name"
 						fullWidth
+						placeholder="Enter your Name"
 						defaultValue={values.bankHolderName}
 						onChange={handleChange("bankHolderName")}
 						helperText={IFerrors.BankHolderNameError}
@@ -46,6 +47,7 @@ export default function PaymentForm(props) {
 						required
 						label="Bank Name"
 						fullWidth
+						placeholder="Enter your Bank Name"
 						defaultValue={values.bankName}
 						onChange={handleChange("bankName")}
 						helperText={IFerrors.bankNameError}
@@ -59,6 +61,8 @@ export default function PaymentForm(props) {
 						id="iban"
 						label="Account Number"
 						fullWidth
+						placeholder="Enter 16 Digit Account Number"
+						inputProps={{ maxLength: 16 }}
 						defaultValue={values.accountNumber}
 						onChange={handleChange("accountNumber")}
 						helperText={IFerrors.accountNumberError}
@@ -75,6 +79,7 @@ export default function PaymentForm(props) {
 						label="Branch Code"
 						fullWidth
 						defaultValue={values.branchCode}
+						placeholder="Enter your Branch Code"
 						onChange={handleChange("branchCode")}
 						helperText={IFerrors.branchCodeError}
 						error={

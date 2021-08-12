@@ -98,6 +98,9 @@ const getAllReviewsGivenByMe = async(req, res, next) => {
 
 const getAllReviewsOfMyStore = async(req, res, next) => {
     try{
+        if(!req.store){
+            throw new Error('Please register your store first!')
+        }
         const store = req.store
         const reviews = await Review.find({storeId: store._id})
         res.status(201).json({

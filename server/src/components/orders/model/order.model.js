@@ -14,6 +14,10 @@ const orderSchema = new mongoose.Schema({
         name:{
             type: String
         },
+        purchasePrice:{
+            type: Number,
+            required: true
+        },
         //price without discount
         salePrice:{
             type: Number,
@@ -38,6 +42,10 @@ const orderSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref:'Store',
             required: true
+    },
+    storeName:{
+        type: String,
+        required: true
     },
     _id:{
         type: String,
@@ -92,12 +100,9 @@ const orderSchema = new mongoose.Schema({
     totalDiscount:{
         type: Number
     },
-    orderDateTime:{
-        type: Date,
-        default: Date.now()
-    },
     deliveryDate:{
-        type: Date
+        type: Date,
+       //default: Date.now()
     },
     deliveryTime:{
         type: String
@@ -109,6 +114,10 @@ const orderSchema = new mongoose.Schema({
     },
     //total with delivery fee
     totalPrice:{
+        type: Number,
+        required: true
+    },
+    totalPurchasePrice:{
         type: Number,
         required: true
     },

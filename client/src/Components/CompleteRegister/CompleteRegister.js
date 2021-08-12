@@ -40,16 +40,15 @@ export default function CompleteRegister(props) {
 		name: "",
 		category: "DEFAULT",
 		biography: "A place to have trust.",
-		warehouseAddress: "Street No. 231, 2484  Fairfield Road",
+		warehouseAddress: "Block-F, Satellite Town, Lahore",
 		physicalAddress: "Street No. 231, 2484  Fairfield Road",
 		city: "Islamabad",
 		country: "Pakistan",
 		type: "individual",
-
-		bankHolderName: "Haseeb Ahmed",
-		bankName: "Meezan Bank Ltd.",
-		branchCode: "PK1234",
-		accountNumber: "213213123612312",
+		bankHolderName: "",
+		bankName: "",
+		branchCode: "",
+		accountNumber: "",
 		checkAgreement: false,
 	});
 
@@ -61,6 +60,7 @@ export default function CompleteRegister(props) {
 		countryError: "",
 		warehouseAddressError: "",
 		physicalAddressError: "",
+
 		BankHolderNameError: "",
 		bankNameError: "",
 		branchCodeError: "",
@@ -123,7 +123,7 @@ export default function CompleteRegister(props) {
 		}
 
 		// Warehouse/Physical Address
-		var addressFormat = /^[a-zA-Z0-9.,@#&\s]*$/;
+		var addressFormat = /^[a-zA-Z0-9.,-@#&\s]*$/;
 
 		if (
 			state.physicalAddress.match(addressFormat) &&
@@ -163,7 +163,8 @@ export default function CompleteRegister(props) {
 		}
 
 		// Bank name
-		if (state.bankName.match(noSpecAndNum)) {
+		var bankNameFormat = /^[A-Za-z\s]+$/;
+		if (state.bankName.match(bankNameFormat)) {
 			errors.bankNameError = "";
 		} else {
 			hasError = true;
@@ -171,7 +172,7 @@ export default function CompleteRegister(props) {
 		}
 
 		// Account No.
-		var accountFormat = /^[0-9]*/;
+		var accountFormat = /^\w{1,16}$/;
 		if (state.accountNumber.match(accountFormat)) {
 			errors.accountNumberError = "";
 		} else {
@@ -195,13 +196,12 @@ export default function CompleteRegister(props) {
 	};
 
 	const handleNext = async () => {
-		var errorExists = StoreInputValidation();
+		if (activeStep === 1) {
+			var StoreErrorExists = StoreInputValidation();
+			console.log("Store page", activeStep);
 
-		if (errorExists === false) {
-			// SAVING STORE DETAILS INTO DATABASE
-			if (activeStep === 1) {
-				setActiveStep(activeStep + 1);
-
+			if (StoreErrorExists === false) {
+				// SAVING STORE DETAILS INTO DATABASE
 				const {
 					name,
 					category,
@@ -233,48 +233,55 @@ export default function CompleteRegister(props) {
 					.then((res) => console.log("res", res))
 					.catch((error) => console.log("Error: " + error));
 
-				console.log("store saved!");
+				setActiveStep(activeStep + 1);
 			}
+		}
 
+		if (activeStep === 2) {
 			var PayErrorExists = PaymentInputValidation();
+			console.log("Payments page", activeStep);
+
+			console.log("error status ", IFerrors);
 
 			if (PayErrorExists === false) {
-				// SAVING PAYMENT DETAILS INTO DATABASE
+				const { bankHolderName, bankName, accountNumber } = state;
+
+				await api
+					.patch(
+						"/seller/addPaymentAccount",
+						{
+							// change this name
+							AccountHolderName: bankHolderName,
+							bankName,
+							accountNumber,
+							paymentMethod: "BANK",
+							isPrimaryAccount: true,
+						},
+						{
+							headers: { Authorization: `Bearer ${token}` },
+						}
+					)
+					.then((res) => console.log("Payment Saved", res))
+					.catch((error) => console.log("Error: " + error));
+				console.log("Registration has been completed...");
+
 				setActiveStep(activeStep + 1);
-				if (activeStep === steps.length - 1) {
-					const isStoreRegistered = true;
-					const vendorData = {
-						...store.data.data,
-						isStoreRegistered,
-					};
-					const token = store.data.token;
-
-					completeRegistration(dispatch, vendorData, token);
-					props.setCompleteRegis(false);
-
-					const { bankHolderName, bankName, accountNumber } = state;
-
-					await api
-						.patch(
-							"/seller/addPaymentAccount",
-							{
-								// change this name
-								AccountHolderName: bankHolderName,
-								bankName,
-								accountNumber,
-								paymentMethod: "BANK",
-								isPrimaryAccount: true,
-							},
-							{
-								headers: { Authorization: `Bearer ${token}` },
-							}
-						)
-						.then((res) => console.log("Payment Saved", res))
-						.catch((error) => console.log("Error: " + error));
-
-					console.log("Registration has been completed...");
-				}
 			}
+		}
+
+		if (activeStep === 3) {
+			setActiveStep(activeStep + 1);
+			console.log("Finalize page");
+
+			let isStoreRegistered = true;
+			let vendorData = {
+				...store.data.data,
+				isStoreRegistered,
+			};
+			let token = store.data.token;
+
+			completeRegistration(dispatch, vendorData, token);
+			props.setCompleteRegis(false);
 		}
 	};
 

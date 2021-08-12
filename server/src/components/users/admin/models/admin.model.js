@@ -118,7 +118,7 @@ const adminSchema = new mongoose.Schema({
 })
 
 //crating index on email
-adminSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
+//adminSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
 
 //finding admin from email and pass 
 adminSchema.statics.findByCredientials= async(email,password)=>{

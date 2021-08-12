@@ -128,14 +128,17 @@ const viewMyStoreProduct = async(req, res, next) => {
 const countMyStoreProductsStock = async(req, res, next) => {
     try{
         const storeID = req.store._id
-        const productsStock = await Product.count({storeID: storeID})
-        if(!product){
-            throw new Error('Products not found!')
-        }
+        const products = await Product.aggregate([
+            { $match: { stockAvailable: {$gte: 0}, storeID: storeID } },
+            { $group: { _id: null, totalStock: { $sum: "$stockAvailable" } } }
+        ])
+        // if(!products){
+        //     throw new Error('Products not found!')
+        // }
         res.status(200).json({
             message:`Products stock count fetched successfully!`,
             data:{
-                productsStock
+                products
             }
         })
     }
@@ -144,6 +147,30 @@ const countMyStoreProductsStock = async(req, res, next) => {
         next(err)
     }
 }
+
+const countTotalExpenseOfProducts = async(req, res, next) => {
+    try{
+        const storeID = req.store._id
+        const products = await Product.aggregate([
+            { $match: { purchasePrice: {$gte: 0}, storeID: storeID } },
+            { $group: { _id: null, purchasePrice: { $sum: {$multiply: ["$purchasePrice", "$stockAvailable" ]}} } }
+        ])
+        // if(!products){
+        //     throw new Error('Products not found!')
+        // }
+        res.status(200).json({
+            message:`Total Expense to buy products fetched successfully!`,
+            data:{
+                products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 
 //FOR ADMIN 
 
@@ -352,6 +379,7 @@ module.exports = {
     viewMyStoreProducts,
     viewMyStoreProduct,
     countMyStoreProductsStock,
+    countTotalExpenseOfProducts,
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,

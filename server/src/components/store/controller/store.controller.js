@@ -1,5 +1,4 @@
 const Store = require('../model/store.model')
-const Product = require('../../products/model/product.model')
 const Vendor = require('../../users/vendor/models/vendor.model')
 
 const registerStore = async(req, res, next) => {
@@ -8,6 +7,8 @@ const registerStore = async(req, res, next) => {
         const store = new Store(req.body)
         await store.save()
         user.storeId = store._id
+        //set store registered in vendor profile
+        user.isStoreRegistered = true
         await user.save()
         res.status(201).json({
             message:`Your request for registration has been sent successfully. You will be informed soon.`,
@@ -84,7 +85,7 @@ const getStoreCategory = async(req, res, next) => {
 const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
     try{
         const filters = {isApproved: false}
-        const totalNumberOfStores = await Store.count(filters)
+        const totalNumberOfStores = await Store.countDocuments(filters)
         return res.status(200).json({
             message:`Total number of Stores for approval fetched successfully!.`,
             data:{
@@ -135,7 +136,7 @@ const viewAllStoresApproved = async(req, res, next) =>{
 const getTotalNumberOfStoresApproved = async(req, res, next) =>{
     try{
         const filters = {isApproved: true}
-        const totalNumberOfStores = await Store.count(filters)
+        const totalNumberOfStores = await Store.countDocuments(filters)
         return res.status(200).json({
             message:`Total number of Stores approved fetched successfully!.`,
             data:{

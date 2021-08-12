@@ -375,7 +375,7 @@ const getTotalNumberOfAdmins = async(req, res, next) => {
         if(!req.user.roles.includes('Super Admin')){
             throw new Error('Not authorized as a super Admin!')
         }
-        const admins = await Admin.count({})
+        const admins = await Admin.countDocuments({})
         res.status(200).json({
             message:`Fetched total Admins !`,
             data:{

@@ -43,13 +43,13 @@ const loginVendor = async (req, res, next) => {
         }
         const token=await vendor.generateAuthToken()
         // if store then activate store and vendor profile
+        //activate account status
+        vendor.isAccountActive = true;
+        //save vendor
+        await vendor.save()
+            
+        //activate store
         if(req.store){
-            isStoreRegistered = true
-            //activate account status
-            vendor.isAccountActive = true;
-            //save vendor
-            await vendor.save()
-            //activate store
             req.store.isActive = true
             //save store
             await req.store.save()
@@ -135,7 +135,6 @@ const deActivateMyAccount = async(req, res, next) => {
         req.user.isAccountActive = false;
         //deactivate store
         if(req.store){
-            isStoreRegistered = true
             req.store.isActive = false
             //we unpublish its all products
             const productsOfStore =  await Product.find({storeID: req.store._id})
@@ -181,7 +180,7 @@ const activateMyAccount = async(req, res, next) => {
 
         //if store, activate store
         if(req.store){
-            isStoreRegistered = true
+            //isStoreRegistered = true
             //activate account status
             req.user.isAccountActive = true;
             //save user

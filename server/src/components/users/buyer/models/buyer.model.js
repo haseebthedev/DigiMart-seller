@@ -128,7 +128,7 @@ const buyerSchema=new mongoose.Schema({
 })
 
 //crating ondex on email
-buyerSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
+// buyerSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
 
  //finding buyer from email and pass 
 buyerSchema.statics.findByCredientials= async(email,password)=>{

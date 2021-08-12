@@ -33,6 +33,7 @@ const updateOrderById = async(req, res, next) => {
         if(req.body.products){
             throw new Error('Inavlid keys entered. Cannot update product details !')
         }
+        
         const updates = Object.keys(req.body)
         const _id = req.params.id
         const order = await Order.findById(_id)
@@ -70,12 +71,60 @@ const updateOrderById = async(req, res, next) => {
     }
 }
 
+const updateOrderedProductById = async(req, res, next) => {
+    try{
+        const updates = Object.keys(req.body)
+        const _id = req.params.id
+        const order = await Order.findOne({ "products._id": _id  })
+        //we dont know which fields were updated by vendor so we do it dynamically
+        order.products.forEach((product) => {
+            if(product._id == _id){
+                updates.forEach((update) => {
+                    product[update] = req.body[update]
+                })
+            } 
+        })
+        await order.save()
+        res.status(200).json({
+            message:`Ordered product Updated !`,
+            data:{
+                order
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const deleteOrderedProductById = async(req, res, next) => {
+    try{
+        const _id = req.params.id
+        const order = await Order.findOne({ "products._id": _id  })
+        order.products = order.products.filter((product) => {
+            return product._id != _id
+        })
+        await order.save()
+        res.status(200).json({
+            message:`Ordered product deleted !`,
+            data:{
+                order
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const deleteOrderById = async(req, res, next) => {
 
     try{
         const _id = req.params.id
         const order = await Order.findOneAndDelete(_id)
-        res.status(201).json({
+        res.status(200).json({
             message:`Order Deleted !`,
             data:{
                 order
@@ -93,7 +142,7 @@ const getOrderDetailsById = async(req, res, next) => {
     try{
         const _id = req.params.id
         const order = await Order.findById(_id)
-        res.status(201).json({
+        res.status(200).json({
             message:`Order Fetched !`,
             data:{
                 order
@@ -112,7 +161,7 @@ const getOrdersOfMyStoreByStatus = async(req, res, next) => {
         const storeId = req.store._id
         const status = req.params.status
         const orders = await Order.find({storeId: storeId, status: status})
-        res.status(201).json({
+        res.status(200).json({
             message:`Store ${status} Orders Fetched !`,
             data:{
                 orders
@@ -128,9 +177,12 @@ const getOrdersOfMyStoreByStatus = async(req, res, next) => {
 const getAllOrdersOfMyStore = async(req, res, next) => {
 
     try{
+        if(!req.store){
+            throw new Error('Please register your store first !')
+        }
         const storeId = req.store._id
         const orders = await Order.find({storeId: storeId})
-        res.status(201).json({
+        res.status(200).json({
             message:`Store Orders Fetched !`,
             data:{
                 orders
@@ -146,12 +198,93 @@ const getAllOrdersOfMyStore = async(req, res, next) => {
 const countTotalSalesOfStore= async(req, res, next) => {
     try{
         const storeId = req.store._id
-        const sales = await Order.count({storeId: storeId, status:"Delivered"})
+        const sales = await Order.countDocuments({storeId: storeId, status:"Delivered"})
 
-        res.status(201).json({
+        res.status(200).json({
             message:`Count of Sales Fetched !`,
             data:{
                 sales
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const countMyStoreOrderssByStatus = async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const status = req.params.status
+        const orders = await Order.countDocuments({storeId: storeId, status:status})
+
+        res.status(200).json({
+            message:`Count of ${status} orders Fetched !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const countMyStoreOrdersDeliveredToday = async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const today = new Date().toISOString().replace('T', ' ').substring(0, 19)
+        const orders = await Order.countDocuments({deliveryDate: {$gte: today},status: "Delivered", storeId: storeId})
+
+        res.status(200).json({
+            message:`Count of orders Fetched !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const totalRevenueEarnedByMyStore = async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const orders = await Order.aggregate([
+            { $match: { totalPrice: {$gte: 0}, storeId: storeId, status: "Delivered" } },
+            { $group: { _id: null, totalRevenue: { $sum: "$totalPrice"} } }
+        ])
+
+        res.status(200).json({
+            message:`Total Revenue Earned By Store !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const totalProfitEarnedByMyStore = async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const orders = await Order.aggregate([
+            { $match: { totalPrice: {$gte: 0}, storeId: storeId, status: "Delivered" } },
+            { $group: { _id: null}},
+            { $addFields: { totalProfit: { $subtract: ["$totalPrice" , "$purchasePrice"]} } }
+        ])
+
+        res.status(200).json({
+            message:`Total Revenue Earned By Store Orders!`,
+            data:{
+                orders
             }
         })
     }
@@ -299,6 +432,12 @@ module.exports = {
     getAllOrdersOfMyStore,
     getOrdersOfMyStoreByStatus,
     countTotalSalesOfStore,
+    countMyStoreOrderssByStatus,
+    countMyStoreOrdersDeliveredToday,
+    totalRevenueEarnedByMyStore,
+    totalProfitEarnedByMyStore,
+    updateOrderedProductById,
+    deleteOrderedProductById,
     //for admin
     getAllOrdersOfStoreById,
     getPendingOrdersOfStoreById,

@@ -140,7 +140,7 @@ const vendorSchema=new mongoose.Schema({
 })
 
 //crating index on email
-vendorSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
+// vendorSchema.index({email: 1},{unique: true, name:'IDX_EMAIL'})
 
  //finding vendor from email and pass 
 vendorSchema.statics.findByCredientials= async(email,password)=>{

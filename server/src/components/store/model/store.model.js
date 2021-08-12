@@ -76,7 +76,7 @@ const storeSchema = new mongoose.Schema({
 })
 
 //crating index on name of store
-storeSchema.index({name: 1},{unique: true, name:'IDX_STORE_NAME'})
+// storeSchema.index({name: 1},{unique: true, name:'IDX_STORE_NAME'})
 
 //get Size of collection
 storeSchema.statics.getStorageDetails = async function() {
