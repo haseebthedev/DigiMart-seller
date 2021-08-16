@@ -95,10 +95,24 @@ const productSchema = new mongoose.Schema({
         ref: 'Store',
         //required: true
     },
-    // reviews:[{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Review'
-    // }],
+    //Vendor details
+    vendorId:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vendor',
+    },
+    vendorCompanyName:{
+        type: String
+    },
+    vendorCategory:{
+        type: String
+    },
+    vendorTypeOfBusiness:{
+        type: String
+    },
+    isAuthenticVendorProduct:{
+        type: Boolean,
+        default: false
+    }
 },
 {
     //to create track of when was created or updated

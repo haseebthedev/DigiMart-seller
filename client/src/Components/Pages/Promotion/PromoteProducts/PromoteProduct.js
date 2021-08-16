@@ -77,7 +77,7 @@ export default function AddProduct() {
 		productName: "",
 		category: "",
 		description: "",
-		discount: 0,
+		discount: "",
 		promoCode: "-",
 		longUrl: "",
 		shortUrl: "",
@@ -85,6 +85,58 @@ export default function AddProduct() {
 		isUrlAlreadyCreated: false,
 		isScheduled: false,
 	});
+
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		categoryError: "",
+		descriptionError: "",
+		discountError: "",
+	});
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
+		if (PPdetails.productName.match(nameFormat)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError =
+				"Invalid Input. Name cannot contains several Special Characters!";
+		}
+
+		// description
+		var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		if (PPdetails.description.match(descFormat)) {
+			errors.descriptionError = "";
+		} else {
+			hasError = true;
+			errors.descriptionError =
+				"Description contains several characters that aren't allowed!";
+		}
+
+		// Product category
+		if (PPdetails.category.length === 0) {
+			hasError = true;
+			errors.categoryError = "Please Choose a Category for Product!";
+		} else {
+			errors.categoryError = "";
+		}
+
+		// discountFormat
+		var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
+		if (PPdetails.discount.match(discountFormat)) {
+			errors.discountError = "";
+		} else {
+			hasError = true;
+			errors.discountError = "Entered Discount Percentage is invalid.";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
 
 	const handlePPSchedule = (input) => (e) => {
 		setPPdetails({ ...PPdetails, [input]: e.target.checked });
@@ -341,44 +393,48 @@ export default function AddProduct() {
 		var error = shortUrl === "" ? true : false;
 		var URL = isScheduled === true ? "promote/schedule" : "promote";
 
-		if (error === false) {
-			await api
-				.post(
-					`/seller/store/product/${URL}`,
-					{
-						...dataToSend,
-					},
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				)
-				.then(
-					(res) =>
+		var hasError = InputValidation();
+
+		if (hasError === false) {
+			if (error === false) {
+				await api
+					.post(
+						`/seller/store/product/${URL}`,
+						{
+							...dataToSend,
+						},
+						{
+							headers: { Authorization: `Bearer ${token}` },
+						}
+					)
+					.then(
+						(res) =>
+							setSnackBar({
+								...snackBarstate,
+								type: "success",
+								message:
+									"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+								open: true,
+							})
+						// console.log("res ", res)
+					)
+					.catch(() =>
 						setSnackBar({
 							...snackBarstate,
-							type: "success",
+							type: "error",
 							message:
-								"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+								"ERROR: Kindly enter Valid Product Details to Promote!",
 							open: true,
 						})
-					// console.log("res ", res)
-				)
-				.catch(() =>
-					setSnackBar({
-						...snackBarstate,
-						type: "error",
-						message:
-							"ERROR: Kindly enter Valid Product Details to Promote!",
-						open: true,
-					})
-				);
-		} else {
-			setSnackBar({
-				...snackBarstate,
-				type: "error",
-				message: "ERROR: Kindly generate Short URL first!",
-				open: true,
-			});
+					);
+			} else {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Kindly generate Short URL first!",
+					open: true,
+				});
+			}
 		}
 	};
 
@@ -406,6 +462,12 @@ export default function AddProduct() {
 											onChange={handlePPdetails(
 												"productName"
 											)}
+											helperText={IFerrors.nameError}
+											error={
+												IFerrors.nameError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={12}>
@@ -421,6 +483,12 @@ export default function AddProduct() {
 											onChange={handlePPdetails(
 												"category"
 											)}
+											error={
+												IFerrors.categoryError.length >
+												0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Choose a Product Category
@@ -451,6 +519,15 @@ export default function AddProduct() {
 											onChange={handlePPdetails(
 												"description"
 											)}
+											helperText={
+												IFerrors.descriptionError
+											}
+											error={
+												IFerrors.descriptionError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -470,6 +547,13 @@ export default function AddProduct() {
 											onChange={handlePPdetails(
 												"discount"
 											)}
+											helperText={IFerrors.discountError}
+											error={
+												IFerrors.discountError.length >
+												0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid
@@ -550,6 +634,7 @@ export default function AddProduct() {
 											label="Product URL"
 											name="productURL"
 											value={PPdetails.longUrl}
+											disabled
 										/>
 									</Grid>
 									<Grid item xs={6} sm={6} md={4} lg={4}>
@@ -687,7 +772,7 @@ export default function AddProduct() {
 								</Grid>
 							</form>
 						</Grid>
-						<Grid item xs={12} sm={12} md={12} lg={4}>
+						<Grid item xs={false} sm={false} md={false} lg={4}>
 							<div
 								style={{
 									border: "1px solid rgb(224 224 224)",

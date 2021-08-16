@@ -12,7 +12,6 @@ import {
 	Grid,
 	Paper,
 	Typography,
-	Tooltip,
 	Modal,
 	Container,
 	TextField,
@@ -43,6 +42,7 @@ export default function Reviews() {
 
 	// OrdersList
 	const [ReviewsDetails, setReviewsDetails] = useState([]);
+	// const [tablePaging, settablePaging] = useState(false);
 
 	const [vendorResponse, setVendorResponse] = useState({
 		rid: "",
@@ -64,38 +64,67 @@ export default function Reviews() {
 		setVendorResponse({ ...vendorResponse, [input]: e.target.value });
 	};
 
+	const [IFerrors, setIFerrors] = useState({
+		responseError: "",
+	});
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// Message Response
+		var responseFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		if (
+			vendorResponse.response.match(responseFormat) &&
+			vendorResponse.response.length > 1
+		) {
+			errors.responseError = "";
+		} else {
+			hasError = true;
+			errors.responseError =
+				"Response Message contains several characters that aren't allowed!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
 	const submitVendorResponse = async () => {
-		await api
-			.patch(
-				`/seller/store/product/review/${vendorResponse.rid}/response`,
-				{
-					response: vendorResponse.response,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then(() => {
-				closeResponseModal();
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "SUCCESS: Your response has been sent!",
-					open: true,
+		const hasErrors = InputValidation();
+
+		if (hasErrors === false) {
+			await api
+				.patch(
+					`/seller/store/product/review/${vendorResponse.rid}/response`,
+					{
+						response: vendorResponse.response,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					closeResponseModal();
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "SUCCESS: Your response has been sent!",
+						open: true,
+					});
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
+				})
+				.catch(() => {
+					closeResponseModal();
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message: "ERROR: Something went wrong!",
+						open: true,
+					});
 				});
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
-			})
-			.catch(() => {
-				closeResponseModal();
-				setSnackBar({
-					...snackBarstate,
-					type: "error",
-					message: "ERROR: Something went wrong!",
-					open: true,
-				});
-			});
+		}
 	};
 
 	const getAllReviews = async () => {
@@ -146,22 +175,6 @@ export default function Reviews() {
 				</div>
 			),
 		},
-		{
-			title: "Actions",
-			field: "Actions",
-			align: "center",
-			render: (rowData) => (
-				<Tooltip title={"Send a Response"}>
-					<div
-						style={{ padding: 4 }}
-						onClick={() => openResponseModal(rowData._id)}
-					>
-						<ReplyIcon />
-					</div>
-				</Tooltip>
-			),
-			export: false,
-		},
 	];
 
 	return (
@@ -171,6 +184,14 @@ export default function Reviews() {
 					title="All Reviews"
 					data={ReviewsDetails}
 					columns={columns}
+					actions={[
+						(rowData) => ({
+							icon: () => <ReplyIcon />,
+							tooltip: "Send a Response",
+							onClick: (event, rowData) =>
+								openResponseModal(rowData._id),
+						}),
+					]}
 					options={{
 						actionsColumnIndex: -1,
 						headerStyle: {
@@ -206,7 +227,7 @@ export default function Reviews() {
 													<div key={index}>
 														<img
 															src={img}
-															alt="productImage"
+															alt="productImage1"
 															style={{
 																width: 120,
 																height: 120,
@@ -222,6 +243,7 @@ export default function Reviews() {
 												style={{
 													width: 120,
 													height: 120,
+													background: "grey",
 												}}
 											/>
 										)}
@@ -231,7 +253,6 @@ export default function Reviews() {
 											variant="h6"
 											style={{
 												fontWeight: "bold",
-												marginBottom: 10,
 											}}
 										>
 											User Comment:
@@ -241,40 +262,50 @@ export default function Reviews() {
 												<Typography
 													style={{
 														textAlign: "justify",
+														marginBottom: 15,
 													}}
 												>
 													{rowData.comment}
 												</Typography>
 											</div>
 										) : (
-											"No comment was written by User."
+											<Typography
+												style={{
+													textAlign: "justify",
+													marginBottom: 15,
+												}}
+											>
+												No comment was written by
+												Customer.
+											</Typography>
 										)}
-									</Grid>
-								</Grid>
 
-								<Grid container spacing={2}>
-									<Grid item xs={6}></Grid>
-									<Grid item xs={6}>
 										<Typography
 											variant="h6"
 											style={{
 												fontWeight: "bold",
-												marginBottom: 15,
 											}}
 										>
 											Vendor Response:
 										</Typography>
 
-										{rowData.response !== "" ? (
+										{rowData.response ? (
 											<Typography
 												style={{
 													textAlign: "justify",
+													marginBottom: 15,
 												}}
 											>
 												{rowData.response}
 											</Typography>
 										) : (
-											"No response from Vendor"
+											<Typography
+												style={{
+													textAlign: "justify",
+												}}
+											>
+												No response from Vendor
+											</Typography>
 										)}
 									</Grid>
 								</Grid>
@@ -317,6 +348,12 @@ export default function Reviews() {
 								label="Response"
 								value={vendorResponse.response}
 								onChange={handlerVendorResponse("response")}
+								helperText={IFerrors.responseError}
+								error={
+									IFerrors.responseError.length > 0
+										? true
+										: false
+								}
 							/>
 						</Grid>
 						<Grid item xs={12} sm={12} md={12} align="right">

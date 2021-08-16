@@ -1,10 +1,10 @@
 const ReportProblem = require('../model/report.model')
 const notification = require('../../notifications/account');
 
-const reportVendorProblem = async(req, res, next) => {
+const reportSellerProblem = async(req, res, next) => {
     try{
         req.body.email = req.user.eamil
-        req.body.vendorID = req.user._id
+        req.body.sellerID = req.user._id
         const myProblem = new ReportProblem(req.body)
         await myProblem.save()
 
@@ -12,7 +12,7 @@ const reportVendorProblem = async(req, res, next) => {
         const subject = 'Seller Problem Reported'
         const message = `Our seller reported a problem with following problem statement and description.
         <br><strong>${myProblem.subject}</strong><br>${myProblem.description}
-        <br><strong>Vendor ID: </strong>${myProblem.vendorID}
+        <br><strong>Seller ID: </strong>${myProblem.sellerID}
         <br><strong>Problem ID: </strong>${myProblem._id}`
         notification.sendReportProblemMail(subject,message,'Complaints Department')
 
@@ -57,7 +57,7 @@ const reportBuyerProblem = async(req, res, next) => {
     }
 }
 
-const reportAdminProblem = async(req, res, next) => {
+const reportSuperAdminProblem = async(req, res, next) => {
     try{
         req.body.email = req.user.eamil
         req.body.adminID = req.user._id
@@ -85,9 +85,9 @@ const reportAdminProblem = async(req, res, next) => {
     }
 }
 
-const viewReportedProblemsOfVendor = async(req, res, next) => {
+const viewReportedProblemsOfSeller = async(req, res, next) => {
     try{
-        const problems = await ReportProblem.find({ "vendorID": { "$ne": null }, "isProblemResolved": false })
+        const problems = await ReportProblem.find({ "sellerID": { "$ne": null }, "isProblemResolved": false })
         if(problems.length == 0){
             res.status(200).json({
                 message:`No problems found !`,
@@ -111,7 +111,7 @@ const viewReportedProblemsOfVendor = async(req, res, next) => {
     }
 }
 
-const viewReportedProblemsOfAdmin = async(req, res, next) => {
+const viewReportedProblemsOfSuperAdmin = async(req, res, next) => {
     try{
         const problems = await ReportProblem.find({ "adminID": { "$ne": null }, "isProblemResolved": false  })
         if(problems.length == 0){
@@ -190,13 +190,13 @@ const changeProblemStatusById = async(req, res, next) => {
 
 
 module.exports = {
-    reportVendorProblem,
+    reportSellerProblem,
     reportBuyerProblem,
-    reportAdminProblem,
+    reportSuperAdminProblem,
     //FOR ADMIN
-    viewReportedProblemsOfVendor,
+    viewReportedProblemsOfSeller,
     viewReportedProblemsOfBuyer,
     changeProblemStatusById,
     //FOR SUPER ADMIN
-    viewReportedProblemsOfAdmin
+    viewReportedProblemsOfSuperAdmin
 }

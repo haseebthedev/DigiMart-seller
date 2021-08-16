@@ -5,26 +5,26 @@ const auth = require('../../users/auth')
 
 //ROUTES FOR ADMIN
 //category
-router.post('/admin/product/category', auth.admin , productCategoryController.addCategory)
-router.patch('/admin/product/category/:id', auth.admin , productCategoryController.updateCategory)
-router.delete('/admin/product/category/:id', auth.admin , productCategoryController.deleteCategory)
-router.get('/admin/product/category/:id', auth.admin , productCategoryController.getCategoryById)
-router.get('/admin/product/categories/view', auth.admin , productCategoryController.getAllCategories)
-router.get('/admin/subCategories/:category', auth.admin, productCategoryController.getAllChildCategoriesOfParent)
+router.post('/superAdmin/product/category', auth.superAdmin , productCategoryController.addCategory)
+router.patch('/superAdmin/product/category/:id', auth.superAdmin , productCategoryController.updateCategory)
+router.delete('/superAdmin/product/category/:id', auth.superAdmin , productCategoryController.deleteCategory)
+router.get('/superAdmin/product/category/:id', auth.superAdmin , productCategoryController.getCategoryById)
+router.get('/superAdmin/product/categories/view', auth.superAdmin , productCategoryController.getAllCategories)
+router.get('/superAdmin/subCategories/:category', auth.superAdmin, productCategoryController.getAllChildCategoriesOfParent)
 //sub category
-router.post('/admin/product/subCategory/:category', auth.admin , productCategoryController.addSubCategory)
-router.delete('/admin/product/subCategory/:id', auth.admin , productCategoryController.deleteSubCategoryById)
-router.patch('/admin/product/subCategory/:id', auth.admin , productCategoryController.updateSubCategoryById)
-router.get('/admin/product/subCategory/:id', auth.admin , productCategoryController.getSubCategoryById)
+router.post('/superAdmin/product/subCategory/:category', auth.superAdmin , productCategoryController.addSubCategory)
+router.delete('/superAdmin/product/subCategory/:id', auth.superAdmin , productCategoryController.deleteSubCategoryById)
+router.patch('/superAdmin/product/subCategory/:id', auth.superAdmin , productCategoryController.updateSubCategoryById)
+router.get('/superAdmin/product/subCategory/:id', auth.superAdmin , productCategoryController.getSubCategoryById)
 //brands
-router.post('/admin/product/brand/:category', auth.admin , productCategoryController.addBrandOfCategory)
-router.delete('/admin/product/brand/:id', auth.admin , productCategoryController.deleteBrandById)
-router.patch('/admin/product/brand/:id', auth.admin , productCategoryController.updateBrandById)
-router.get('/admin/product/brand/:id', auth.admin , productCategoryController.getBrandById)
+router.post('/superAdmin/product/brand/:category', auth.superAdmin , productCategoryController.addBrandOfCategory)
+router.delete('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.deleteBrandById)
+router.patch('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.updateBrandById)
+router.get('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.getBrandById)
 
-//ROUTES FOR VENDOR
-router.get('/seller/product/category/:id', auth.vendor , productCategoryController.getCategoryById)
-router.get('/seller/product/categories', auth.vendor , productCategoryController.getAllCategories)
-router.get('/seller/subCategories/brands/:category', auth.vendor, productCategoryController.getAllChildCategoriesOfParent)
+//ROUTES FOR SELLER
+router.get('/seller/product/category/:id', auth.seller , productCategoryController.getCategoryById)
+router.get('/seller/product/categories', auth.seller , productCategoryController.getAllCategories)
+router.get('/seller/subCategories/brands/:category', auth.seller, productCategoryController.getAllChildCategoriesOfParent)
 
 module.exports = router

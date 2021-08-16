@@ -94,7 +94,7 @@ const getAllReviewsGivenByMe = async(req, res, next) => {
     }
 }
 
-//FOR AUTHENTICATED VENDOR
+//FOR AUTHENTICATED Seller
 
 const getAllReviewsOfMyStore = async(req, res, next) => {
     try{
@@ -218,10 +218,10 @@ module.exports = {
     //for admin
     getAllReviewsOfStoreById,
     getAllReviewsOfAllStores,
-    //for vendor and admin
+    //for Seller and admin
     getAllReviewsOfProductById,
     getAllReviewsOfBuyerById,
-    //for vendor only
+    //for Seller only
     getAllReviewsOfMyStore,
     addResponseOfReviewById
 }

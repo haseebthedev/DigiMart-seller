@@ -3,16 +3,16 @@ const router = express.Router()
 const problemController = require('../controller/report.controller')
 const auth = require('../../users/auth')
 
-router.post('/seller/reportProblem', auth.vendor, problemController.reportVendorProblem)
+router.post('/seller/reportProblem', auth.seller, problemController.reportSellerProblem)
 router.post('/buyer/reportProblem', auth.buyer, problemController.reportBuyerProblem)
-router.post('/admin/reportProblem', auth.admin, problemController.reportAdminProblem)
+router.post('/superAdmin/reportProblem', auth.superAdmin, problemController.reportSuperAdminProblem)
 
 //ROLES FOR ADMIN
-router.get('/admin/view/seller/problems', auth.admin, problemController.viewReportedProblemsOfVendor)
-router.get('/admin/view/buyer/problems', auth.admin, problemController.viewReportedProblemsOfBuyer)
-router.patch('/admin/problem/:id', auth.admin, problemController.changeProblemStatusById)
+router.get('/superAdmin/view/seller/problems', auth.superAdmin, problemController.viewReportedProblemsOfSeller)
+router.get('/superAdmin/view/buyer/problems', auth.superAdmin, problemController.viewReportedProblemsOfBuyer)
+router.patch('/superAdmin/problem/:id', auth.superAdmin, problemController.changeProblemStatusById)
 
 //ROLES FOR SUPER ADMIN
-router.get('/superAdmin/view/admin/problems', auth.admin, problemController.viewReportedProblemsOfAdmin)
+router.get('/superAdmin/view/admin/problems', auth.superAdmin, problemController.viewReportedProblemsOfSuperAdmin)
 
 module.exports = router

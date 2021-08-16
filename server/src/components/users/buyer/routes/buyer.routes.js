@@ -15,12 +15,12 @@ router.patch('/buyer/me', buyerAuth ,buyerController.updateProfile)
 router.patch('/buyer/updatePassword', buyerAuth ,buyerController.changePassword)
 
 //ROUTES FOR ADMIN
-router.get('/admin/buyers', auth.admin, buyerController.getAllBuyersDetails)
-router.get('/admin/buyers/totalNumber', auth.admin, buyerController.getTotalNumberOfBuyers)
-router.patch('/admin/buyer/block/:id', auth.admin, buyerController.blockBuyerById)
-router.patch('/admin/buyer/unblock/:id', auth.admin, buyerController.unBlockBuyerById)
-router.get('/admin/buyer/:id', auth.admin, buyerController.viewBuyerById)
-router.post('/admin/buyer/register', auth.admin, buyerController.registerBuyer)
-router.patch('/admin/buyer/:id', auth.admin, buyerController.editBuyerById)
+router.get('/superAdmin/buyers', auth.superAdmin, buyerController.getAllBuyersDetails)
+router.get('/superAdmin/buyers/totalNumber', auth.superAdmin, buyerController.getTotalNumberOfBuyers)
+router.patch('/superAdmin/buyer/block/:id', auth.superAdmin, buyerController.blockBuyerById)
+router.patch('/superAdmin/buyer/unblock/:id', auth.superAdmin, buyerController.unBlockBuyerById)
+router.get('/superAdmin/buyer/:id', auth.superAdmin, buyerController.viewBuyerById)
+router.post('/superAdmin/buyer/register', auth.superAdmin, buyerController.registerBuyer)
+router.patch('/superAdmin/buyer/:id', auth.superAdmin, buyerController.editBuyerById)
 
 module.exports = router 

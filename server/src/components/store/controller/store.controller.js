@@ -1,5 +1,5 @@
 const Store = require('../model/store.model')
-const Vendor = require('../../users/vendor/models/vendor.model')
+const Seller = require('../../users/seller/models/seller.model')
 
 const registerStore = async(req, res, next) => {
     try{
@@ -7,7 +7,7 @@ const registerStore = async(req, res, next) => {
         const store = new Store(req.body)
         await store.save()
         user.storeId = store._id
-        //set store registered in vendor profile
+        //set store registered in seller profile
         user.isStoreRegistered = true
         await user.save()
         res.status(201).json({
@@ -260,7 +260,7 @@ const editStoreById = async(req, res, next) => {
         updates.forEach((update) => store[update] = req.body[update])
         await store.save()
         return res.status(200).json({
-            message:`Store and Vendor updated successfully.`,
+            message:`Store and Seller updated successfully.`,
             data:{
                 store
             }
@@ -289,10 +289,10 @@ const viewStoreById = async(req, res, next) => {
     }
 }
 
-const addStoreOfVendorById = async(req, res, next) => {
+const addStoreOfSellerById = async(req, res, next) => {
     try{
         const _id = req.params.id
-        const user = await Vendor.findById(_id)
+        const user = await Seller.findById(_id)
         const store = new Store(req.body)
         await store.save()
         user.storeId = store._id
@@ -329,7 +329,7 @@ module.exports = {
     viewAllStores,
     editStoreById,
     viewStoreById,
-    addStoreOfVendorById,
+    addStoreOfSellerById,
     viewAllStoreApprovals,
     viewAllStoresApproved
 }

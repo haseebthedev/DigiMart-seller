@@ -187,7 +187,7 @@ const Register = () => {
 						align="center"
 						className={classes.headingMargin}
 					>
-						Registration for Vendor
+						Registration for Seller
 					</Typography>
 					<Typography variant="h6" spacing={3} gutterBottom>
 						Personal Details

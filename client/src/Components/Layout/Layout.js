@@ -64,12 +64,19 @@ import StorageIcon from "@material-ui/icons/Storage";
 import SurroundSoundIcon from "@material-ui/icons/SurroundSound";
 import EventIcon from "@material-ui/icons/Event";
 import LocalActivityIcon from "@material-ui/icons/LocalActivity";
+import ContactMailIcon from "@material-ui/icons/ContactMail";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import ViewListIcon from "@material-ui/icons/ViewList";
+import ArtTrackIcon from "@material-ui/icons/ArtTrack";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
 
 // Page Components
 import VendorAnalytics from "../VendorAnalytics/VendorAnalytics";
+import AddVendor from "../Pages/Vendor/AddVendor/AddVendor";
+import ViewVendors from "../Pages/Vendor/ViewVendors/ViewVendors";
+import BuyVendorProduct from "../Pages/Vendor/BuyVendorProduct/BuyVendorProduct";
 import AddProduct from "../Pages/Product/AddProduct/AddProduct";
 import ViewProducts from "../Pages/Product/ViewProducts/ViewProducts";
 import Orders from "../Pages/Orders/Orders";
@@ -81,6 +88,7 @@ import SettingsStore from "../Pages/Setting/SettingsStore";
 import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
 import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProducts";
 import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
+import BusinessAnalytics from "../Pages/BusinessAnalytics/BusinessAnalytics";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -146,6 +154,7 @@ const Layout = (props) => {
 	const [openDDSettings, setOpenDDSettings] = useState(false);
 	const [openDDPayments, setOpenDDPayments] = useState(false);
 	const [openDDPromotions, setOpenDDPromotions] = useState(false);
+	const [openDDVendors, setOpenDDVendors] = useState(false);
 
 	const handleDDProduct = () => {
 		setOpenDDProduct(!openDDProduct);
@@ -176,6 +185,9 @@ const Layout = (props) => {
 	};
 	const handleDDPromotions = () => {
 		setOpenDDPromotions(!openDDPromotions);
+	};
+	const handleDDVendor = () => {
+		setOpenDDVendors(!openDDVendors);
 	};
 
 	// DARK MODE
@@ -212,7 +224,7 @@ const Layout = (props) => {
 
 	return (
 		<div className={classes.root}>
-			{isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
+			{isLoggedOut ? <Redirect to="/seller/login" /> : ""}
 			<CssBaseline />
 			<AppBar
 				position="fixed"
@@ -382,8 +394,8 @@ const Layout = (props) => {
 					<ListItem
 						button
 						component={Link}
-						to="/vendor/dashboard"
-						selected={pathname === "/vendor/dashboard"}
+						to="/seller/dashboard"
+						selected={pathname === "/seller/dashboard"}
 					>
 						<ListItemIcon>
 							<DashboardIcon className={classes.iconColor} />
@@ -391,9 +403,74 @@ const Layout = (props) => {
 						<ListItemText primary={"Dashboard"} />
 					</ListItem>
 
-					<ListItem button onClick={handleDDProduct}>
+					{/* Add a Vendor */}
+					<ListItem button onClick={handleDDVendor}>
 						<ListItemIcon>
 							<ProductIcon className={classes.iconColor} />
+						</ListItemIcon>
+						<ListItemText primary="Vendors" />
+						{openDDVendors ? <ExpandLess /> : <ExpandMore />}
+					</ListItem>
+					<Collapse in={openDDVendors} timeout="auto" unmountOnExit>
+						<List component="div" disablePadding>
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname === "/seller/vendors/add-vendor"
+								}
+								component={Link}
+								to="/seller/vendors/add-vendor"
+							>
+								<ListItemIcon>
+									<ContactMailIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Add a Vendor" />
+							</ListItem>
+
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/seller/vendors/view-all-vendors"
+								}
+								component={Link}
+								to="/seller/vendors/view-all-vendors"
+							>
+								<ListItemIcon>
+									<ViewListIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="View Vendors" />
+							</ListItem>
+
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/seller/vendors/buy-vendor-product"
+								}
+								component={Link}
+								to="/seller/vendors/buy-vendor-product"
+							>
+								<ListItemIcon>
+									<ShoppingCartIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Buy Vendor Product" />
+							</ListItem>
+						</List>
+					</Collapse>
+
+					<ListItem button onClick={handleDDProduct}>
+						<ListItemIcon>
+							<ArtTrackIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Products" />
 						{openDDProduct ? <ExpandLess /> : <ExpandMore />}
@@ -404,10 +481,10 @@ const Layout = (props) => {
 								button
 								className={classes.dropdown}
 								selected={
-									pathname === "/vendor/products/add-product"
+									pathname === "/seller/products/add-product"
 								}
 								component={Link}
-								to="/vendor/products/add-product"
+								to="/seller/products/add-product"
 							>
 								<ListItemIcon>
 									<SaveAltIcon
@@ -422,10 +499,10 @@ const Layout = (props) => {
 								button
 								selected={
 									pathname ===
-									"/vendor/products/view-products"
+									"/seller/products/view-products"
 								}
 								component={Link}
-								to="/vendor/products/view-products"
+								to="/seller/products/view-products"
 							>
 								<ListItemIcon>
 									<ViewComfyIcon
@@ -436,19 +513,11 @@ const Layout = (props) => {
 							</ListItem>
 						</List>
 					</Collapse>
-
-					{/* <ListItem button selected={pathname === "/vendor/sales"}>
-						<ListItemIcon>
-							<SalesIcon className={classes.iconColor} />
-						</ListItemIcon>
-						<ListItemText primary="Sales" />
-					</ListItem> */}
-
 					<ListItem
 						button
-						selected={pathname === "/vendor/Orders"}
+						selected={pathname === "/seller/orders"}
 						component={Link}
-						to="/vendor/Orders"
+						to="/seller/orders"
 					>
 						<ListItemIcon>
 							<InboxIcon className={classes.iconColor} />
@@ -458,9 +527,9 @@ const Layout = (props) => {
 
 					<ListItem
 						button
-						selected={pathname === "/vendor/reviews"}
+						selected={pathname === "/seller/reviews"}
 						component={Link}
-						to="/vendor/Reviews"
+						to="/seller/reviews"
 					>
 						<ListItemIcon>
 							<SpeakerNotesIcon className={classes.iconColor} />
@@ -489,10 +558,10 @@ const Layout = (props) => {
 								button
 								selected={
 									pathname ===
-									"/vendor/payments/PaymentMethod"
+									"/seller/payments/PaymentMethod"
 								}
 								component={Link}
-								to="/vendor/payments/PaymentMethod"
+								to="/seller/payments/PaymentMethod"
 							>
 								<ListItemIcon>
 									<PaymentIcon
@@ -505,10 +574,10 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								button
 								selected={
-									pathname === "/vendor/payments/Transactions"
+									pathname === "/seller/payments/Transactions"
 								}
 								component={Link}
-								to="/vendor/payments/Transactions"
+								to="/seller/payments/Transactions"
 							>
 								<ListItemIcon>
 									<StorageIcon
@@ -520,7 +589,12 @@ const Layout = (props) => {
 						</List>
 					</Collapse>
 
-					<ListItem button>
+					<ListItem
+						button
+						selected={pathname === "/seller/business-analytics"}
+						component={Link}
+						to="/seller/business-analytics"
+					>
 						<ListItemIcon>
 							<AssessmentIcon className={classes.iconColor} />
 						</ListItemIcon>
@@ -541,10 +615,10 @@ const Layout = (props) => {
 								button
 								className={classes.dropdown}
 								selected={
-									pathname === "/vendor/setting/profile"
+									pathname === "/seller/setting/profile"
 								}
 								component={Link}
-								to="/vendor/setting/profile"
+								to="/seller/setting/profile"
 							>
 								<ListItemIcon>
 									<AccountCircleIcon
@@ -556,9 +630,9 @@ const Layout = (props) => {
 							<ListItem
 								button
 								className={classes.dropdown}
-								selected={pathname === "/vendor/setting/store"}
+								selected={pathname === "/seller/setting/store"}
 								component={Link}
-								to="/vendor/setting/store"
+								to="/seller/setting/store"
 							>
 								<ListItemIcon>
 									<LocalConvenienceStoreIcon
@@ -588,10 +662,10 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								selected={
 									pathname ===
-									"/vendor/Promotion/Promote-Product"
+									"/seller/Promotion/promote-product"
 								}
 								component={Link}
-								to="/vendor/Promotion/Promote-Product"
+								to="/seller/Promotion/promote-product"
 							>
 								<ListItemIcon>
 									<SurroundSoundIcon
@@ -606,10 +680,10 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								selected={
 									pathname ===
-									"/vendor/Promotion/Regular-Customers"
+									"/seller/Promotion/Regular-Customers"
 								}
 								component={Link}
-								to="/vendor/Promotion/Regular-Customers"
+								to="/seller/Promotion/Regular-Customers"
 							>
 								<ListItemIcon>
 									<AccountCircleIcon
@@ -624,10 +698,10 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								selected={
 									pathname ===
-									"/vendor/Promotion/Promoted-Products"
+									"/seller/Promotion/promoted-products"
 								}
 								component={Link}
-								to="/vendor/Promotion/Promoted-Products"
+								to="/seller/Promotion/promoted-products"
 							>
 								<ListItemIcon>
 									<LocalActivityIcon
@@ -642,10 +716,10 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								selected={
 									pathname ===
-									"/vendor/Promotion/Scheduled-Promotions"
+									"/seller/Promotion/scheduled-promotions"
 								}
 								component={Link}
-								to="/vendor/Promotion/Scheduled-Promotions"
+								to="/seller/Promotion/scheduled-promotions"
 							>
 								<ListItemIcon>
 									<EventIcon className={classes.iconColor} />
@@ -664,45 +738,61 @@ const Layout = (props) => {
 			>
 				<SwitchRouter>
 					<Route
-						path="/vendor/dashboard"
+						path="/seller/dashboard"
 						component={VendorAnalytics}
 					/>
 					<Route
-						path="/vendor/products/add-product"
+						path="/seller/vendors/add-vendor"
+						component={AddVendor}
+					/>
+					<Route
+						path="/seller/vendors/view-all-vendors"
+						component={ViewVendors}
+					/>
+					<Route
+						path="/seller/vendors/buy-vendor-product"
+						component={BuyVendorProduct}
+					/>
+					<Route
+						path="/seller/products/add-product"
 						component={AddProduct}
 					/>
 					<Route
-						path="/vendor/products/view-products"
+						path="/seller/products/view-products"
 						component={ViewProducts}
 					/>
-					<Route path="/vendor/Orders" component={Orders} />
-					<Route path="/vendor/Reviews" component={Reviews} />
+					<Route path="/seller/orders" component={Orders} />
+					<Route path="/seller/reviews" component={Reviews} />
 					<Route
-						path="/vendor/payments/PaymentMethod"
+						path="/seller/payments/PaymentMethod"
 						component={PaymentMethod}
 					/>
 					<Route
-						path="/vendor/payments/Transactions"
+						path="/seller/payments/Transactions"
 						component={Transactions}
 					/>
 					<Route
-						path="/vendor/setting/profile"
+						path="/seller/business-analytics"
+						component={BusinessAnalytics}
+					/>
+					<Route
+						path="/seller/setting/profile"
 						component={SettingsProfile}
 					/>
 					<Route
-						path="/vendor/setting/store"
+						path="/seller/setting/store"
 						component={SettingsStore}
 					/>
 					<Route
-						path="/vendor/Promotion/Promote-Product"
+						path="/seller/Promotion/promote-product"
 						component={PromoteProduct}
 					/>
 					<Route
-						path="/vendor/Promotion/Promoted-Products"
+						path="/seller/Promotion/promoted-products"
 						component={PromotedProducts}
 					/>
 					<Route
-						path="/vendor/Promotion/Scheduled-Promotions"
+						path="/seller/Promotion/scheduled-promotions"
 						component={ScheduledPromotions}
 					/>
 				</SwitchRouter>

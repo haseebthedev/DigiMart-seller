@@ -3,6 +3,9 @@ import api from "../../../Axios/api";
 import MaterialTable from "material-table";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+// import VisibilityIcon from "@material-ui/icons/Visibility";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
 import {
 	Grid,
@@ -11,6 +14,10 @@ import {
 	Divider,
 	Select,
 	MenuItem,
+	TextField,
+	Container,
+	Modal,
+	Button,
 } from "@material-ui/core";
 
 import { useUserContext } from "../../../context/UserContext";
@@ -35,8 +42,85 @@ export default function Orders() {
 		setSnackBar({ ...snackBarstate, open: false });
 	};
 
+	// Edit Order Modal here
+	const [editOrderOpen, setEditOrderOpen] = useState(true);
+	const handleOpen = () => {
+		setEditOrderOpen(true);
+	};
+	const handleClose = () => {
+		setEditOrderOpen(false);
+	};
+
 	// OrdersList
 	const [OrderDetails, setOrderdetails] = useState([]);
+
+	const [editOrderDetails, setEditOrderDetails] = useState({
+		_id: "",
+		status: "",
+		products: [],
+		deliveryDate: "",
+		storeId: "",
+		storeName: "",
+		buyerId: "",
+		name: "",
+		deliveryAddress: "",
+		contactNumber: "",
+		email: "",
+		couponCode: "",
+		totalDiscount: "",
+		subTotalPrice: "",
+		totalPrice: "",
+		totalPurchasePrice: "",
+		shippingFee: "",
+		deliveryInstructions: "",
+		totalQuantity: "",
+	});
+
+	const handlerOrderChange = (input) => (e) => {
+		setEditOrderDetails({ ...editOrderDetails, [input]: e.target.value });
+	};
+
+	const handlerProductChange = (input, index) => (e) => {
+		console.log(e.target.value);
+
+		let updatedProduct = {
+			...editOrderDetails.products[index],
+			[input]: e.target.value,
+		};
+
+		var productList = editOrderDetails.products;
+
+		var newProductList = productList.splice(index, 1, updatedProduct);
+
+		setEditOrderDetails({
+			...editOrderDetails,
+			products: newProductList,
+		});
+	};
+
+	const deleteProductfromOrder = (id) => {
+		let products = editOrderDetails.products;
+		let newProducts = products.filter((prod) => prod._id !== id);
+
+		setEditOrderDetails({ ...editOrderDetails, products: newProducts });
+	};
+
+	const handleUpdateOrder = async (id) => {
+		console.log("editOrderDetails ", editOrderDetails);
+
+		await api
+			.patch(
+				`/seller/store/order/${editOrderDetails._id}`,
+				{ ...editOrderDetails },
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then((res) => {
+				console.log("res ", res);
+			})
+			.catch((error) => console.log(error));
+	};
 
 	const handerChangeStatus = (id) => async (e) => {
 		let newStatus = e.target.value;
@@ -120,7 +204,10 @@ export default function Orders() {
 			hidden: false,
 			export: true,
 		},
-		{ title: "Order ID", field: "_id" },
+		{
+			title: "Order ID",
+			field: "_id",
+		},
 		{ title: "Name", field: "name" },
 		{ title: "Contact", field: "contactNumber" },
 		{
@@ -161,25 +248,23 @@ export default function Orders() {
 		},
 		{
 			title: "Date",
-			field: "orderDateTime",
+			field: "createdAt",
 			align: "center",
-			render: ({ orderDateTime }) => (
-				<div>{orderDateTime.split("T")[0]}</div>
-			),
+			render: ({ createdAt }) => <div>{createdAt.split("T")[0]}</div>,
 		},
 		{
 			title: "Time",
-			field: "orderDateTime",
+			field: "createdAt",
 			align: "center",
-			render: ({ orderDateTime }) => {
-				let time = new Date(orderDateTime);
+			render: ({ createdAt }) => {
+				let time = new Date(createdAt);
 				return <div>{time.toLocaleTimeString()}</div>;
 			},
 			export: false,
 		},
 		{
-			field: "Actions",
-			title: "Actions",
+			field: "",
+			title: "",
 			align: "center",
 			render: (rowData) => (
 				<div>
@@ -211,6 +296,19 @@ export default function Orders() {
 					title="All Orders"
 					data={OrderDetails}
 					columns={columns}
+					actions={[
+						(rowData) => ({
+							icon: () => <EditIcon />,
+							tooltip: "Edit Order Details",
+							onClick: (event, rowData) => {
+								setEditOrderDetails({
+									editOrderDetails,
+									...rowData,
+								});
+								handleOpen();
+							},
+						}),
+					]}
 					options={{
 						actionsColumnIndex: -1,
 						headerStyle: {
@@ -351,6 +449,243 @@ export default function Orders() {
 					}}
 				/>
 			</Grid>
+
+			{/* Edit Product */}
+			<Modal
+				open={editOrderOpen}
+				onClose={handleClose}
+				onBackdropClick={handleClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container
+					component={Paper}
+					style={{
+						padding: "20px",
+						maxWidth: "70vw",
+						maxHeight: "80vh",
+						overflow: "auto",
+						scrollbarWidth: "2px",
+					}}
+				>
+					<Grid container spacing={2}>
+						<Grid item xs={12} sm={12} md={12} align="center">
+							<Typography variant="h5">
+								Edit Order Details
+							</Typography>
+						</Grid>
+						<Grid container spacing={2}>
+							<Grid item xs={12} md={4}>
+								<form
+									className={classes.form}
+									noValidate
+									style={{ padding: 20 }}
+								>
+									<Typography
+										variant="h6"
+										style={{
+											fontWeight: "bold",
+											marginBottom: 10,
+										}}
+									>
+										Customer Details:
+									</Typography>
+									<div>
+										<Typography
+											style={{
+												marginBottom: 10,
+											}}
+										>
+											BID: {editOrderDetails.buyerId}
+										</Typography>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Name"
+											value={editOrderDetails.name}
+											onChange={handlerOrderChange(
+												"name"
+											)}
+										/>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Email"
+											value={editOrderDetails.email}
+											onChange={handlerOrderChange(
+												"email"
+											)}
+										/>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Delivery Address"
+											value={
+												editOrderDetails.deliveryAddress
+											}
+											onChange={handlerOrderChange(
+												"deliveryAddress"
+											)}
+										/>
+									</div>
+								</form>
+							</Grid>
+							<Grid item xs={12} md={8}>
+								<form
+									className={classes.form}
+									noValidate
+									style={{ padding: 20 }}
+								>
+									<Grid container spacing={2}>
+										<Grid item xs={12}>
+											<Typography
+												variant="h6"
+												style={{
+													fontWeight: "bold",
+													marginBottom: 10,
+												}}
+											>
+												Ordered Items:
+											</Typography>
+											{editOrderDetails.products.map(
+												(prod, index) => (
+													<Grid
+														item
+														xs={12}
+														key={prod._id}
+														style={{
+															marginBottom: 30,
+														}}
+													>
+														<Grid container>
+															<Grid item xs={10}>
+																<Typography
+																	style={{
+																		marginBottom: 10,
+																	}}
+																>
+																	PID:{" "}
+																	{
+																		prod.productId
+																	}
+																</Typography>
+
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	fullWidth
+																	label="Name"
+																	value={
+																		prod.name
+																	}
+																	onChange={handlerProductChange(
+																		"name",
+																		index
+																	)}
+																/>
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	fullWidth
+																	label="Color"
+																	value={
+																		prod.color
+																	}
+																	onChange={handlerProductChange(
+																		"color",
+																		index
+																	)}
+																/>
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	fullWidth
+																	label="Size"
+																	value={
+																		prod.size
+																	}
+																	onChange={handlerProductChange(
+																		"size",
+																		index
+																	)}
+																/>
+																<TextField
+																	margin="dense"
+																	variant="outlined"
+																	fullWidth
+																	label="Quantity"
+																	value={
+																		prod.quantity
+																	}
+																	onChange={handlerProductChange(
+																		"quantity",
+																		index
+																	)}
+																/>
+															</Grid>
+															<Grid
+																item
+																xs={2}
+																align="center"
+															>
+																<DeleteSweepIcon
+																	style={{
+																		fontSize: 30,
+																	}}
+																	onClick={() =>
+																		deleteProductfromOrder(
+																			prod._id
+																		)
+																	}
+																/>
+															</Grid>
+														</Grid>
+													</Grid>
+												)
+											)}
+										</Grid>
+									</Grid>
+								</form>
+							</Grid>
+
+							{/* BUTTONS */}
+							<Grid
+								item
+								xs={12}
+								align="center"
+								style={{ marginTop: -30, marginBottom: 20 }}
+							>
+								<Button
+									variant="outlined"
+									color="primary"
+									style={{ marginRight: 10 }}
+									onClick={handleClose}
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={handleUpdateOrder}
+								>
+									UPDATE
+								</Button>
+							</Grid>
+						</Grid>
+					</Grid>
+				</Container>
+			</Modal>
+
+			{/* Alert Snackbar */}
 			<Snackbar
 				open={open}
 				anchorOrigin={{ vertical, horizontal }}

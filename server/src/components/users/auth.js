@@ -1,9 +1,9 @@
-const vendor = require('./vendor/middlewares/vendorAuth')
+const seller = require('./seller/middlewares/sellerAuth')
 const buyer = require('./buyer/middlewares/buyerAuth')
-const admin = require('../users/admin/middlewares/adminAuth')
+const superAdmin = require('./super-admin/middlewares/superAdminAuth')
 
 module.exports = {
-    vendor,
+    seller,
     buyer,
-    admin
+    superAdmin
 }

@@ -17,14 +17,14 @@ function App() {
 		<BrowserRouter>
 			<div className="App">
 				<Switch>
-					<Route path="/vendor/register" exact component={Register} />
+					<Route path="/seller/register" exact component={Register} />
 					<Route
-						path="/vendor/forget-password"
+						path="/seller/forget-password"
 						exact
 						component={ForgetPassword}
 					/>
-					<Route path="/vendor/login" exact component={Login} />
-					<PrivateRoute path="/vendor">
+					<Route path="/seller/login" exact component={Login} />
+					<PrivateRoute path="/seller">
 						<Layout />
 					</PrivateRoute>
 				</Switch>
@@ -41,7 +41,7 @@ function App() {
 					store.isAuthenticated ? (
 						children
 					) : (
-						<Redirect to="/vendor/login" />
+						<Redirect to="/seller/login" />
 					)
 				}
 			/>

@@ -67,7 +67,7 @@ const storeSchema = new mongoose.Schema({
     // }],
     earningsID:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'VendorEarning'
+        ref:'SellerEarning'
     }
 },
 {

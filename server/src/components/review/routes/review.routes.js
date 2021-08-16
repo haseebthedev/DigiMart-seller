@@ -11,19 +11,19 @@ router.get('/buyer/product/review/:id', auth.buyer, reviewController.getReviewBy
 router.get('/buyer/reviews/view', auth.buyer, reviewController.getAllReviewsGivenByMe)
 
 //FOR VENDORS
-router.get('/seller/store/products/reviews', auth.vendor, reviewController.getAllReviewsOfMyStore)
-router.get('/seller/store/product/review/:id', auth.vendor, reviewController.getReviewById)
-router.get('/seller/store/reviews/product/:id', auth.vendor, reviewController.getAllReviewsOfProductById)
-router.get('/seller/store/reviews/buyer/:id', auth.vendor, reviewController.getAllReviewsOfBuyerById)
-router.patch('/seller/store/product/review/:id/response', auth.vendor, reviewController.addResponseOfReviewById)
+router.get('/seller/store/products/reviews', auth.seller, reviewController.getAllReviewsOfMyStore)
+router.get('/seller/store/product/review/:id', auth.seller, reviewController.getReviewById)
+router.get('/seller/store/reviews/product/:id', auth.seller, reviewController.getAllReviewsOfProductById)
+router.get('/seller/store/reviews/buyer/:id', auth.seller, reviewController.getAllReviewsOfBuyerById)
+router.patch('/seller/store/product/review/:id/response', auth.seller, reviewController.addResponseOfReviewById)
 
 //FOR ADMINS
-router.patch('/admin/product/review/:id', auth.admin, reviewController.updateReviewById)
-router.delete('/admin/product/review/:id', auth.admin, reviewController.deleteReviewById)
-router.get('/admin/product/review/:id', auth.admin, reviewController.getReviewById)
-router.get('/admin/products/reviews/store/:id', auth.admin, reviewController.getAllReviewsOfStoreById)
-router.get('/admin/store/reviews/product/:id', auth.admin, reviewController.getAllReviewsOfProductById)
-router.get('/admin/store/reviews/buyer/:id', auth.admin, reviewController.getAllReviewsOfBuyerById)
-router.get('/admin/stores/reviews', auth.admin, reviewController.getAllReviewsOfAllStores)
+router.patch('/superAdmin/product/review/:id', auth.superAdmin, reviewController.updateReviewById)
+router.delete('/superAdmin/product/review/:id', auth.superAdmin, reviewController.deleteReviewById)
+router.get('/superAdmin/product/review/:id', auth.superAdmin, reviewController.getReviewById)
+router.get('/superAdmin/products/reviews/store/:id', auth.superAdmin, reviewController.getAllReviewsOfStoreById)
+router.get('/superAdmin/store/reviews/product/:id', auth.superAdmin, reviewController.getAllReviewsOfProductById)
+router.get('/superAdmin/store/reviews/buyer/:id', auth.superAdmin, reviewController.getAllReviewsOfBuyerById)
+router.get('/superAdmin/stores/reviews', auth.superAdmin, reviewController.getAllReviewsOfAllStores)
 
 module.exports = router

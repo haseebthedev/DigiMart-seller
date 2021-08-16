@@ -68,7 +68,7 @@ const ImageCrop = (props) => {
 	}, [completedCrop]);
 
 	return (
-		<div className="App">
+		<div className="App" style={{ borderRadius: 6 }}>
 			<div>
 				<input type="file" accept="image/*" onChange={onSelectFile} />
 			</div>
@@ -132,13 +132,22 @@ const ImageCrop = (props) => {
 					)}
 				</Grid>
 			</Grid>
-			<Grid>
+			<Grid
+				style={{
+					position: "absolute",
+					bottom: 20,
+					right: 20,
+				}}
+			>
 				<Button
-					style={{
-						position: "absolute",
-						bottom: 20,
-						right: 20,
-					}}
+					variant="outlined"
+					color="primary"
+					onClick={props.handleClose}
+					style={{ marginRight: 10 }}
+				>
+					CANCEL
+				</Button>
+				<Button
 					variant="contained"
 					color="primary"
 					onClick={setCroppedImage}

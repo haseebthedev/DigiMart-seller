@@ -1,7 +1,7 @@
 const Store = require('../../store/model/store.model')
 const Product = require('../model/product.model')
 
-const addProduct = async(req, res, next) => {
+const addProductToMyStore = async(req, res, next) => {
 
     //FOR AUTHENTICATED VENDOR
     try{
@@ -347,7 +347,7 @@ const addProductByStoreId = async(req, res, next) => {
         const store = await Store.findOne({_id: storeId})
         //check if product name added before in this store DB
         if(!store){
-            throw new Error('Please register your store to add Product.')
+            throw new Error('Please register store to add Product.')
         }
         const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:storeId})
         if(isProductNamePresent){
@@ -372,8 +372,8 @@ const addProductByStoreId = async(req, res, next) => {
 
 
 module.exports = {
-    //VENDOR
-    addProduct,
+    //SELLER
+    addProductToMyStore,
     updateProduct,
     deleteProduct,
     viewMyStoreProducts,

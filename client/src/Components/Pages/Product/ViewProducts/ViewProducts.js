@@ -172,15 +172,32 @@ export default function ViewProducts() {
 		state: "New",
 		shippingCost: "20",
 		images: [],
-		discountPercentage: 10,
-		discountPrice: 0,
-		stockAvailable: 0,
+		discountPercentage: "",
+		discountPrice: "",
+		stockAvailable: "",
 		dimensions: "",
 		isOnSale: false,
 		warranty: "",
 		weight: "",
 	});
 	const [colors, setColors] = useState([]);
+
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		descriptionError: "",
+		categoryError: "",
+		subCategoryError: "",
+		brandError: "",
+		purchasePriceError: "",
+		salePriceError: "",
+		stateError: "",
+		shippingCostError: "",
+		stockError: "",
+		warrantyError: "",
+		weightError: "",
+		dimensionsError: "",
+		discountPercentageError: "",
+	});
 
 	const handlerColor = () => (e) => {
 		var newColor = e.target.value;
@@ -262,44 +279,177 @@ export default function ViewProducts() {
 		});
 	};
 
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
+		if (productDetails.name.match(nameFormat)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError =
+				"Invalid Input. Name cannot contains several Special Characters!";
+		}
+
+		// description
+		var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		if (productDetails.description.match(descFormat)) {
+			errors.descriptionError = "";
+		} else {
+			hasError = true;
+			errors.descriptionError =
+				"Description contains several characters that aren't allowed!";
+		}
+
+		// Product category
+		if (productDetails.category.length === 0) {
+			hasError = true;
+			errors.categoryError = "Please Choose a Category for Product!";
+		} else {
+			errors.categoryError = "";
+		}
+
+		// subcategory
+		if (productDetails.subCategory.length === 0) {
+			hasError = true;
+			errors.subCategoryError = "Please Choose Sub-Category for Product!";
+		} else {
+			errors.subCategoryError = "";
+		}
+
+		// brand
+		if (productDetails.brand.length === 0) {
+			hasError = true;
+			errors.brandError = "Please Choose the Product brand!";
+		} else {
+			errors.brandError = "";
+		}
+
+		// state
+		if (productDetails.state.length === 0) {
+			hasError = true;
+			errors.stateError = "Please Choose the Product State!";
+		} else {
+			errors.stateError = "";
+		}
+
+		// stock
+		var stockFormat = /^[1-9]\d*$/;
+		if (productDetails.stockAvailable.toString().match(stockFormat)) {
+			errors.stockError = "";
+		} else {
+			hasError = true;
+			errors.stockError = "Entered stock amount is invalid.";
+		}
+
+		// Shipping cost
+		var shippingFormat = /^[1-9]\d*$/;
+		if (productDetails.shippingCost.toString().match(shippingFormat)) {
+			errors.shippingCostError = "";
+		} else {
+			hasError = true;
+			errors.shippingCostError = "Entered Shipping Amount is invalid.";
+		}
+
+		// price
+		var PriceFormat = /^\d+(.\d{1,2})?$/;
+		if (productDetails.purchasePrice.toString().match(PriceFormat)) {
+			errors.purchasePriceError = "";
+		} else {
+			hasError = true;
+			errors.purchasePriceError = "Entered Amount is invalid.";
+		}
+
+		if (productDetails.salePrice.toString().match(PriceFormat)) {
+			errors.salePriceError = "";
+		} else {
+			hasError = true;
+			errors.salePriceError = "Entered Amount is invalid.";
+		}
+
+		// warranty
+		var warrantyFormat =
+			/[0-9]+\s[\bday\b|\bdays\b|\byear\b|\byears\b|\bmonth\b|\bmonths\b|\bweek\b|\bweeks\b]+/;
+		if (productDetails.warranty.match(warrantyFormat)) {
+			errors.warrantyError = "";
+		} else {
+			hasError = true;
+			errors.warrantyError = "Entered Warranty is invalid.";
+		}
+
+		// weight
+		var weightFormat =
+			/[0-9]+\s[\bgram\b|\bgrams\b|\bkilogram\b|\bkilograms\b|\bmiligram\b|\bmiligrams\b]+/;
+		if (productDetails.weight.match(weightFormat)) {
+			errors.weightError = "";
+		} else {
+			hasError = true;
+			errors.weightError = "Entered Weight Amount is invalid.";
+		}
+
+		if (productDetails.isOnSale === true) {
+			// discountFormat
+			var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
+			if (
+				productDetails.discountPercentage
+					.toString()
+					.match(discountFormat)
+			) {
+				errors.discountError = "";
+			} else {
+				hasError = true;
+				errors.discountError = "Entered Discount Amount is invalid.";
+			}
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
 	const editProductHandler = (e) => {
 		e.preventDefault();
 
-		api.patch(
-			`/seller/store/product/${productDetails._id}`,
-			{
-				...productDetails,
-				colors,
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
-			.then((res) => {
-				const newDetails = details.map((prod) =>
-					prod._id === productDetails._id ? productDetails : prod
-				);
-				setDetails(newDetails);
-				handleClose();
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "SUCCESS: Product has been Updated!",
-					open: true,
+		var hasError = InputValidation();
+
+		if (hasError === false) {
+			api.patch(
+				`/seller/store/product/${productDetails._id}`,
+				{
+					...productDetails,
+					colors,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+				.then((res) => {
+					const newDetails = details.map((prod) =>
+						prod._id === productDetails._id ? productDetails : prod
+					);
+					setDetails(newDetails);
+					handleClose();
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "SUCCESS: Product has been Updated!",
+						open: true,
+					});
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
+				})
+				.catch(() => {
+					handleClose();
+					setSnackBar({
+						...snackBarstate,
+						message: "ERROR: Something is not working properly!",
+						type: "error",
+						open: true,
+					});
 				});
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
-			})
-			.catch(() => {
-				handleClose();
-				setSnackBar({
-					...snackBarstate,
-					message: "ERROR: Something is not working properly!",
-					type: "error",
-					open: true,
-				});
-			});
+		}
 	};
 
 	// Edit Product Modal Settings here
@@ -432,8 +582,6 @@ export default function ViewProducts() {
 		skipEmptyLines: true,
 		transformHeader: (header) =>
 			header.charAt(0).toLowerCase().concat(header.slice(1)),
-
-		//header.charAt(0).toLowerCase().concat(header.slice(1)),
 	};
 
 	const retrivingAllProducts = async () => {
@@ -608,16 +756,19 @@ export default function ViewProducts() {
 							<Grid container spacing={2}>
 								<Grid item xs={12}>
 									<TextField
-										autoFocus
 										margin="dense"
 										variant="outlined"
-										autoComplete="pName"
 										required
 										fullWidth
 										label="Name"
-										name="name"
 										value={productDetails.name}
 										onChange={handleProductDetails("name")}
+										helperText={IFerrors.nameError}
+										error={
+											IFerrors.nameError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 								<Grid item xs={12}>
@@ -633,6 +784,12 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"description"
 										)}
+										helperText={IFerrors.descriptionError}
+										error={
+											IFerrors.descriptionError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 								<Grid item xs={6}>
@@ -648,6 +805,11 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"category"
 										)}
+										error={
+											IFerrors.categoryError.length > 0
+												? true
+												: false
+										}
 									>
 										<MenuItem value="DEFAULT" disabled>
 											Choose a Product Category
@@ -675,6 +837,11 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"subCategory"
 										)}
+										error={
+											IFerrors.subCategoryError.length > 0
+												? true
+												: false
+										}
 									>
 										<MenuItem value="DEFAULT" disabled>
 											Choose sub-category
@@ -703,6 +870,11 @@ export default function ViewProducts() {
 										value={productDetails.brand}
 										defaultValue="DEFAULT"
 										onChange={handleProductDetails("brand")}
+										error={
+											IFerrors.brandError.length > 0
+												? true
+												: false
+										}
 									>
 										<MenuItem value="DEFAULT" disabled>
 											Select Brand of Product
@@ -789,6 +961,12 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"stockAvailable"
 										)}
+										helperText={IFerrors.stockError}
+										error={
+											IFerrors.stockError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 
@@ -804,6 +982,12 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"warranty"
 										)}
+										helperText={IFerrors.warrantyError}
+										error={
+											IFerrors.warrantyError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 
@@ -818,6 +1002,13 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"purchasePrice"
 										)}
+										helperText={IFerrors.purchasePriceError}
+										error={
+											IFerrors.purchasePriceError.length >
+											0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 								<Grid item xs={6}>
@@ -832,6 +1023,12 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"salePrice"
 										)}
+										helperText={IFerrors.salePriceError}
+										error={
+											IFerrors.salePriceError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 
@@ -848,6 +1045,12 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"weight"
 										)}
+										helperText={IFerrors.weightError}
+										error={
+											IFerrors.weightError.length > 0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 
@@ -886,6 +1089,13 @@ export default function ViewProducts() {
 										onChange={handleProductDetails(
 											"shippingCost"
 										)}
+										helperText={IFerrors.shippingCostError}
+										error={
+											IFerrors.shippingCostError.length >
+											0
+												? true
+												: false
+										}
 									/>
 								</Grid>
 								<Grid item xs={12}>
@@ -1044,6 +1254,15 @@ export default function ViewProducts() {
 												onChange={handlerDiscount(
 													"discountPercentage"
 												)}
+												helperText={
+													IFerrors.discountError
+												}
+												error={
+													IFerrors.discountError
+														.length > 0
+														? true
+														: false
+												}
 											/>
 										</Grid>
 									) : (

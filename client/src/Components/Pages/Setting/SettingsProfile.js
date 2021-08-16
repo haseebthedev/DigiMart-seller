@@ -37,14 +37,20 @@ export default function VendorCenter() {
 
 	const [profileData, setProfileData] = useState({
 		profilePic: null,
-		name: store.data.data.name,
-		email: store.data.data.email,
-		phoneNumber: store.data.data.phoneNumber,
-		isDarkModeEnabled: store.data.data.isDarkModeEnabled,
-		isNotificationsEnabled: store.data.data.isNotificationsEnabled,
+		name: "",
+		email: "",
+		phoneNumber: "",
+		isDarkModeEnabled: false,
+		isNotificationsEnabled: false,
 	});
 
-	const [isLoggedOut, setIsLoggedOut] = React.useState(false);
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		emailError: "",
+		phoneNumberError: "",
+	});
+
+	const [isLoggedOut, setIsLoggedOut] = useState(false);
 	const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 	const [isDeactivatingAccount, setIsDeactivatingAccount] = useState(false);
 	const [isProfilePicRemove, setIsProfilePicRemove] = useState(false);
@@ -134,43 +140,83 @@ export default function VendorCenter() {
 		setProfileData({ ...profileData, [input]: e.target.checked });
 	};
 
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		var noNumber = /^([^0-9]*)$/;
+		if (profileData.name.match(noNumber)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError =
+				"Name cannot contains Numbers or Special Characters!";
+		}
+
+		// email
+		// eslint-disable-next-line
+		var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		if (profileData.email.match(mailFormat)) {
+			errors.emailError = "";
+		} else {
+			hasError = true;
+			errors.emailError = "Entered Email address is invalid!";
+		}
+
+		// phone
+		var phoneFormat = /^(\+92)?[0-9]{10}$/;
+		if (profileData.phoneNumber.match(phoneFormat)) {
+			errors.phoneNumberError = "";
+		} else {
+			hasError = true;
+			errors.phoneNumberError = "Entered Phone Number is invalid!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
 	// UPDATE REQUEST SENDING HERE
 	const handleSubmitUpdate = async () => {
-		await api
-			.patch(
-				"/seller/me",
-				{
-					...profileData,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then(async (res) => {
-				// console.log("before");
-				const oldData = store.data.data;
-				const newData = { ...oldData, ...profileData };
+		var errorExists = InputValidation();
 
-				setTimeout(function () {
+		if (errorExists === false) {
+			await api
+				.patch(
+					"/seller/me",
+					{
+						...profileData,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(async (res) => {
+					const oldData = store.data.data;
+					const newData = { ...oldData, ...profileData };
+
+					setTimeout(function () {
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message: "Your Profile has been updated!",
+							open: true,
+						});
+						setTimeout(function () {
+							updateProfile(dispatch, newData, token);
+						}, 1000);
+					}, 1000);
+				})
+				.catch((error) =>
 					setSnackBar({
 						...snackBarstate,
-						type: "success",
-						message: "Your Profile has been updated!",
+						type: "error",
+						message: "ERROR: Something went wrong!",
 						open: true,
-					});
-					setTimeout(function () {
-						updateProfile(dispatch, newData, token);
-					}, 1000);
-				}, 1000);
-			})
-			.catch((error) =>
-				setSnackBar({
-					...snackBarstate,
-					type: "error",
-					message: "ERROR: Something went wrong!",
-					open: true,
-				})
-			);
+					})
+				);
+		}
 	};
 
 	// Modal Settings here
@@ -184,23 +230,42 @@ export default function VendorCenter() {
 		setModelOpen(false);
 	};
 
+	const getProfileDetails = () => {
+		api.get("/seller/personalDetails", {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then((res) => {
+				const {
+					profilePic,
+					name,
+					email,
+					phoneNumber,
+					isDarkModeEnabled,
+					isNotificationsEnabled,
+				} = res.data.data.seller;
+
+				setProfileData({
+					profilePic,
+					name,
+					email,
+					phoneNumber,
+					isDarkModeEnabled,
+					isNotificationsEnabled,
+				});
+			})
+			.catch((error) =>
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message:
+						"ERROR: System is busy or not responding at the moment!",
+					open: true,
+				})
+			);
+	};
+
 	useEffect(() => {
-		const {
-			profilePic,
-			name,
-			email,
-			phoneNumber,
-			isDarkModeEnabled,
-			isNotificationsEnabled,
-		} = store.data.data;
-		setProfileData({
-			profilePic,
-			name,
-			email,
-			phoneNumber,
-			isDarkModeEnabled,
-			isNotificationsEnabled,
-		});
+		getProfileDetails();
 		// eslint-disable-next-line
 	}, []);
 
@@ -250,8 +315,14 @@ export default function VendorCenter() {
 									id="name"
 									label="Username"
 									name="username"
-									defaultValue={profileData.name}
+									value={profileData.name}
 									onChange={handleChange("name")}
+									helperText={IFerrors.nameError}
+									error={
+										IFerrors.nameError.length > 0
+											? true
+											: false
+									}
 								/>
 								<TextField
 									variant="outlined"
@@ -260,8 +331,14 @@ export default function VendorCenter() {
 									id="email"
 									label="Email Address"
 									name="email"
-									defaultValue={profileData.email}
+									value={profileData.email}
 									onChange={handleChange("email")}
+									helperText={IFerrors.emailError}
+									error={
+										IFerrors.emailError.length > 0
+											? true
+											: false
+									}
 								/>
 								<TextField
 									variant="outlined"
@@ -270,8 +347,16 @@ export default function VendorCenter() {
 									id="phone"
 									label="Phone No."
 									name="phoneNumber"
-									defaultValue={profileData.phoneNumber}
+									placeholder="+923XXXXXXXXX"
+									inputProps={{ maxLength: 13 }}
+									value={profileData.phoneNumber}
 									onChange={handleChange("phoneNumber")}
+									helperText={IFerrors.phoneNumberError}
+									error={
+										IFerrors.phoneNumberError.length > 0
+											? true
+											: false
+									}
 								/>
 
 								{/* <FormControlLabel

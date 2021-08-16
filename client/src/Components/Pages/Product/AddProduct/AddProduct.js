@@ -15,7 +15,7 @@ import {
 import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-
+import Brightness1Icon from "@material-ui/icons/Brightness1";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 
@@ -263,7 +263,7 @@ export default function AddProduct() {
 			errors.subCategoryError = "";
 		}
 
-		// subcategory
+		// brand
 		if (productDetails.brand.length === 0) {
 			hasError = true;
 			errors.brandError = "Please Choose the Product brand!";
@@ -677,6 +677,13 @@ export default function AddProduct() {
 										<Grid item xs={12}>
 											{colors.map((el, index) => (
 												<Chip
+													icon={
+														<Brightness1Icon
+															style={{
+																color: el,
+															}}
+														/>
+													}
 													label={el}
 													key={index}
 													onDelete={handleDeleteColor(
@@ -1182,6 +1189,7 @@ export default function AddProduct() {
 									borderRadius: 6,
 									padding: 15,
 									marginBottom: 10,
+									textAlign: "center",
 								}}
 							>
 								<img
@@ -1207,7 +1215,6 @@ export default function AddProduct() {
 						</Grid>
 					</Grid>
 				</div>
-				{/* </Container> */}
 			</Grid>
 		</Grid>
 	);

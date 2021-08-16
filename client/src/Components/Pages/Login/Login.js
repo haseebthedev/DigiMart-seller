@@ -62,7 +62,7 @@ const Login = () => {
 				setTimeout(() => setIsLoggedIn(true), [1000]);
 				return loginUser(
 					dispatch,
-					res.data.data.vendor,
+					res.data.data.seller,
 					res.data.data.token
 				);
 			})
@@ -78,7 +78,7 @@ const Login = () => {
 
 	return (
 		<Grid container className={classes.root}>
-			{isLoggedIn ? <Redirect to="/vendor/dashboard" /> : ""}
+			{isLoggedIn ? <Redirect to="/seller/dashboard" /> : ""}
 			<Grid
 				item
 				xs={false}
@@ -148,7 +148,7 @@ const Login = () => {
 						<Grid container justify="space-between">
 							<Grid item>
 								<Link
-									href="/vendor/forget-password"
+									href="/seller/forget-password"
 									variant="body2"
 									color="primary"
 								>
@@ -157,7 +157,7 @@ const Login = () => {
 							</Grid>
 							<Grid item>
 								<Link
-									href="/vendor/register"
+									href="/seller/register"
 									variant="body2"
 									color="primary"
 								>

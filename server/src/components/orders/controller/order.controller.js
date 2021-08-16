@@ -30,9 +30,6 @@ const addOrder = async(req, res, next) => {
 const updateOrderById = async(req, res, next) => {
 
     try{
-        if(req.body.products){
-            throw new Error('Inavlid keys entered. Cannot update product details !')
-        }
         
         const updates = Object.keys(req.body)
         const _id = req.params.id
@@ -251,6 +248,39 @@ const countMyStoreOrdersDeliveredToday = async(req, res, next) => {
     }
 }
 
+const getOrdersListBetweenDateRange = async(req, res, next) => {
+    try{
+        let storeId = ""
+        if(req.store){
+            storeId = req.store._id
+        }
+        else{
+            storeId = req.params.id
+        }
+        //console.log(storeId)
+        const lesserThanDate = new Date(req.body.lesserThanDate).toISOString()
+        const greaterThanDate = new Date(req.body.greaterThanDate).toISOString()
+        //console.log(new Date(greaterThanDate))
+        const orders = await Order.find({
+            deliveryDate: {
+                $gte: new Date(greaterThanDate),
+                $lte: new Date(lesserThanDate)
+            },
+            storeId: storeId
+        })
+        res.status(200).json({
+            message:`Orders list fetched !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const totalRevenueEarnedByMyStore = async(req, res, next) => {
     try{
         const storeId = req.store._id
@@ -438,6 +468,7 @@ module.exports = {
     totalProfitEarnedByMyStore,
     updateOrderedProductById,
     deleteOrderedProductById,
+    getOrdersListBetweenDateRange,
     //for admin
     getAllOrdersOfStoreById,
     getPendingOrdersOfStoreById,

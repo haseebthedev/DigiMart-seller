@@ -1,6 +1,6 @@
-const Vendor = require('../../users/vendor/models/vendor.model')
+const Seller = require('../../users/seller/models/seller.model')
 const Buyer = require('../../users/buyer/models/buyer.model')
-const Admin = require('../../users/admin/models/admin.model')
+const Admin = require('../../users/super-admin/models/superAdmin.model')
 const Store = require('../../store/model/store.model')
 const Product = require('../../products/model/product.model')
 
@@ -8,13 +8,13 @@ const Product = require('../../products/model/product.model')
 const viewDatabaseUsage = async(req, res, next) => {
     try{
         //const db = Buyer.db.name
-            const vendorSize = await Vendor.getStorageDetails()
+            const sellerSize = await Seller.getStorageDetails()
             const buyerSize = await Buyer.getStorageDetails()
             const adminSize = await Admin.getStorageDetails()
             const storeSize = await Store.getStorageDetails()
             const productSize = await Product.getStorageDetails()
             //get total Size
-            const occupiedSpace = vendorSize + buyerSize + adminSize + storeSize + productSize + ' KB'
+            const occupiedSpace = sellerSize + buyerSize + adminSize + storeSize + productSize + ' KB'
             const totalSpace = '560 MB'
 
             return res.status(200).json({
@@ -23,7 +23,7 @@ const viewDatabaseUsage = async(req, res, next) => {
                     storage: {
                         occupiedSpace,
                         totalSpace,
-                        vendorSize,
+                        sellerSize,
                         buyerSize,
                         adminSize,
                         storeSize,

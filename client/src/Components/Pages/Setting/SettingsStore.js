@@ -49,6 +49,12 @@ export default function VendorCenter() {
 	const [isLoggedOut] = useState(false);
 	const [isStoreLogoRemove, setStoreLogoRemove] = useState(false);
 
+	const [IFerrors, setIFerrors] = useState({
+		nameError: "",
+		biographyError: "",
+		warehouseAddressError: "",
+	});
+
 	const onSelectlogo = (image) => {
 		setStoreData({ ...storeData, logo: image });
 	};
@@ -56,35 +62,80 @@ export default function VendorCenter() {
 		setStoreData({ ...storeData, [input]: e.target.value });
 	};
 
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		// eslint-disable-next-line
+		var storeNameFormat = /[A-Za-z0-9-·$&()\+#]/;
+		if (storeData.name.match(storeNameFormat)) {
+			errors.nameError = "";
+		} else {
+			hasError = true;
+			errors.nameError =
+				"Name cannot contains several Special Characters!";
+		}
+
+		// biography
+		var bioFormat = /^[a-zA-Z0-9-@#!&$,.{1}\s]*$/;
+		if (
+			storeData.biography.match(bioFormat) &&
+			storeData.biography.length > 4
+		) {
+			errors.biographyError = "";
+		} else {
+			hasError = true;
+			errors.biographyError = "Kindly enter a short Biography.";
+		}
+
+		// warehouse address
+		var addressFormat = /^[a-zA-Z0-9.,-@#&\s]*$/;
+		if (storeData.warehouseAddress.match(addressFormat)) {
+			errors.warehouseAddressError = "";
+		} else {
+			hasError = true;
+			errors.warehouseAddressError =
+				"Kindly Enter a Valid Warehouse Address!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
 	// UPDATE REQUEST SENDING HERE
-	const handleSubmitUpdate = () => {
-		api.patch(
-			"/seller/store/me",
-			{
-				...storeData,
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
-			.then((res) =>
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "Your Store has been updated!",
-					open: true,
-				})
+	const handleSubmitUpdate = async () => {
+		var errorExists = InputValidation();
+
+		if (errorExists === false) {
+			api.patch(
+				"/seller/store/me",
+				{
+					...storeData,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
 			)
-			.catch((error) =>
-				setSnackBar({
-					...snackBarstate,
-					type: "error",
-					message:
-						"ERROR: " +
-						JSON.stringify(error.response.data.error.message),
-					open: true,
-				})
-			);
+				.then((res) =>
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "Your Store has been updated!",
+						open: true,
+					})
+				)
+				.catch((error) =>
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+						open: true,
+					})
+				);
+		}
 	};
 
 	// Modal Settings here
@@ -190,6 +241,12 @@ export default function VendorCenter() {
 									name="storeName"
 									value={storeData.name}
 									onChange={handleChange("name")}
+									helperText={IFerrors.nameError}
+									error={
+										IFerrors.nameError.length > 0
+											? true
+											: false
+									}
 								/>
 								<TextField
 									variant="outlined"
@@ -200,6 +257,12 @@ export default function VendorCenter() {
 									name="biography"
 									value={storeData.biography}
 									onChange={handleChange("biography")}
+									helperText={IFerrors.biographyError}
+									error={
+										IFerrors.biographyError.length > 0
+											? true
+											: false
+									}
 								/>
 
 								<FormControl fullWidth>
@@ -250,6 +313,13 @@ export default function VendorCenter() {
 									name="warehouseAddress"
 									value={storeData.warehouseAddress}
 									onChange={handleChange("warehouseAddress")}
+									helperText={IFerrors.warehouseAddressError}
+									error={
+										IFerrors.warehouseAddressError.length >
+										0
+											? true
+											: false
+									}
 								/>
 
 								<Button
