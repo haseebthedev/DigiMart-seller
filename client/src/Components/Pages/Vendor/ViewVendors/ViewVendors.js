@@ -97,7 +97,7 @@ export default function ViewVendors() {
 
 	const retrivingAllVendors = async () => {
 		await api
-			.get("/seller/vendors", {
+			.get("/seller/vendors/approved/list", {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then((res) => {

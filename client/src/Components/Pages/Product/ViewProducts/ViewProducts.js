@@ -800,8 +800,8 @@ export default function ViewProducts() {
 										fullWidth
 										label="Category"
 										style={{ marginTop: 8 }}
-										defaultValue={"DEFAULT"}
 										value={productDetails.category}
+										defaultValue={"DEFAULT"}
 										onChange={handleProductDetails(
 											"category"
 										)}
@@ -1255,10 +1255,11 @@ export default function ViewProducts() {
 													"discountPercentage"
 												)}
 												helperText={
-													IFerrors.discountError
+													IFerrors.discountPercentageError
 												}
 												error={
-													IFerrors.discountError
+													IFerrors
+														.discountPercentageError
 														.length > 0
 														? true
 														: false

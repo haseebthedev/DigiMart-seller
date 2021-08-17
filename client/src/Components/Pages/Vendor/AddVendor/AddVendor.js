@@ -37,20 +37,180 @@ export default function AddProduct() {
 	const [vendorCategoryList, setVendorCategoryList] = useState([]);
 
 	const [vendorDetails, setVendorDetails] = useState({
-		companyName: "haseebs Electronics",
-		address: "B0987, rwp",
-		businessNumber: "0514589087",
-		email: "jamalElectronics@gmai.com",
-		city: "rawalpindi",
-		country: "Pakistan",
-		description: "We deliver electronics items in all over pakistan",
-		typeOfBusiness: "Wholesaler",
-		category: "",
-		contactPersonName: "Ameen",
-		contactPersonDesignation: "Manager",
-		contactPersonNumber: "+923350987654",
-		contactPersonEmail: "ameen@gmail.com",
+		companyName: "",
+		address: "",
+		businessNumber: "",
+		email: "",
+		city: "",
+		country: "",
+		description: "",
+		typeOfBusiness: "",
+		category: "DEFAULT",
+		contactPersonName: "",
+		contactPersonDesignation: "",
+		contactPersonNumber: "",
+		contactPersonEmail: "",
 	});
+
+	const [IFerrors, setIFerrors] = useState({
+		companyNameError: "",
+		addressError: "",
+		businessNumberError: "",
+		emailError: "",
+		cityError: "",
+		countryError: "",
+		descriptionError: "",
+		typeOfBusinessError: "",
+		categoryError: "",
+		contactPersonNameError: "",
+		contactPersonDesignationError: "",
+		contactPersonNumberError: "",
+		contactPersonEmailError: "",
+	});
+
+	const clearInputFields = () => {
+		setVendorDetails({
+			companyName: "",
+			address: "",
+			businessNumber: "",
+			email: "",
+			city: "",
+			country: "",
+			description: "",
+			typeOfBusiness: "",
+			category: "DEFAULT",
+			contactPersonName: "",
+			contactPersonDesignation: "",
+			contactPersonNumber: "",
+			contactPersonEmail: "",
+		});
+	};
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// name
+		var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
+		if (vendorDetails.companyName.match(nameFormat)) {
+			errors.companyNameError = "";
+		} else {
+			hasError = true;
+			errors.companyNameError =
+				"Name cannot contains several Special Characters!";
+		}
+
+		//typeofBusiness
+		if (vendorDetails.typeOfBusiness.match(nameFormat)) {
+			errors.typeOfBusinessError = "";
+		} else {
+			hasError = true;
+			errors.typeOfBusinessError =
+				"Please Enter a Valid Type of Business!";
+		}
+
+		// address
+		var addressFormat = /^[a-zA-Z0-9-@#{1},\s]*$/;
+		if (
+			vendorDetails.address.match(addressFormat) &&
+			vendorDetails.address.length > 10
+		) {
+			errors.addressError = "";
+		} else {
+			hasError = true;
+			errors.addressError =
+				"Entered Address is invalid. Special Characters not allowed i.e. /!$%^&*()";
+		}
+
+		// phone
+		var phoneFormat = /^(\0)?[0-9]{10}$/;
+		if (vendorDetails.businessNumber.match(phoneFormat)) {
+			errors.businessNumberError = "";
+		} else {
+			hasError = true;
+			errors.businessNumberError = "Entered Phone Number is invalid!";
+		}
+
+		// city
+		var cityFormat = /^[A-Za-z\s]+$/;
+		if (vendorDetails.city.match(cityFormat)) {
+			errors.cityError = "";
+		} else {
+			hasError = true;
+			errors.cityError = "Kindly Enter a Valid City Name!";
+		}
+
+		// Country
+		var countryFormat = /^[a-zA-Z]*$/;
+		if (
+			vendorDetails.country.match(countryFormat) &&
+			vendorDetails.country.length > 3
+		) {
+			errors.countryError = "";
+		} else {
+			hasError = true;
+			errors.countryError = "Kindly Enter a Valid Country Name!";
+		}
+
+		// email
+		// eslint-disable-next-line
+		var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		if (vendorDetails.email.match(mailFormat)) {
+			errors.emailError = "";
+		} else {
+			hasError = true;
+			errors.emailError = "Entered Email address is invalid!";
+		}
+
+		// description
+		var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		if (vendorDetails.description.match(descFormat)) {
+			errors.descriptionError = "";
+		} else {
+			hasError = true;
+			errors.descriptionError =
+				"Description contains several characters that aren't allowed!";
+		}
+
+		// Vendor category
+		if (vendorDetails.category.match("DEFAULT")) {
+			hasError = true;
+			errors.categoryError = "Please Choose a Category for Vendor!";
+		} else {
+			errors.categoryError = "";
+		}
+
+		// Representative name
+		if (vendorDetails.contactPersonName.match(nameFormat)) {
+			errors.contactPersonNameError = "";
+		} else {
+			hasError = true;
+			errors.contactPersonNameError =
+				"Invalid Input. Name cannot contains several Special Characters!";
+		}
+
+		// phone
+		var contactFormat = /^(\+92)?[0-9]{10}$/;
+		if (vendorDetails.contactPersonNumber.match(contactFormat)) {
+			errors.contactPersonNumberError = "";
+		} else {
+			hasError = true;
+			errors.contactPersonNumberError =
+				"Entered Phone Number is invalid!";
+		}
+
+		// designation
+		if (vendorDetails.contactPersonDesignation.match(nameFormat)) {
+			errors.contactPersonDesignationError = "";
+		} else {
+			hasError = true;
+			errors.contactPersonDesignationError =
+				"Invalid Input. Designation cannot contains several Special Characters!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
 
 	const handlerVendorDetails = (input) => (e) => {
 		setVendorDetails({ ...vendorDetails, [input]: e.target.value });
@@ -59,32 +219,38 @@ export default function AddProduct() {
 	const handlerAddVendor = async (e) => {
 		e.preventDefault();
 
-		await api
-			.post(
-				"/seller/vendor",
-				{
-					...vendorDetails,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then(() =>
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "SUCCESS: The Vendor has been added for approval!",
-					open: true,
+		var errorExists = InputValidation();
+
+		if (errorExists === false) {
+			await api
+				.post(
+					"/seller/vendor",
+					{
+						...vendorDetails,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message:
+							"SUCCESS: The Vendor has been added for approval!",
+						open: true,
+					});
+					clearInputFields();
 				})
-			)
-			.catch(() =>
-				setSnackBar({
-					...snackBarstate,
-					type: "error",
-					message: "ERROR: System is not responding or busy!",
-					open: true,
-				})
-			);
+				.catch(() =>
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						message: "ERROR: System is not responding or busy!",
+						open: true,
+					})
+				);
+		}
 	};
 
 	const getAllVendorCategory = async () => {
@@ -128,6 +294,15 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"companyName"
 											)}
+											helperText={
+												IFerrors.companyNameError
+											}
+											error={
+												IFerrors.companyNameError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={6}>
@@ -142,6 +317,12 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"email"
 											)}
+											helperText={IFerrors.emailError}
+											error={
+												IFerrors.emailError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -160,6 +341,15 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"description"
 											)}
+											helperText={
+												IFerrors.descriptionError
+											}
+											error={
+												IFerrors.descriptionError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -176,6 +366,12 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"city"
 											)}
+											helperText={IFerrors.cityError}
+											error={
+												IFerrors.cityError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={6}>
@@ -190,6 +386,12 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"country"
 											)}
+											helperText={IFerrors.countryError}
+											error={
+												IFerrors.countryError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 
@@ -205,6 +407,12 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"address"
 											)}
+											helperText={IFerrors.addressError}
+											error={
+												IFerrors.addressError.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -217,10 +425,20 @@ export default function AddProduct() {
 											fullWidth
 											label="Business Number"
 											name="businessNumber"
+											placeholder="0514844123"
 											value={vendorDetails.businessNumber}
 											onChange={handlerVendorDetails(
 												"businessNumber"
 											)}
+											helperText={
+												IFerrors.businessNumberError
+											}
+											error={
+												IFerrors.businessNumberError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={6}>
@@ -231,25 +449,30 @@ export default function AddProduct() {
 											fullWidth
 											label="Vendor Category"
 											style={{ marginTop: 8 }}
-											defaultValue={"DEFAULT"}
+											value={vendorDetails.category}
 											name="category"
 											onChange={handlerVendorDetails(
 												"category"
 											)}
+											error={
+												IFerrors.categoryError.length >
+												0
+													? true
+													: false
+											}
 										>
 											<MenuItem value="DEFAULT" disabled>
 												Choose a Vendor Category
 											</MenuItem>
 											{vendorCategoryList.map(
-												// eslint-disable-next-line
-												(el, index) => {
+												(el, index) => (
 													<MenuItem
 														value={el.name}
 														key={index}
 													>
 														{el.name}
-													</MenuItem>;
-												}
+													</MenuItem>
+												)
 											)}
 										</Select>
 									</Grid>
@@ -267,6 +490,15 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"typeOfBusiness"
 											)}
+											helperText={
+												IFerrors.typeOfBusinessError
+											}
+											error={
+												IFerrors.typeOfBusinessError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -297,6 +529,15 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"contactPersonName"
 											)}
+											helperText={
+												IFerrors.contactPersonNameError
+											}
+											error={
+												IFerrors.contactPersonNameError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 									<Grid item xs={6}>
@@ -307,12 +548,23 @@ export default function AddProduct() {
 											fullWidth
 											label="Phone #"
 											name="contactPersonNumber"
+											placeholder="+923123123456"
 											value={
 												vendorDetails.contactPersonNumber
 											}
 											onChange={handlerVendorDetails(
 												"contactPersonNumber"
 											)}
+											helperText={
+												IFerrors.contactPersonNumberError
+											}
+											error={
+												IFerrors
+													.contactPersonNumberError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
@@ -331,6 +583,41 @@ export default function AddProduct() {
 											onChange={handlerVendorDetails(
 												"contactPersonDesignation"
 											)}
+											helperText={
+												IFerrors.contactPersonDesignationError
+											}
+											error={
+												IFerrors
+													.contactPersonDesignationError
+													.length > 0
+													? true
+													: false
+											}
+										/>
+									</Grid>
+									<Grid item xs={6}>
+										<TextField
+											variant="outlined"
+											margin="dense"
+											required
+											fullWidth
+											name="contactPersonEmail"
+											label="Email"
+											value={
+												vendorDetails.contactPersonEmail
+											}
+											onChange={handlerVendorDetails(
+												"contactPersonEmail"
+											)}
+											helperText={
+												IFerrors.contactPersonEmailError
+											}
+											error={
+												IFerrors.contactPersonEmailError
+													.length > 0
+													? true
+													: false
+											}
 										/>
 									</Grid>
 								</Grid>
