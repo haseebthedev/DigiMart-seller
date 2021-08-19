@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../Axios/api";
-
-import { Box, Grid, Paper } from "@material-ui/core";
+import Pal from "../../../themes/palette";
+import MaterialTable from "material-table";
+import { Box, Grid, Paper, Typography } from "@material-ui/core";
 
 // icons
 import FeaturedVideoIcon from "@material-ui/icons/FeaturedVideo";
@@ -10,7 +11,7 @@ import WhatshotIcon from "@material-ui/icons/Whatshot";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 
 import { useUserContext } from "../../../context/UserContext";
-// import useStyles from "./styles";
+import ImgNotAvailable from "../../../assets/images/imgNotAvailable.jpg";
 import Chart from "react-apexcharts";
 
 // Widgets
@@ -24,30 +25,15 @@ const BusinessAnalytics = () => {
 	const { store } = useUserContext();
 	const token = store.data.token;
 
+	const [StatsCount, setStatsCount] = useState({
+		stock: "0",
+		investment: "0",
+		revenue: "0",
+		profit: "0",
+	});
 	const [salesData, setSalesData] = useState([]);
 	const [categoryData, setCategoryData] = useState([]);
-	// const [salesData, setSalesData] = useState([
-	// 	{
-	// 		date: "2021-08-12T07:02:11.212Z",
-	// 		orders: 53,
-	// 	},
-	// 	{
-	// 		date: "2021-08-12T07:03:11.212Z",
-	// 		orders: 26,
-	// 	},
-	// 	{
-	// 		date: "2021-08-12T07:04:11.212Z",
-	// 		orders: 73,
-	// 	},
-	// 	{
-	// 		date: "2021-08-12T07:05:11.212Z",
-	// 		orders: 51,
-	// 	},
-	// 	{
-	// 		date: "2021-08-12T07:06:11.212Z",
-	// 		orders: 61,
-	// 	},
-	// ]);
+	const [details, setDetails] = useState([]);
 
 	var SalesStats = {
 		series: [
@@ -107,9 +93,11 @@ const BusinessAnalytics = () => {
 			chart: {
 				type: "polarArea",
 			},
-			labels: ["Delivered", "Cancelled", "Pending", "Active", "Returned"],
+			labels: ["Delivered", "Cancelled", "Returned", "Active", "Pending"],
+			colors: ["#04e762", "#ff0a0a", "#ff4c00", "#1786dd", "#775DD0"],
 			fill: {
 				opacity: 1,
+				colors: ["#04e762", "#ff0a0a", "#ff4c00", "#1786dd", "#775DD0"],
 			},
 			yaxis: {
 				show: false,
@@ -130,12 +118,56 @@ const BusinessAnalytics = () => {
 		},
 	};
 
-	const [StatsCount, setStatsCount] = useState({
-		stock: "1234",
-		investment: "4321",
-		revenue: "1123",
-		profit: "9876",
-	});
+	var barChart = {
+		series: [
+			{
+				name: "Sales / Month",
+				data: salesData,
+			},
+		],
+		options: {
+			colors: [Pal.palette.primary.main],
+			title: {
+				text: "Monthly Sales",
+				align: "center",
+				style: {
+					fontSize: "20px",
+					fontFamily: "poppins",
+				},
+			},
+			chart: {
+				type: "bar",
+				height: 350,
+			},
+			plotOptions: {
+				bar: {
+					borderRadius: 0,
+					horizontal: false,
+				},
+			},
+			dataLabels: {
+				enabled: false,
+			},
+			xaxis: {
+				type: "datetime",
+			},
+		},
+	};
+
+	const retrivingTop5Products = async () => {
+		await api
+			.get("/seller/store/products", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then((res) => {
+				setDetails(res.data.data.products);
+			})
+			.catch((error) =>
+				console.log(
+					"ERROR: " + JSON.stringify(error.response.data.error)
+				)
+			);
+	};
 
 	const getStats = async () => {
 		await api
@@ -143,16 +175,25 @@ const BusinessAnalytics = () => {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then((res) => {
-				// let stock = res.data.data.productsAnalytics.totalStock;
-				// let investment = res.data.data.productsAnalytics.totalPurchasePrice;
-				// let revenue = res.data.data.ordersAnalytics.totalRevenue;
-				// let profit = res.data.data.ordersAnalytics.totalProfit;
-				setStatsCount({ ...StatsCount, stock: 112233 });
+				let result = res.data.data;
+
+				let stock = result.productsAnalytics[0].totalStock;
+				let investment = result.productsAnalytics[0].totalPurchasePrice;
+				let revenue = result.productsAnalytics[0].totalSalePrice;
+				let profit = result.ordersAnalytics[0].totalProfit;
+
+				setStatsCount({
+					...StatsCount,
+					stock,
+					investment,
+					revenue,
+					profit,
+				});
 
 				// PieChart
-				let AllCounts = res.data.data.allCounts;
+				var AllCounts = res.data.data.allCounts;
+				delete AllCounts.todayDeliveredOrdersCount;
 				setCategoryData(AllCounts);
-
 
 				let salesDatabyDates = res.data.data.salesByDate.map((el) => {
 					let x, y;
@@ -176,9 +217,59 @@ const BusinessAnalytics = () => {
 	};
 
 	useEffect(() => {
+		// Retriving List of Products from API
+		retrivingTop5Products();
+		// eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
 		getStats();
 		// eslint-disable-next-line
 	}, []);
+
+	const columns = [
+		{
+			title: "Image",
+			field: "images",
+			render: ({ images }) => (
+				<img
+					src={images.length > 0 ? images[0] : ImgNotAvailable}
+					alt="ProductImage"
+					style={{ width: 40, height: 40, borderRadius: "50%" }}
+				/>
+			),
+			hidden: false,
+			export: false,
+		},
+		{ title: "Name", field: "name", hidden: false, export: true },
+		{
+			title: "description",
+			field: "description",
+			hidden: true,
+			export: true,
+		},
+		{ title: "Brand", field: "brand", hidden: false, export: true },
+		{ title: "Category", field: "category", hidden: false, export: true },
+		{
+			title: "purchasePrice",
+			field: "purchasePrice",
+			hidden: true,
+			export: true,
+		},
+		{
+			title: "Price",
+			field: "salePrice",
+			render: ({ salePrice }) => <div>{"$" + salePrice}</div>,
+			hidden: false,
+			export: true,
+		},
+		{
+			title: "Stock",
+			field: "stockAvailable",
+			hidden: false,
+			export: true,
+		},
+	];
 
 	return (
 		<Box>
@@ -230,6 +321,30 @@ const BusinessAnalytics = () => {
 							type="area"
 						/>
 					</Paper>
+					<MaterialTable
+						style={{ marginTop: 30 }}
+						title={
+							<Typography
+								variant="h5"
+								style={{ fontWeight: "bold" }}
+							>
+								Top Performing Products
+							</Typography>
+						}
+						data={details}
+						columns={columns}
+						options={{
+							actionsColumnIndex: -1,
+							headerStyle: {
+								backgroundColor: Pal.palette.primary.main,
+								color: "#fff",
+								fontWeight: "bold",
+							},
+							exportButton: false,
+							search: false,
+							paging: false,
+						}}
+					/>
 				</Grid>
 				<Grid item xs={12} md={5}>
 					<Paper style={{ padding: 16 }}>
@@ -239,15 +354,15 @@ const BusinessAnalytics = () => {
 							type="polarArea"
 						/>
 					</Paper>
-				</Grid>
-			</Grid>
-			{/* <Grid container>
-				<Grid item xs={12}>
-					<Paper style={{ padding: 16 }}>
-						<GeoLocSales />
+					<Paper style={{ padding: 16, marginTop: 30 }}>
+						<Chart
+							options={barChart.options}
+							series={barChart.series}
+							type="bar"
+						/>
 					</Paper>
 				</Grid>
-			</Grid> */}
+			</Grid>
 		</Box>
 	);
 };

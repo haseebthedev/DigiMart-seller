@@ -27,6 +27,7 @@ import BallotIcon from "@material-ui/icons/Ballot";
 import Brightness1Icon from "@material-ui/icons/Brightness1";
 import AddVendorSvg from "../../../../assets/images/AddVendor.svg";
 import ImageNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
+import Pal from "../../../../themes/palette";
 import { useUserContext } from "../../../../context/UserContext";
 import useStyles from "./styles";
 
@@ -896,13 +897,19 @@ export default function BuyVendorProduct() {
 																/>
 																<CardContent
 																	style={{
-																		padding: 8,
+																		padding: 6,
 																	}}
+																	align="center"
 																>
 																	<Typography
-																		variant="body1"
 																		style={{
 																			marginTop: 4,
+																			color: Pal
+																				.palette
+																				.primary
+																				.main,
+																			fontWeight:
+																				"bold",
 																		}}
 																		gutterBottom
 																	>
@@ -925,6 +932,22 @@ export default function BuyVendorProduct() {
 																			prod.category
 																		}
 																	</Typography>
+																	<Typography
+																		style={{
+																			marginTop: 8,
+																			fontSize: 12,
+																		}}
+																	>
+																		Stock :{" "}
+																		{
+																			prod.salePrice
+																		}{" "}
+																		{" - "}{" "}
+																		Brand :{" "}
+																		{
+																			prod.brand
+																		}
+																	</Typography>
 																</CardContent>
 
 																<CardActions
@@ -933,13 +956,26 @@ export default function BuyVendorProduct() {
 																			"center",
 																	}}
 																>
-																	<Button
-																		size="small"
-																		color="primary"
-																		variant="outlined"
+																	<Typography
+																		style={{
+																			marginTop: 4,
+																			color: Pal
+																				.palette
+																				.primary
+																				.main,
+																			fontWeight:
+																				"bold",
+																			border:
+																				`1px solid ` +
+																				Pal,
+																		}}
+																		align="center"
 																	>
-																		VIEW
-																	</Button>
+																		Rs.{" "}
+																		{
+																			prod.salePrice
+																		}
+																	</Typography>
 																	<Button
 																		size="small"
 																		color="primary"

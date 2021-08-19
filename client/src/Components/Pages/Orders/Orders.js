@@ -43,7 +43,7 @@ export default function Orders() {
 	};
 
 	// Edit Order Modal here
-	const [editOrderOpen, setEditOrderOpen] = useState(true);
+	const [editOrderOpen, setEditOrderOpen] = useState(false);
 	const handleOpen = () => {
 		setEditOrderOpen(true);
 	};
@@ -53,11 +53,12 @@ export default function Orders() {
 
 	// OrdersList
 	const [OrderDetails, setOrderdetails] = useState([]);
+	// Order ProductsList
+	const [ProductsDetails, setProductsDetails] = useState([]);
 
 	const [editOrderDetails, setEditOrderDetails] = useState({
 		_id: "",
 		status: "",
-		products: [],
 		deliveryDate: "",
 		storeId: "",
 		storeName: "",
@@ -80,44 +81,48 @@ export default function Orders() {
 		setEditOrderDetails({ ...editOrderDetails, [input]: e.target.value });
 	};
 
-	const handlerProductChange = (input, index) => (e) => {
-		console.log(e.target.value);
-
-		let updatedProduct = {
-			...editOrderDetails.products[index],
-			[input]: e.target.value,
-		};
-
-		var productList = editOrderDetails.products;
-
-		var newProductList = productList.splice(index, 1, updatedProduct);
-
-		setEditOrderDetails({
-			...editOrderDetails,
-			products: newProductList,
-		});
+	const handlerProductChange = (input, id) => (e) => {
+		let productlist = ProductsDetails.map((el) =>
+			el._id === id ? { ...el, [input]: e.target.value } : el
+		);
+		setProductsDetails(productlist);
 	};
 
 	const deleteProductfromOrder = (id) => {
-		let products = editOrderDetails.products;
-		let newProducts = products.filter((prod) => prod._id !== id);
-
-		setEditOrderDetails({ ...editOrderDetails, products: newProducts });
+		if (ProductsDetails.length > 1) {
+			let newProducts = ProductsDetails.filter((prod) => prod._id !== id);
+			setEditOrderDetails({ ...editOrderDetails, products: newProducts });
+		} else {
+			setSnackBar({
+				...snackBarstate,
+				type: "error",
+				message:
+					"You Can't delete all products. Instead, change its status!",
+				open: true,
+			});
+		}
 	};
 
-	const handleUpdateOrder = async (id) => {
-		console.log("editOrderDetails ", editOrderDetails);
-
+	const handleUpdateOrder = async () => {
 		await api
 			.patch(
 				`/seller/store/order/${editOrderDetails._id}`,
-				{ ...editOrderDetails },
+				{ ...editOrderDetails, products: ProductsDetails },
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
 			)
-			.then((res) => {
-				console.log("res ", res);
+			.then(() => {
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Order has been added successfully!",
+					open: true,
+				});
+				setTimeout(() => {
+					window.location.reload();
+				}, 1500);
+				handleClose();
 			})
 			.catch((error) => console.log(error));
 	};
@@ -186,6 +191,7 @@ export default function Orders() {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then((res) => {
+				// setProductsDetails(productArray);
 				setOrderdetails(res.data.data.orders);
 			})
 			.catch((error) => console.log(error));
@@ -305,6 +311,7 @@ export default function Orders() {
 									editOrderDetails,
 									...rowData,
 								});
+								setProductsDetails(rowData.products);
 								handleOpen();
 							},
 						}),
@@ -517,6 +524,18 @@ export default function Orders() {
 											margin="dense"
 											variant="outlined"
 											fullWidth
+											label="Contact"
+											value={
+												editOrderDetails.contactNumber
+											}
+											onChange={handlerOrderChange(
+												"contactNumber"
+											)}
+										/>
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
 											label="Email"
 											value={editOrderDetails.email}
 											onChange={handlerOrderChange(
@@ -556,12 +575,12 @@ export default function Orders() {
 											>
 												Ordered Items:
 											</Typography>
-											{editOrderDetails.products.map(
+											{ProductsDetails.map(
 												(prod, index) => (
 													<Grid
 														item
 														xs={12}
-														key={prod._id}
+														key={index}
 														style={{
 															marginBottom: 30,
 														}}
@@ -589,7 +608,7 @@ export default function Orders() {
 																	}
 																	onChange={handlerProductChange(
 																		"name",
-																		index
+																		prod._id
 																	)}
 																/>
 																<TextField
@@ -602,7 +621,7 @@ export default function Orders() {
 																	}
 																	onChange={handlerProductChange(
 																		"color",
-																		index
+																		prod._id
 																	)}
 																/>
 																<TextField
@@ -615,7 +634,7 @@ export default function Orders() {
 																	}
 																	onChange={handlerProductChange(
 																		"size",
-																		index
+																		prod._id
 																	)}
 																/>
 																<TextField
@@ -628,7 +647,7 @@ export default function Orders() {
 																	}
 																	onChange={handlerProductChange(
 																		"quantity",
-																		index
+																		prod._id
 																	)}
 																/>
 															</Grid>

@@ -34,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
 	chip: {
 		margin: theme.spacing(0.5),
 	},
+	media: {
+		height: 90,
+	},
 }));
 
 export default useStyles;
