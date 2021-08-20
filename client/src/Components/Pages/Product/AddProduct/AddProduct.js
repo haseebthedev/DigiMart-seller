@@ -46,8 +46,8 @@ export default function AddProduct() {
 	const [productSubCategories, setProductSubCategories] = useState([]);
 	const [productBrand, setProductBrand] = useState([]);
 	const [productDetails, setProductDetails] = useState({
-		name: "test",
-		description: "test",
+		name: "",
+		description: "",
 		category: "",
 		subCategory: "",
 		brand: "",

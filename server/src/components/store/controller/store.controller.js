@@ -1,5 +1,6 @@
 const Store = require('../model/store.model')
 const Seller = require('../../users/seller/models/seller.model')
+const Buyer = require('../../users/buyer/models/buyer.model')
 
 const registerStore = async(req, res, next) => {
     try{
@@ -80,7 +81,41 @@ const getStoreCategory = async(req, res, next) => {
         next(err)
     }
 }
+
+const viewSubscribersOfStore = async(req, res, next) => {
+    try{
+        const storeId = req.store._id
+        const subscribers = await Buyer.find({subscribedStores: {"$in" : storeId}})
+        res.status(200).json({
+            message: `Store subscribers fetched Successfully!`,
+            data: {
+                subscribers
+            }
+        })
+    }
+    catch(err){
+        err.status = 404
+        next(err)
+    }
+}
 //ROUTES FOR ADMIN
+
+const viewSubscribersOfStoreByStoreId = async(req, res, next) => {
+    try{
+        const storeId = req.params.id
+        const subscribers = await Buyer.find({subscribedStores: {"$in" : storeId}})
+        res.status(200).json({
+            message: `Store subscribers fetched Successfully!`,
+            data: {
+                subscribers
+            }
+        })
+    }
+    catch(err){
+        err.status = 404
+        next(err)
+    }
+}
 
 const getTotalNumberOfStoreApprovals = async(req, res, next) =>{
     try{
@@ -319,7 +354,9 @@ module.exports = {
     getStoreDetails,
     updateStore,
     getStoreCategory,
+    viewSubscribersOfStore,
     //for admin
+    viewSubscribersOfStoreByStoreId,
     getTotalNumberOfStoreApprovals,
     getTotalNumberOfStoresApproved,
     approveStore,

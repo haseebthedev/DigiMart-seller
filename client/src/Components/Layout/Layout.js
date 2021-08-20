@@ -89,6 +89,8 @@ import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
 import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProducts";
 import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
 import BusinessAnalytics from "../Pages/BusinessAnalytics/BusinessAnalytics";
+import ReportAProblem from "../Pages/ReportAProblem/ReportAProblem";
+import Complaints from '../Pages/Complaints/Complaints'
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -537,6 +539,18 @@ const Layout = (props) => {
 						<ListItemText primary="Reviews" />
 					</ListItem>
 
+					<ListItem
+						button
+						selected={pathname === "/seller/complaints"}
+						component={Link}
+						to="/seller/complaints"
+					>
+						<ListItemIcon>
+							<InboxIcon className={classes.iconColor} />
+						</ListItemIcon>
+						<ListItemText primary="Complaints" />
+					</ListItem>
+
 					<ListItem button>
 						<ListItemIcon>
 							<ChatIcon className={classes.iconColor} />
@@ -640,6 +654,23 @@ const Layout = (props) => {
 									/>
 								</ListItemIcon>
 								<ListItemText primary="Store Settings" />
+							</ListItem>
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/seller/setting/report-problem"
+								}
+								component={Link}
+								to="/seller/setting/report-problem"
+							>
+								<ListItemIcon>
+									<LocalConvenienceStoreIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="Report A Problem" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -763,6 +794,7 @@ const Layout = (props) => {
 					/>
 					<Route path="/seller/orders" component={Orders} />
 					<Route path="/seller/reviews" component={Reviews} />
+					<Route path="/seller/complaints" component={Complaints} />
 					<Route
 						path="/seller/payments/PaymentMethod"
 						component={PaymentMethod}
@@ -782,6 +814,10 @@ const Layout = (props) => {
 					<Route
 						path="/seller/setting/store"
 						component={SettingsStore}
+					/>
+					<Route
+						path="/seller/setting/report-problem"
+						component={ReportAProblem}
 					/>
 					<Route
 						path="/seller/Promotion/promote-product"

@@ -18,5 +18,6 @@ router.post('/seller/vendor', auth.seller , vendorController.requestVendor)
 router.get('/seller/vendor/:id', auth.seller , vendorController.getVendorById)
 router.get('/seller/vendors', auth.seller , vendorController.getAllVendors)
 router.get('/seller/vendors/:category', auth.seller , vendorController.getAllVendorsByCategoryName)
+router.get('/seller/vendors/approved/list', auth.seller , vendorController.getAllApprovedVendors)
 
 module.exports = router

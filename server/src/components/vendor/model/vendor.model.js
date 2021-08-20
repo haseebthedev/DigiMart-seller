@@ -44,8 +44,8 @@ const vendorSchema = new mongoose.Schema({
     },
     //e.g fashion, electronics
     //drop down
-    categories:{
-        type: [String],
+    category:{
+        type: String,
         required: true
     },
     //contact Person Details

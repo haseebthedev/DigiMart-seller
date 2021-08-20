@@ -38,6 +38,7 @@ router.patch('/seller/updatePassword', sellerAuth, sellerController.changePasswo
 router.get('/superAdmin/sellers/totalNumber', auth.superAdmin, sellerController.getTotalNumberOfSellers)
 router.get('/superAdmin/sellers', auth.superAdmin, sellerController.getAllSellersDetails)
 router.get('/superAdmin/sellers/stores/unregistered', auth.superAdmin, sellerController.viewAllSellersWhoseStoresNotRegistered)
+router.get('/superAdmin/sellers/stores/registered', auth.superAdmin, sellerController.viewAllSellersWhoseStoresAreRegistered)
 router.patch('/superAdmin/seller/block/:id', auth.superAdmin, sellerController.blockSellerById)
 router.patch('/superAdmin/seller/unblock/:id', auth.superAdmin, sellerController.unblockSellerById)
 router.post('/superAdmin/seller/register', auth.superAdmin, sellerController.registerSeller)

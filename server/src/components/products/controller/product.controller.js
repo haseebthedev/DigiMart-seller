@@ -13,7 +13,6 @@ const addProductToMyStore = async(req, res, next) => {
         if(isProductNamePresent){
             throw new Error('Product with this name already added before.')
         }
-
         req.body['storeID'] = req.store._id
         const product = new Product(req.body)
         await product.save()
@@ -33,18 +32,19 @@ const addProductToMyStore = async(req, res, next) => {
 const updateProduct = async(req, res, next) => {
     try{
         const updates = Object.keys(req.body)
-        //validations
-        // const allowedUpdated = ['name','category','description','manufactureDate','stockAvailable','price',
-        // 'weight','discountPercentage','manufacturer','warranty','images','colors','isVisibilityEnabled']
-        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-        // if(!isValidOperation || updates.length == 0){
-        //     throw new Error('Invalid Keys! Please enter valid keys.')
-        // }
+
+        //check if product is the one selected from vendor's products
+        if(req.body.vendorId){
+            //validations
+            const allowedUpdated = ['stockAvailable','salePrice']
+            const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+            if(!isValidOperation || updates.length == 0){
+                throw new Error('Invalid Keys! You can only update stock and sale price.')
+            }
+        }
         const productID = req.params.id
         const storeID = req.store._id
-        
         const product = await Product.findOne({_id:productID,storeID:storeID})
-        
         updates.forEach((update) => {
             product[update] = req.body[update]
         })
@@ -84,10 +84,62 @@ const deleteProduct = async(req, res, next) => {
     }
 }
 
-const viewMyStoreProducts = async(req, res, next) => {
+const viewMyStoreAllProducts = async(req, res, next) => {
     try{
         const storeID = req.store._id
         const products = await Product.find({storeID: storeID})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Store products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewStoreProductsSelectedByVendorsProducts = async(req, res, next) => {
+    try{
+        let storeID = ""
+        if(req.store){
+            storeID = req.store._id
+        }
+        else{
+            storeID = req.params.id
+        }
+        const products = await Product.find({storeID: storeID, vendorId: {$ne: null}})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Vendor's products added in your store fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewStoreOwnProducts = async(req, res, next) => {
+    try{
+        let storeID = ""
+        if(req.store){
+            storeID = req.store._id
+        }
+        else{
+            storeID = req.params.id
+        }
+        const products = await Product.find({storeID: storeID, vendorId: null})
         if(!products){
             throw new Error('Products not found!')
         }
@@ -376,7 +428,9 @@ module.exports = {
     addProductToMyStore,
     updateProduct,
     deleteProduct,
-    viewMyStoreProducts,
+    viewMyStoreAllProducts,
+    viewStoreOwnProducts,
+    viewStoreProductsSelectedByVendorsProducts,
     viewMyStoreProduct,
     countMyStoreProductsStock,
     countTotalExpenseOfProducts,

@@ -297,8 +297,7 @@ const sendPromotionMessage = async(req, res, next) => {
     try{
         messageBody = req.body.message
         recieverNumber = req.body.number
-        const sentSMSId = sendSMS.message(recieverNumber , messageBody)
-        if(sentSMSId){
+        sendSMS.message(recieverNumber , messageBody)
             res.status(200).json({
                 message:`Message sent !`,
                 data:{
@@ -307,16 +306,114 @@ const sendPromotionMessage = async(req, res, next) => {
                     //sentSMSId
                 }
             })
-        }
-        else{
-            throw new Error('Message could not be sent !')
-        }
     }
     catch (err) {
         err.status = 404
         next(err)
     }
 }
+
+const sendPromotionMessageToAudience = async(req, res, next) => {
+    try{
+        const messageBody = req.body.message
+        const audienceNumbers = req.body.audienceNumbers
+        audienceNumbers.forEach(async (number) => {
+            //console.log(number)
+            await sendSMS.message(number , messageBody)
+        })
+        res.status(200).json({
+            message:`Message sent To Audience Successfully!`,
+            data:{
+                messageBody,
+                audienceNumbers
+            }
+        })
+    }
+    catch (err) {
+        err.status = 404
+        next(err)
+    }
+}
+
+
+//FOR ADMIN
+
+const addPromotedProductToStoreById = async(req, res, next) => {
+    try{
+
+        req.body['storeId'] = req.params.id
+        const product = new PromoteProduct(req.body)
+        await product.save()
+        res.status(201).json({
+            message:`Promoted product has been added successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 500
+        next(err)
+    }
+}
+
+const scheduleProductPromotionByStoreId = async(req, res, next) => {
+    try{
+
+        req.body['storeId'] = req.params.id
+        req.body['isPromotionScheduled'] = true
+        if(req.body.promotion_date){
+            req.body.promotion_date = (new Date(Date.parse(req.body.promotion_date+' GMT'))).toISOString()
+        }
+        const product = new PromoteProduct(req.body)
+        await product.save()
+        res.status(201).json({
+            message:`Product promotion scheduled successfully!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getScheduledPromotionsOfStoreByStoreId = async(req, res, next) => {
+    try{
+        const promotions = await PromoteProduct.find({isPromotionScheduled: true, storeId: req.params.id})
+        res.status(201).json({
+            message:`Promotions fetched successfully!`,
+            data:{
+                promotions
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
+const getPromotedProductsOfStoreByStoreId = async(req, res, next) => {
+    try{
+        const productPromotions = await PromoteProduct.find({isPromotionScheduled: false, storeId: req.params.id})
+        res.status(201).json({
+            message:`Product Promotions fetched successfully!`,
+            data:{
+                productPromotions
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 
 module.exports = {
     //FOR VENDOR
@@ -331,6 +428,12 @@ module.exports = {
     deleteScheduledPromotionById,
     viewScheduledPromotionById,
     sendPromotionMessage,
+    sendPromotionMessageToAudience,
     //FOR ADMIN
-    getAllPromotedProducts
+    getAllPromotedProducts,
+    addPromotedProductToStoreById,
+    scheduleProductPromotionByStoreId,
+    getPromotedProductsOfStoreByStoreId,
+    getScheduledPromotionsOfStoreByStoreId
+
 }

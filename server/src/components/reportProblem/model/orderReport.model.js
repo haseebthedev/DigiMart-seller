@@ -12,6 +12,11 @@ const orderReportProblemSchema = mongoose.Schema({
         required: true,
         ref:'Store'
     },
+    orderID:{
+        type: String,
+        required: true,
+        //ref:'Order'
+    },
     storeName:{
         type: String,
         required: true,

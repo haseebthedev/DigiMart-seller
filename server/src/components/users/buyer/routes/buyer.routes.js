@@ -13,6 +13,9 @@ router.delete('/buyer/me', buyerAuth, buyerController.deleteMyAccount)
 router.patch('/buyer/forgetPassword' , buyerController.forgetAccountPassword)
 router.patch('/buyer/me', buyerAuth ,buyerController.updateProfile)
 router.patch('/buyer/updatePassword', buyerAuth ,buyerController.changePassword)
+router.patch('/buyer/store/subscribe', buyerAuth ,buyerController.subscribeStoreByStoreId)
+router.patch('/buyer/store/Unsubscribe', buyerAuth ,buyerController.UnSubscribeStoreByStoreId)
+router.get('/buyer/stores/subscribed', buyerAuth ,buyerController.ViewSubscribedStores)
 
 //ROUTES FOR ADMIN
 router.get('/superAdmin/buyers', auth.superAdmin, buyerController.getAllBuyersDetails)
@@ -22,5 +25,8 @@ router.patch('/superAdmin/buyer/unblock/:id', auth.superAdmin, buyerController.u
 router.get('/superAdmin/buyer/:id', auth.superAdmin, buyerController.viewBuyerById)
 router.post('/superAdmin/buyer/register', auth.superAdmin, buyerController.registerBuyer)
 router.patch('/superAdmin/buyer/:id', auth.superAdmin, buyerController.editBuyerById)
+router.patch('/superAdmin/buyer/:id/store/subscribe', auth.superAdmin ,buyerController.addSubscribeStoreOfBuyerByBuyerId)
+router.patch('/superAdmin/buyer/:id/store/unsubscribe', auth.superAdmin ,buyerController.UnSubscribeStoreOfBuyerByBuyerId)
+router.get('/superAdmin/buyer/:id/stores/subscribed', auth.superAdmin ,buyerController.ViewSubscribedStoresOfBuyerByBuyerId)
 
 module.exports = router 

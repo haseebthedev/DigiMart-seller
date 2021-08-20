@@ -59,7 +59,7 @@ const superAdminSchema = new mongoose.Schema({
         }
     },
     profilePic:{
-        type: [String]
+        type: String
     },
     isAccountActive: {
         type: Boolean,

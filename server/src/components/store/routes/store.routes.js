@@ -8,6 +8,7 @@ router.post('/seller/store/register', auth.seller ,storeController.registerStore
 router.get('/seller/store/me', auth.seller ,storeController.getStoreDetails)
 router.patch('/seller/store/me', auth.seller, storeController.updateStore)
 router.get('/seller/store/category', auth.seller, storeController.getStoreCategory)
+router.get('/seller/store/subscribers', auth.seller, storeController.viewSubscribersOfStore)
 
 //ROUTES FOR ADMIN
 router.get('/superAdmin/store/approvals/number', auth.superAdmin, storeController.getTotalNumberOfStoreApprovals)
@@ -23,5 +24,6 @@ router.get('/superAdmin/stores/approvals', auth.superAdmin, storeController.view
 router.get('/superAdmin/stores/approved', auth.superAdmin, storeController.viewAllStoresApproved)
 router.get('/superAdmin/store/:id', auth.superAdmin, storeController.viewStoreById)
 router.patch('/superAdmin/store/:id', auth.superAdmin, storeController.editStoreById)
+router.get('/superAdmin/store/:id/subscribers', auth.superAdmin, storeController.viewSubscribersOfStoreByStoreId)
 
 module.exports = router

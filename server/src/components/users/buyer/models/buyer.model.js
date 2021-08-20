@@ -102,15 +102,6 @@ const buyerSchema=new mongoose.Schema({
         type:Boolean,
         default:false
     },
-    //i commented it to use later when its schemas are created
-    // orders:{
-    //     type: [mongoose.Schema.Types.ObjectId],
-    //     ref:'Order'
-    // },
-    // reviews:{
-    //     type: [mongoose.Schema.Types.ObjectId],
-    //     ref:'Review'
-    // },
 
     // we use tokens array bcz we can login from different devices so we need different token for each device
     // so if we logout from one we can from from the other session

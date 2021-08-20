@@ -1,5 +1,6 @@
 const ReportProblem = require('../model/report.model')
 const notification = require('../../notifications/account');
+const SOFTWARE_MENTAINENECE_EMAIL = 'digimart.cui@gmail.com'
 
 const reportSellerProblem = async(req, res, next) => {
     try{
@@ -64,13 +65,12 @@ const reportSuperAdminProblem = async(req, res, next) => {
         const myProblem = new ReportProblem(req.body)
         await myProblem.save()
 
-         //send mail
-         const subject = 'Admin Problem Reported'
-         const message = `Our admin reported a problem with following problem statement and description.
-         <br><strong>${myProblem.subject}</strong><br>${myProblem.description}
-         <br><strong>Admin ID: </strong>${myProblem.adminID}
-         <br><strong>Problem ID: </strong>${myProblem._id}`
-         notification.sendReportProblemMail(subject,message,'Complaints Department')
+        //send mail
+        const subject = req.body.subject
+        const message = `${req.body.description}
+        <br>System complaints notifications from <strong>Digi-Mart</strong>`
+        
+        notification.sendNotificationMail(SOFTWARE_MENTAINENECE_EMAIL,subject,message,'')
 
         res.status(201).json({
             message:`Problem sent!`,

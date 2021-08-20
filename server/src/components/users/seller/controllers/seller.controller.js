@@ -8,8 +8,9 @@ const Order = require('../../../orders/model/order.model')
 const PromoteProduct = require('../../../promotion/model/promoteProduct.model')
 
 const registerSeller = async(req, res, next) => {
-    const seller=new Seller(req.body)
+
     try{
+        const seller=new Seller(req.body)
         await seller.save()
         const token=await seller.generateAuthToken()
         //send registration mail
@@ -618,6 +619,25 @@ const viewAllSellersWhoseStoresNotRegistered = async(req, res, next) => {
     }
 }
 
+const viewAllSellersWhoseStoresAreRegistered = async(req, res, next) => {
+    try{
+        const users = await Seller.find({storeId: {$ne:null}})
+        if(!users){
+            throw new Error('User not found!')
+        }
+        return res.status(200).json({
+            message:`Sellers whose stores are registered fetched successfully.`,
+            data:{
+                sellers: users
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 
 module.exports={
@@ -644,5 +664,6 @@ module.exports={
     unblockSellerById,
     editSellerById,
     viewSellerById,
-    viewAllSellersWhoseStoresNotRegistered
+    viewAllSellersWhoseStoresNotRegistered,
+    viewAllSellersWhoseStoresAreRegistered
 }

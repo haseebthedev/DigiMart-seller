@@ -13,6 +13,6 @@ router.get('/superAdmin/view/buyer/problems', auth.superAdmin, problemController
 router.patch('/superAdmin/problem/:id', auth.superAdmin, problemController.changeProblemStatusById)
 
 //ROLES FOR SUPER ADMIN
-router.get('/superAdmin/view/admin/problems', auth.superAdmin, problemController.viewReportedProblemsOfSuperAdmin)
+router.get('/superAdmin/view/system/problems', auth.superAdmin, problemController.viewReportedProblemsOfSuperAdmin)
 
 module.exports = router

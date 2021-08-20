@@ -149,7 +149,7 @@ const getAllApprovedVendors = async(req, res, next) => {
 const getAllVendorsByCategoryName = async(req, res, next) => {
     try{
         const categoryName = req.params.category
-        const vendors = await Vendor.find({"categories": {"$in": categoryName}})
+        const vendors = await Vendor.find({category: categoryName})
         res.status(200).json({
             message:`Vendors list has been fetched successfully!`,
             data:{

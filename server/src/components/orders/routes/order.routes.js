@@ -15,6 +15,7 @@ router.get('/seller/store/orders/:status', auth.seller, orderController.getOrder
 router.patch('/seller/store/order/product/:id', auth.seller, orderController.updateOrderedProductById)
 router.delete('/seller/store/order/product/:id', auth.seller, orderController.deleteOrderedProductById)
 router.get('/seller/store/orders/date/range', auth.seller, orderController.getOrdersListBetweenDateRange)
+router.get('/seller/store/buyers', auth.seller, orderController.getAllCustomersOfStoreAndCountOfTheirOrders)
 
 //ROUTES FOR ADMIN
 //crud operations
@@ -32,8 +33,9 @@ router.get('/superAdmin/orders/returned/store/:id', auth.superAdmin, orderContro
 router.get('/superAdmin/orders/completed/store/:id', auth.superAdmin, orderController.getCompletedOrdersOfStoreById)
 router.get('/superAdmin/orders/stores', auth.superAdmin, orderController.getAllOrdersInAllStores)
 router.get('/superAdmin/store/:id/orders/date/range', auth.superAdmin, orderController.getOrdersListBetweenDateRange)
+router.get('/superAdmin/store/:id/buyers', auth.superAdmin, orderController.getAllCustomersOfStoreAndCountOfTheirOrdersByStoreId)
 
-//ANALYTICS FOR VENDOR
+//ANALYTICS FOR SELLER
 router.get('/seller/store/orders/sale/count', auth.seller, orderController.countTotalSalesOfStore)
 router.get('/seller/store/orders/count/:status', auth.seller, orderController.countMyStoreOrderssByStatus)
 router.get('/admin/store/orders/today/count', auth.seller, orderController.countMyStoreOrdersDeliveredToday)

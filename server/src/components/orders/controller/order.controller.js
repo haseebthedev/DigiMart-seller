@@ -1,5 +1,7 @@
 const Order = require('../model/order.model')
 const Product = require('../../products/model/product.model')
+const Buyer = require('../../users/buyer/models/buyer.model')
+const mongoose=require('mongoose')
 
 //for buyer
 const addOrder = async(req, res, next) => {
@@ -439,7 +441,7 @@ const getAllOrdersInAllStores = async(req, res, next) => {
 
     try{
         const orders = await Order.find({})
-        res.status(201).json({
+        res.status(200).json({
             message:`All Orders Fetched !`,
             data:{
                 orders
@@ -451,6 +453,121 @@ const getAllOrdersInAllStores = async(req, res, next) => {
         next(err)
     }
 }
+
+const getAllCustomersOfStoreAndCountOfTheirOrders = async(req, res, next) => {
+    try{
+        let storeID = ""
+        if(req.store){
+            storeID = req.store._id
+        }
+        else{
+            storeID = req.params.id
+        }
+        //console.log(storeID)
+        const AllbuyerIdsAndCount = await Order.aggregate([
+            {
+              "$match": {
+                "$expr": {
+                      "$eq": [
+                        "$storeId",
+                        storeID
+                      ]
+                }
+              }
+            },
+            {
+              "$group": {
+                "_id": {
+                  "buyerId": "$buyerId",
+                },
+                "count": {
+                  "$sum": 1
+                }
+              }
+            },
+            {
+              "$sort": {
+                "count": -1
+              }
+            }
+          ])
+          var BuyerIdsArray = []
+          //seperate buyers Ids from objects
+          AllbuyerIdsAndCount.forEach((item) =>{
+            BuyerIdsArray.push(item._id.buyerId)
+          })
+
+        // now find all buyers with these id's
+        let buyers = await Buyer.find({ '_id': { $in: BuyerIdsArray } });
+        res.status(200).json({
+            message:`Buyers Fetched !`,
+            data:{
+                buyers,
+                orderCountOfBuyer: AllbuyerIdsAndCount
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getAllCustomersOfStoreAndCountOfTheirOrdersByStoreId = async(req, res, next) => {
+    try{
+        const storeID  = mongoose.Types.ObjectId(req.params.id)
+        const AllbuyerIdsAndCount = await Order.aggregate([
+            {
+              "$match": {
+                "$expr": {
+                      "$eq": [
+                        "$storeId",
+                        storeID
+                      ]
+                }
+              }
+            },
+            {
+              "$group": {
+                "_id": {
+                  "buyerId": "$buyerId",
+                },
+                "count": {
+                  "$sum": 1
+                }
+              }
+            },
+            {
+              "$sort": {
+                "count": -1
+              }
+            }
+          ])
+
+          var BuyerIdsArray = []
+          //seperate buyers Ids from objects
+          AllbuyerIdsAndCount.forEach((item) =>{
+            BuyerIdsArray.push(item._id.buyerId)
+          })
+
+        // now find all buyers with these id's
+        let buyers = await Buyer.find({ '_id': { $in: BuyerIdsArray } });
+
+        res.status(200).json({
+            message:`Buyers Fetched !`,
+            data:{
+                buyers,
+                orderCountOfBuyer: AllbuyerIdsAndCount
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 
 module.exports = {
     //for buyer
@@ -469,6 +586,8 @@ module.exports = {
     updateOrderedProductById,
     deleteOrderedProductById,
     getOrdersListBetweenDateRange,
+    getAllCustomersOfStoreAndCountOfTheirOrders,
+    getAllCustomersOfStoreAndCountOfTheirOrdersByStoreId,
     //for admin
     getAllOrdersOfStoreById,
     getPendingOrdersOfStoreById,

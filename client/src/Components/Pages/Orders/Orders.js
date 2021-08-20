@@ -7,6 +7,13 @@ import MuiAlert from "@material-ui/lab/Alert";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+	MuiPickersUtilsProvider,
+	KeyboardDatePicker,
+} from "@material-ui/pickers";
+
 import {
 	Grid,
 	Paper,
@@ -187,12 +194,54 @@ export default function Orders() {
 	};
 
 	const getAllOrders = async () => {
-		api.get("/seller/store/orders/view", {
-			headers: { Authorization: `Bearer ${token}` },
-		})
+		await api
+			.get("/seller/store/orders/view", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
 			.then((res) => {
 				// setProductsDetails(productArray);
 				setOrderdetails(res.data.data.orders);
+			})
+			.catch((error) => console.log(error));
+	};
+
+	// Sort Order by Date Modal here
+	const [SortOrderOpen, setSortOrderOpen] = useState(false);
+	const handleSortOpen = () => {
+		setSortOrderOpen(true);
+	};
+	const handleSortClose = () => {
+		setSortOrderOpen(false);
+	};
+
+	// SORT ORDERS LIST
+	const [DateFrom, setDateFrom] = useState(new Date());
+	const [DateTo, setDateTo] = useState(new Date());
+
+	const handleDateFromChange = (date) => {
+		setDateFrom(date);
+	};
+
+	const handleDateToChange = (date) => {
+		setDateTo(date);
+	};
+
+	const handlerSortDate = async () => {
+		await api
+			.post(
+				"/seller/store/orders/date/range",
+				{
+					greaterThanDate: DateFrom,
+					lesserThanDate: DateTo,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			)
+			.then((res) => {
+				console.log("res", res.data.data.orders);
+				setOrderdetails(res.data.data.orders);
+				handleSortClose();
 			})
 			.catch((error) => console.log(error));
 	};
@@ -297,6 +346,19 @@ export default function Orders() {
 
 	return (
 		<Grid container className={classes.root}>
+			<Grid
+				item
+				xs={12}
+				sm={12}
+				md={12}
+				align="right"
+				style={{ marginBottom: 20 }}
+				onClick={handleSortOpen}
+			>
+				<Button variant="contained" color="primary" align="right">
+					SORT BY DATE
+				</Button>
+			</Grid>
 			<Grid item xs={12} sm={12} md={12} component={Paper}>
 				<MaterialTable
 					title="All Orders"
@@ -699,6 +761,89 @@ export default function Orders() {
 									UPDATE
 								</Button>
 							</Grid>
+						</Grid>
+					</Grid>
+				</Container>
+			</Modal>
+
+			{/* Sort Orders by Date  */}
+			<Modal
+				open={SortOrderOpen}
+				onClose={handleSortClose}
+				onBackdropClick={handleSortClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container
+					component={Paper}
+					style={{
+						padding: "20px",
+						maxWidth: "70vw",
+						maxHeight: "80vh",
+					}}
+				>
+					<Grid container spacing={4} align="center">
+						<Grid item xs={12} sm={12} md={12}>
+							<Typography variant="h5">
+								Sort Orders by Dates
+							</Typography>
+						</Grid>
+						<Grid item xs={12}>
+							<Grid
+								container
+								spacing={2}
+								style={{ marginBottom: 10 }}
+								align="center"
+							>
+								<Grid item xs={12} sm={12} md={6} lg={6}>
+									<MuiPickersUtilsProvider
+										utils={DateFnsUtils}
+									>
+										<KeyboardDatePicker
+											margin="normal"
+											label="Select Date"
+											format="MM/dd/yyyy"
+											value={DateFrom}
+											maxDate={new Date().toLocaleString()}
+											onChange={handleDateFromChange}
+										/>
+									</MuiPickersUtilsProvider>
+								</Grid>
+								<Grid item xs={12} sm={12} md={6} lg={6}>
+									<MuiPickersUtilsProvider
+										utils={DateFnsUtils}
+									>
+										<KeyboardDatePicker
+											margin="normal"
+											label="Select Date"
+											format="MM/dd/yyyy"
+											value={DateTo}
+											maxDate={new Date().toLocaleString()}
+											onChange={handleDateToChange}
+										/>
+									</MuiPickersUtilsProvider>
+								</Grid>
+							</Grid>
+						</Grid>
+						<Grid item xs={12} style={{ marginBottom: 20 }}>
+							<Button
+								variant="outlined"
+								color="primary"
+								style={{ marginRight: 20 }}
+								onClick={handleSortClose}
+							>
+								CANCEL
+							</Button>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={handlerSortDate}
+							>
+								APPLY SORT
+							</Button>
 						</Grid>
 					</Grid>
 				</Container>

@@ -7,7 +7,9 @@ const auth = require('../../users/auth')
 router.post('/seller/store/product', auth.seller, productController.addProductToMyStore)
 router.patch('/seller/store/product/:id', auth.seller, productController.updateProduct)
 router.delete('/seller/store/product/:id', auth.seller, productController.deleteProduct)
-router.get('/seller/store/products', auth.seller, productController.viewMyStoreProducts)
+router.get('/seller/store/products', auth.seller, productController.viewMyStoreAllProducts)
+router.get('/seller/store/products/vendor', auth.seller, productController.viewStoreProductsSelectedByVendorsProducts)
+router.get('/seller/store/products/own', auth.seller, productController.viewStoreOwnProducts)
 router.get('/seller/store/product/:id', auth.seller, productController.viewMyStoreProduct)
 //Analytics
 router.get('/seller/store/products/stock/count', auth.seller, productController.countMyStoreProductsStock)
@@ -23,6 +25,8 @@ router.get('/superAdmin/products/totalNumber', auth.superAdmin, productControlle
 router.patch('/superAdmin/product/:id', auth.superAdmin, productController.editProductById)
 router.delete('/superAdmin/product/:id', auth.superAdmin, productController.deleteProductById)
 router.post('/superAdmin/product/store/:id', auth.superAdmin, productController.addProductByStoreId)
+router.get('/superAdmin/store/:id/products/vendor', auth.superAdmin, productController.viewStoreProductsSelectedByVendorsProducts)
+router.get('/superAdmin/store/:id/products/own', auth.superAdmin, productController.viewStoreOwnProducts)
 
 //GENERAL ROUTES FOR SELLER, ADMIN, BUYER
 

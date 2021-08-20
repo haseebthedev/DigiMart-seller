@@ -1,4 +1,5 @@
 const Buyer = require('../models/buyer.model')
+const Store = require('../../../store/model/store.model')
 const passwordGenerator = require('generate-password');
 const userEmail = require('../../../notifications/account')
 const bcrypt=require('bcryptjs')
@@ -154,13 +155,13 @@ const activateMyAccount = async(req, res, next) => {
 const updateProfile = async(req, res, next) => {
     try{
         const updates=Object.keys(req.body)
-        console.log(updates.length)
-        const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
-        'accountNumber','profilePic','isNotificationsEnabled','isDarkModeEnabled']
-        const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
-        if(!isValidOperation || updates.length == 0){
-            throw new Error('Invalid Keys! Please enter valid keys.')
-        }
+        // console.log(updates.length)
+        // const allowedUpdated=['name','email','password','gender','phoneNumber','birthday',
+        // 'accountNumber','profilePic','isNotificationsEnabled','isDarkModeEnabled']
+        // const isValidOperation = updates.every((update) => allowedUpdated.includes(update))
+        // if(!isValidOperation || updates.length == 0){
+        //     throw new Error('Invalid Keys! Please enter valid keys.')
+        // }
         const user = req.user
         updates.forEach((update) => user[update] = req.body[update])
         await user.save()
@@ -177,6 +178,69 @@ const updateProfile = async(req, res, next) => {
         next(e)
     }
 }
+
+const subscribeStoreByStoreId = async(req, res, next) => {
+    try{
+        const storeId = req.body.storeId
+        const user = req.user
+        user.subscribedStores.push(storeId)
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`Subscribed to store successfully successfully.`,
+            data:{
+                subscribers: req.user.subscribedStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const UnSubscribeStoreByStoreId = async(req, res, next) => {
+    try{
+        const storeId = req.body.storeId
+        const user = req.user
+        user.subscribedStores = user.subscribedStores.filter((subscribedStoreId) => {
+            return storeId != subscribedStoreId
+        })
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`UnSubscribed to store successfully successfully.`,
+            data:{
+                subscribers: req.user.subscribedStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const ViewSubscribedStores = async(req, res, next) => {
+    try{
+        const user = req.user
+        const subscribedStoresIds = user.subscribedStores
+        //get all  details of subscribed stores
+        const subscribedStores = await Store.find({'_id': { $in: subscribedStoresIds }})
+        //send email here
+        return res.status(200).json({
+            message:`Subscribed stores fetched successfully.`,
+            data:{
+                subscribedStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 const forgetAccountPassword = async(req, res, next) => {
     try{
@@ -363,6 +427,73 @@ const editBuyerById = async(req, res, next) => {
     }
 }
 
+const addSubscribeStoreOfBuyerByBuyerId = async(req, res, next) => {
+    try{
+        const storeId = req.body.storeId
+        const userId = req.params.id
+        const user = await Buyer.findById(userId)
+        user.subscribedStores.push(storeId)
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`Subscribed to store successfully successfully.`,
+            data:{
+                buyer: user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const UnSubscribeStoreOfBuyerByBuyerId = async(req, res, next) => {
+    try{
+        const storeId = req.body.storeId
+        const userId = req.params.id
+        const user = await Buyer.findById(userId)
+        user.subscribedStores = user.subscribedStores.filter((subscribedStoreId) => {
+            return storeId != subscribedStoreId
+        })
+        await user.save()
+        //send email here
+        return res.status(200).json({
+            message:`UnSubscribed to store successfully successfully.`,
+            data:{
+                buyer: user
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
+const ViewSubscribedStoresOfBuyerByBuyerId = async(req, res, next) => {
+    try{
+        const userId = req.params.id
+        const user = await Buyer.findById(userId)
+        const subscribedStoresIds = user.subscribedStores
+        //get all  details of subscribed stores
+        const subscribedStores = await Store.find({'_id': { $in: subscribedStoresIds }})
+        //send email here
+        return res.status(200).json({
+            message:`Subscribed stores fetched successfully.`,
+            data:{
+                subscribedStores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+
 
 module.exports = {
     registerBuyer,
@@ -374,11 +505,17 @@ module.exports = {
     forgetAccountPassword,
     updateProfile,
     changePassword,
+    subscribeStoreByStoreId,
+    UnSubscribeStoreByStoreId,
+    ViewSubscribedStores,
     //for admin
     getAllBuyersDetails,
     getTotalNumberOfBuyers,
     blockBuyerById,
     unBlockBuyerById,
     viewBuyerById,
-    editBuyerById
+    editBuyerById,
+    addSubscribeStoreOfBuyerByBuyerId,
+    ViewSubscribedStoresOfBuyerByBuyerId,
+    UnSubscribeStoreOfBuyerByBuyerId
 }
