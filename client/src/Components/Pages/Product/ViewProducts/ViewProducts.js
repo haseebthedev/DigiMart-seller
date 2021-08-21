@@ -3,6 +3,7 @@ import api from "../../../../Axios/api";
 import MaterialTable from "material-table";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
@@ -113,7 +114,7 @@ export default function ViewProducts() {
 			hidden: true,
 			export: true,
 		},
-		{ title: "Warranty", field: "warranty", hidden: false, export: true },
+		{ title: "Warranty", field: "warranty", hidden: true, export: true },
 		{
 			title: "Colors",
 			field: "colors",
@@ -452,13 +453,21 @@ export default function ViewProducts() {
 		}
 	};
 
-	// Edit Product Modal Settings here
+	// Edit Product Modal
 	const [modalOpen, setModelOpen] = useState(false);
 	const handleOpen = () => {
 		setModelOpen(true);
 	};
 	const handleClose = () => {
 		setModelOpen(false);
+	};
+	// View Product Modal
+	const [VPmodalOpen, setVPModelOpen] = useState(false);
+	const handleVPOpen = () => {
+		setVPModelOpen(true);
+	};
+	const handleVPClose = () => {
+		setVPModelOpen(false);
 	};
 
 	// Import Products List
@@ -672,6 +681,15 @@ export default function ViewProducts() {
 					data={details}
 					columns={columns}
 					actions={[
+						(rowData) => ({
+							icon: () => <VisibilityIcon />,
+							tooltip: "View",
+							onClick: (event, rowData) => {
+								setProductDetails(rowData);
+								setColors(rowData.colors);
+								handleVPOpen();
+							},
+						}),
 						(rowData) => ({
 							icon: () => <EditIcon />,
 							tooltip: "Edit",
@@ -1294,6 +1312,424 @@ export default function ViewProducts() {
 										onClick={editProductHandler}
 									>
 										Save Changes
+									</Button>
+								</Grid>
+							</Grid>
+
+							<Snackbar
+								open={open}
+								anchorOrigin={{ vertical, horizontal }}
+								autoHideDuration={3000}
+								onClose={handleCloseSnackBar}
+								key={vertical + horizontal}
+							>
+								<MuiAlert
+									elevation={6}
+									variant="filled"
+									onClose={handleCloseSnackBar}
+									severity={snackBarstate.type}
+								>
+									{snackBarstate.message}
+								</MuiAlert>
+							</Snackbar>
+						</form>
+					</Grid>
+				</Container>
+			</Modal>
+
+			{/* View Product */}
+			<Modal
+				open={VPmodalOpen}
+				onClose={handleVPClose}
+				onBackdropClick={handleVPClose}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container
+					component={Paper}
+					style={{
+						padding: "20px",
+						maxWidth: "50vw",
+						maxHeight: "80vh",
+						overflow: "auto",
+						scrollbarWidth: "2px",
+					}}
+				>
+					<Grid container spacing={4}>
+						<Grid item xs={12} sm={12} md={12} align="center">
+							<Typography variant="h5">
+								Product Details
+							</Typography>
+						</Grid>
+						<form
+							className={classes.form}
+							noValidate
+							style={{ padding: 20 }}
+						>
+							<Grid container spacing={2}>
+								<Grid item xs={12}>
+									<TextField
+										margin="dense"
+										variant="outlined"
+										fullWidth
+										label="Name"
+										value={productDetails.name}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										multiline
+										rows={4}
+										label="Description"
+										value={productDetails.description}
+									/>
+								</Grid>
+								<Grid item xs={6}>
+									<Select
+										variant="outlined"
+										margin="dense"
+										required
+										fullWidth
+										label="Category"
+										style={{ marginTop: 8 }}
+										value={productDetails.category}
+										defaultValue={"DEFAULT"}
+									>
+										<MenuItem value="DEFAULT" disabled>
+											Choose a Product Category
+										</MenuItem>
+										{productCategories.map((el, index) => (
+											<MenuItem
+												value={el.name}
+												key={index}
+											>
+												{el.name}
+											</MenuItem>
+										))}
+									</Select>
+								</Grid>
+								<Grid item xs={6}>
+									<Select
+										variant="outlined"
+										margin="dense"
+										required
+										fullWidth
+										label="Sub Category"
+										style={{ marginTop: 8 }}
+										defaultValue={"DEFAULT"}
+										value={productDetails.subCategory}
+									>
+										<MenuItem value="DEFAULT" disabled>
+											Choose sub-category
+										</MenuItem>
+										{productSubCategories.map(
+											(el, index) => (
+												<MenuItem
+													value={el.name}
+													key={index}
+												>
+													{el.name}
+												</MenuItem>
+											)
+										)}
+									</Select>
+								</Grid>
+								<Grid item xs={12}>
+									<Select
+										variant="outlined"
+										margin="dense"
+										required
+										fullWidth
+										label="Brand"
+										name="brand"
+										style={{ marginTop: 8 }}
+										value={productDetails.brand}
+										defaultValue="DEFAULT"
+									>
+										<MenuItem value="DEFAULT" disabled>
+											Select Brand of Product
+										</MenuItem>
+										{productBrand.map((el, index) => (
+											<MenuItem
+												value={el.name}
+												key={index}
+											>
+												{el.name}
+											</MenuItem>
+										))}
+									</Select>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										placeholder="dd/MM/YYYY"
+										label="Manufacture Date"
+										name="manufactureDate"
+										value={productDetails.manufactureDate}
+									/>
+								</Grid>
+
+								<Grid item xs={12}>
+									<Select
+										variant="outlined"
+										margin="dense"
+										required
+										fullWidth
+										label="Category"
+										name="category"
+										style={{ marginTop: 8 }}
+										value={"DEFAULT"}
+										defaultValue={"DEFAULT"}
+									>
+										<MenuItem value="DEFAULT" disabled>
+											Select Product Color
+										</MenuItem>
+										<MenuItem value="Red">Red</MenuItem>
+										<MenuItem value="Green">Green</MenuItem>
+										<MenuItem value="Black">Black</MenuItem>
+										<MenuItem value="Purple">
+											Purple
+										</MenuItem>
+									</Select>
+								</Grid>
+
+								{colors.length > 0 ? (
+									<Grid item xs={12}>
+										{colors.map((el, index) => (
+											<Chip
+												label={el}
+												key={index}
+												style={{
+													margin: "2px 4px",
+												}}
+											/>
+										))}
+									</Grid>
+								) : (
+									""
+								)}
+
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										name="stock"
+										label="Stock / Quantity"
+										value={productDetails.stockAvailable}
+									/>
+								</Grid>
+
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										name="warranty"
+										label="Warranty"
+										value={productDetails.warranty}
+									/>
+								</Grid>
+
+								<Grid item xs={6}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										label="Purchase Price"
+										value={productDetails.purchasePrice}
+									/>
+								</Grid>
+								<Grid item xs={6}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										label="Sale Price (Rs)"
+										name="salePrice"
+										value={productDetails.salePrice}
+									/>
+								</Grid>
+
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										label="Weight"
+										id="weight"
+										name="weight"
+										value={productDetails.weight}
+									/>
+								</Grid>
+
+								<Grid item xs={12}>
+									<Select
+										variant="outlined"
+										margin="dense"
+										required
+										fullWidth
+										label="Product State"
+										name="state"
+										style={{ marginTop: 8 }}
+										defaultValue={"DEFAULT"}
+										value={productDetails.state}
+									>
+										<MenuItem value="DEFAULT">
+											Select the Product State
+										</MenuItem>
+										<MenuItem value="New">New</MenuItem>
+										<MenuItem value="Used">Used</MenuItem>
+										<MenuItem value="Refurbished">
+											Refurbished
+										</MenuItem>
+									</Select>
+								</Grid>
+
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										label="Shipping Cost"
+										name="shippingCost"
+										value={productDetails.shippingCost}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<TextField
+										variant="outlined"
+										margin="dense"
+										fullWidth
+										label="Dimensions"
+										value={productDetails.dimensions}
+									/>
+								</Grid>
+
+								<Grid
+									item
+									xs={12}
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										marginLeft: 10,
+										marginRight: 10,
+										marginTop: 20,
+										marginBottom: 5,
+										padding: 20,
+										height: 120,
+										border: "1px solid #c4c4c4",
+										borderRadius: 6,
+									}}
+								>
+									<Grid
+										container
+										justify="center"
+										spacing={2}
+									>
+										{productDetails.images.length > 0 ? (
+											productDetails.images.map(
+												(img, index) => (
+													<Grid
+														item
+														key={index}
+														align="center"
+													>
+														<img
+															src={img}
+															alt="product-images"
+															width="70px"
+															height="70px"
+															style={{
+																border: "3px solid #e1e1e1",
+																padding: "2px",
+															}}
+														/>
+													</Grid>
+												)
+											)
+										) : (
+											<Typography>
+												No Product Images Uploaded!
+											</Typography>
+										)}
+									</Grid>
+								</Grid>
+
+								<Grid
+									container
+									spacing={2}
+									style={{ marginLeft: 5, marginRight: 5 }}
+								>
+									<Grid item xs={4}>
+										<div
+											style={{
+												display: "flex",
+												justifyContent: "center",
+												border: "1px solid #c4c4c4",
+												borderRadius: 4,
+												marginTop: 8,
+											}}
+										>
+											<FormControlLabel
+												margin="normal"
+												control={
+													<Switch
+														color="primary"
+														checked={
+															productDetails.isOnSale
+														}
+													/>
+												}
+												label="On Sale"
+												labelPlacement="start"
+											/>
+										</div>
+									</Grid>
+
+									{productDetails.isOnSale ? (
+										<Grid item xs={8}>
+											<TextField
+												variant="outlined"
+												margin="dense"
+												required
+												fullWidth
+												label="Discount(%)"
+												id="discount"
+												name="discount"
+												value={
+													productDetails.discountPercentage
+												}
+											/>
+										</Grid>
+									) : (
+										""
+									)}
+								</Grid>
+
+								<Grid
+									item
+									xs={12}
+									sm={12}
+									md={12}
+									align="center"
+									style={{ margin: "20px 0" }}
+								>
+									<Button
+										variant="outlined"
+										color="primary"
+										onClick={handleVPClose}
+									>
+										CLOSE
 									</Button>
 								</Grid>
 							</Grid>

@@ -121,14 +121,14 @@ const BusinessAnalytics = () => {
 	var barChart = {
 		series: [
 			{
-				name: "Sales / Month",
+				name: "Orders / Day",
 				data: salesData,
 			},
 		],
 		options: {
 			colors: [Pal.palette.primary.main],
 			title: {
-				text: "Monthly Sales",
+				text: "Orders",
 				align: "center",
 				style: {
 					fontSize: "20px",
@@ -249,7 +249,7 @@ const BusinessAnalytics = () => {
 			export: true,
 		},
 		{ title: "Brand", field: "brand", hidden: false, export: true },
-		{ title: "Category", field: "category", hidden: false, export: true },
+		{ title: "Category", field: "category", hidden: true, export: true },
 		{
 			title: "purchasePrice",
 			field: "purchasePrice",

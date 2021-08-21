@@ -90,7 +90,9 @@ import PromotedProducts from "../Pages/Promotion/PromotedProducts/PromotedProduc
 import ScheduledPromotions from "../Pages/Promotion/ScheduledPromotions/ScheduledPromotions";
 import BusinessAnalytics from "../Pages/BusinessAnalytics/BusinessAnalytics";
 import ReportAProblem from "../Pages/ReportAProblem/ReportAProblem";
-import Complaints from '../Pages/Complaints/Complaints'
+import Complaints from "../Pages/Complaints/Complaints";
+import Subscribers from "../Pages/MySubscribers/MySubscribers";
+import PrivacyPolicy from "../Pages/PrivacyPolicy/PrivacyPolicy";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -327,13 +329,17 @@ const Layout = (props) => {
 									<ListItemText primary="View Store" />
 								</MenuItem>
 
-								<MenuItem onClick={handleClose}>
+								<MenuItem
+									onClick={handleClose}
+									component={Link}
+									to="/seller/setting/report-problem"
+								>
 									<ListItemIcon
 										className={classes.listItemIcon}
 									>
 										<AssistantPhotoIcon fontSize="small" />
 									</ListItemIcon>
-									<ListItemText primary="Report a Problem" />
+									<ListItemText primary="Report Problem" />
 								</MenuItem>
 								<MenuItem onClick={handleClose}>
 									<ListItemIcon
@@ -341,9 +347,13 @@ const Layout = (props) => {
 									>
 										<LiveHelpIcon fontSize="small" />
 									</ListItemIcon>
-									<ListItemText primary="Frequent Questions" />
+									<ListItemText primary="FAQ's" />
 								</MenuItem>
-								<MenuItem onClick={handleClose}>
+								<MenuItem
+									onClick={handleClose}
+									component={Link}
+									to="/seller/privacy-policy"
+								>
 									<ListItemIcon
 										className={classes.listItemIcon}
 									>
@@ -351,13 +361,17 @@ const Layout = (props) => {
 									</ListItemIcon>
 									<ListItemText primary="Privacy Policy" />
 								</MenuItem>
-								<MenuItem onClick={handleClose}>
+								<MenuItem
+									onClick={handleClose}
+									component={Link}
+									to="/seller/setting/profile"
+								>
 									<ListItemIcon
 										className={classes.listItemIcon}
 									>
 										<SettingsIcon fontSize="small" />
 									</ListItemIcon>
-									<ListItemText primary="Settings and Config" />
+									<ListItemText primary="Settings" />
 								</MenuItem>
 								<MenuItem onClick={logoutHandler}>
 									<ListItemIcon
@@ -436,11 +450,10 @@ const Layout = (props) => {
 								button
 								className={classes.dropdown}
 								selected={
-									pathname ===
-									"/seller/vendors/view-all-vendors"
+									pathname === "/seller/vendors/view-vendors"
 								}
 								component={Link}
-								to="/seller/vendors/view-all-vendors"
+								to="/seller/vendors/view-vendors"
 							>
 								<ListItemIcon>
 									<ViewListIcon
@@ -549,6 +562,18 @@ const Layout = (props) => {
 							<InboxIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Complaints" />
+					</ListItem>
+
+					<ListItem
+						button
+						selected={pathname === "/seller/view-subscribers"}
+						component={Link}
+						to="/seller/view-subscribers"
+					>
+						<ListItemIcon>
+							<InboxIcon className={classes.iconColor} />
+						</ListItemIcon>
+						<ListItemText primary="My Subscribers" />
 					</ListItem>
 
 					<ListItem button>
@@ -777,7 +802,7 @@ const Layout = (props) => {
 						component={AddVendor}
 					/>
 					<Route
-						path="/seller/vendors/view-all-vendors"
+						path="/seller/vendors/view-vendors"
 						component={ViewVendors}
 					/>
 					<Route
@@ -795,6 +820,10 @@ const Layout = (props) => {
 					<Route path="/seller/orders" component={Orders} />
 					<Route path="/seller/reviews" component={Reviews} />
 					<Route path="/seller/complaints" component={Complaints} />
+					<Route
+						path="/seller/view-subscribers"
+						component={Subscribers}
+					/>
 					<Route
 						path="/seller/payments/PaymentMethod"
 						component={PaymentMethod}
@@ -830,6 +859,10 @@ const Layout = (props) => {
 					<Route
 						path="/seller/Promotion/scheduled-promotions"
 						component={ScheduledPromotions}
+					/>
+					<Route
+						path="/seller/privacy-policy"
+						component={PrivacyPolicy}
 					/>
 				</SwitchRouter>
 			</main>
