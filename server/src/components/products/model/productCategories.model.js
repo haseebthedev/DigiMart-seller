@@ -16,6 +16,7 @@ const productCategorySchema = new mongoose.Schema({
                 type: String
             }
         }],
+        unique:[true,'Sub-Category already present!'],
     },
     brands:{
         type:[{

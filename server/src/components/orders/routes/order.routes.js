@@ -4,7 +4,10 @@ const orderController = require('../controller/order.controller')
 const auth = require('../../users/auth')
 
 //ROUTES FOR BUYER
-router.post('/buyer/product/order', orderController.addOrder)
+router.post('/buyer/product/order', auth.buyer , orderController.addOrder)
+router.get('/buyer/orders/me', auth.buyer , orderController.viewOrdersPlacedByMe)
+router.get('/buyer/orders/:status', auth.buyer , orderController.getOrdersPlacedByMeByOrderStatus)
+router.get('/buyer/order/:id', auth.buyer, orderController.getMyOrderDetailsById)
 
 //ROUTES FOR AUTHENTICATED VENDOR
 router.patch('/seller/store/order/:id', auth.seller, orderController.updateOrderById)
@@ -14,7 +17,7 @@ router.get('/seller/store/orders/view', auth.seller, orderController.getAllOrder
 router.get('/seller/store/orders/:status', auth.seller, orderController.getOrdersOfMyStoreByStatus)
 router.patch('/seller/store/order/product/:id', auth.seller, orderController.updateOrderedProductById)
 router.delete('/seller/store/order/product/:id', auth.seller, orderController.deleteOrderedProductById)
-router.get('/seller/store/orders/date/range', auth.seller, orderController.getOrdersListBetweenDateRange)
+router.post('/seller/store/orders/date/range', auth.seller, orderController.getOrdersListBetweenDateRange)
 router.get('/seller/store/buyers', auth.seller, orderController.getAllCustomersOfStoreAndCountOfTheirOrders)
 
 //ROUTES FOR ADMIN
@@ -32,7 +35,7 @@ router.get('/superAdmin/orders/active/store/:id', auth.superAdmin, orderControll
 router.get('/superAdmin/orders/returned/store/:id', auth.superAdmin, orderController.getReturnedOrdersOfStoreById)
 router.get('/superAdmin/orders/completed/store/:id', auth.superAdmin, orderController.getCompletedOrdersOfStoreById)
 router.get('/superAdmin/orders/stores', auth.superAdmin, orderController.getAllOrdersInAllStores)
-router.get('/superAdmin/store/:id/orders/date/range', auth.superAdmin, orderController.getOrdersListBetweenDateRange)
+router.post('/superAdmin/store/:id/orders/date/range', auth.superAdmin, orderController.getOrdersListBetweenDateRange)
 router.get('/superAdmin/store/:id/buyers', auth.superAdmin, orderController.getAllCustomersOfStoreAndCountOfTheirOrdersByStoreId)
 
 //ANALYTICS FOR SELLER

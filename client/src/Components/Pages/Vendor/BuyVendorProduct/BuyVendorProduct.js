@@ -178,7 +178,6 @@ export default function BuyVendorProduct() {
 			"__v",
 			"_id",
 			"vendorId",
-			"vendorCompanyName",
 			"vendorCategory",
 			"vendorTypeOfBusiness",
 		];

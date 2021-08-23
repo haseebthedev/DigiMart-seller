@@ -63,6 +63,11 @@ export default function Orders() {
 	// Order ProductsList
 	const [ProductsDetails, setProductsDetails] = useState([]);
 
+	const [subTotal, setsubTotal] = useState(0);
+	const [discount, setdiscount] = useState(0);
+	const [totalPrice, settotalPrice] = useState(0);
+	const [totalQuantity, settotalQuantity] = useState(0);
+
 	const [editOrderDetails, setEditOrderDetails] = useState({
 		_id: "",
 		status: "",
@@ -92,7 +97,35 @@ export default function Orders() {
 		let productlist = ProductsDetails.map((el) =>
 			el._id === id ? { ...el, [input]: e.target.value } : el
 		);
+		calculateOrderStats(OrderDetails);
 		setProductsDetails(productlist);
+		// const {
+		// 	subTotalPrice,
+		// 	totalPurchasePrice,
+		// 	totalQuantity,
+		// 	totalDiscount,
+		// } = OrderDetails;
+
+		let subTotalPrice = 0;
+		let totalDiscount = 0;
+		let totalQuantity = 0;
+		let totalPurchasePrice = 0;
+
+		for (let i = 0; i < ProductsDetails.length; i++) {
+			subTotalPrice +=
+				ProductsDetails[i].salePrice * ProductsDetails[i].quantity;
+			totalDiscount += ProductsDetails[i].discount;
+			totalQuantity += ProductsDetails[i].quantity;
+			totalPurchasePrice += ProductsDetails[i].salePrice;
+		}
+
+		setOrderdetails({
+			...OrderDetails,
+			subTotalPrice,
+			totalQuantity,
+			totalDiscount,
+			totalPurchasePrice,
+		});
 	};
 
 	const deleteProductfromOrder = (id) => {
@@ -344,6 +377,19 @@ export default function Orders() {
 		},
 	];
 
+	function calculateOrderStats(
+		subTotalPrice,
+		totalPrice,
+		totalDiscount,
+		totalPurchasePrice
+	) {
+		setsubTotal(subTotalPrice);
+		// setdiscount(orderData.totalDiscount);
+		// settotalPrice(orderData.totalPrice);
+		// settotalQuantity(orderData.totalQuantity);
+		console.log(subTotalPrice);
+	}
+
 	return (
 		<Grid container className={classes.root}>
 			<Grid
@@ -373,6 +419,12 @@ export default function Orders() {
 									editOrderDetails,
 									...rowData,
 								});
+								calculateOrderStats(
+									rowData.subTotalPrice,
+									rowData.totalPrice,
+									rowData.totalDiscount,
+									rowData.totalPurchasePrice
+								);
 								setProductsDetails(rowData.products);
 								handleOpen();
 							},
@@ -519,7 +571,7 @@ export default function Orders() {
 				/>
 			</Grid>
 
-			{/* Edit Product */}
+			{/* Edit Orders */}
 			<Modal
 				open={editOrderOpen}
 				onClose={handleClose}
@@ -547,79 +599,6 @@ export default function Orders() {
 							</Typography>
 						</Grid>
 						<Grid container spacing={2}>
-							<Grid item xs={12} md={4}>
-								<form
-									className={classes.form}
-									noValidate
-									style={{ padding: 20 }}
-								>
-									<Typography
-										variant="h6"
-										style={{
-											fontWeight: "bold",
-											marginBottom: 10,
-										}}
-									>
-										Customer Details:
-									</Typography>
-									<div>
-										<Typography
-											style={{
-												marginBottom: 10,
-											}}
-										>
-											BID: {editOrderDetails.buyerId}
-										</Typography>
-
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Name"
-											value={editOrderDetails.name}
-											onChange={handlerOrderChange(
-												"name"
-											)}
-										/>
-
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Contact"
-											value={
-												editOrderDetails.contactNumber
-											}
-											onChange={handlerOrderChange(
-												"contactNumber"
-											)}
-										/>
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Email"
-											value={editOrderDetails.email}
-											onChange={handlerOrderChange(
-												"email"
-											)}
-										/>
-
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Delivery Address"
-											value={
-												editOrderDetails.deliveryAddress
-											}
-											onChange={handlerOrderChange(
-												"deliveryAddress"
-											)}
-										/>
-									</div>
-								</form>
-							</Grid>
 							<Grid item xs={12} md={8}>
 								<form
 									className={classes.form}
@@ -735,6 +714,108 @@ export default function Orders() {
 											)}
 										</Grid>
 									</Grid>
+								</form>
+							</Grid>
+							<Grid item xs={12} md={4}>
+								<form
+									className={classes.form}
+									noValidate
+									style={{ padding: 20 }}
+								>
+									<Typography
+										variant="h6"
+										style={{
+											fontWeight: "bold",
+											marginBottom: 10,
+										}}
+									>
+										Customer Details:
+									</Typography>
+									<div style={{ marginBottom: 10 }}>
+										<Typography
+											style={{
+												marginBottom: 10,
+											}}
+										>
+											BID: {editOrderDetails.buyerId}
+										</Typography>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Name"
+											value={editOrderDetails.name}
+											onChange={handlerOrderChange(
+												"name"
+											)}
+										/>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Contact"
+											value={
+												editOrderDetails.contactNumber
+											}
+											onChange={handlerOrderChange(
+												"contactNumber"
+											)}
+										/>
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Email"
+											value={editOrderDetails.email}
+											onChange={handlerOrderChange(
+												"email"
+											)}
+										/>
+
+										<TextField
+											margin="dense"
+											variant="outlined"
+											fullWidth
+											label="Delivery Address"
+											value={
+												editOrderDetails.deliveryAddress
+											}
+											onChange={handlerOrderChange(
+												"deliveryAddress"
+											)}
+										/>
+									</div>
+									<Divider />
+									<div
+										style={{ marginTop: 20 }}
+										align="center"
+									>
+										<Grid item xs={12} md={12}>
+											<Typography
+												style={{
+													marginBottom: 10,
+												}}
+											>
+												SubTotal : {subTotal}
+											</Typography>
+											<Typography
+												style={{
+													marginBottom: 10,
+												}}
+											>
+												Discount : {discount}
+											</Typography>
+											<Typography
+												style={{
+													marginBottom: 10,
+												}}
+											>
+												Total Price : {totalPrice}
+											</Typography>
+										</Grid>
+									</div>
 								</form>
 							</Grid>
 

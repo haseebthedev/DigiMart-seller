@@ -269,6 +269,26 @@ const forgetAccountPassword = async(req, res, next) => {
     }
 }
 
+const viewMyProfileInfo = async (req, res, next) => {
+    try{
+        const _id = req.user._id
+        const buyer = await Buyer.find({_id: _id})
+        if(buyer.length == 0){
+            throw new Error('No buyer find of this id !')
+        }
+        res.status(200).json({
+            message:`Buyer fetched successfully!.`,
+            data:{
+                buyer
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 const changePassword = async(req, res, next) => {
     try{
         const user = req.user
@@ -508,6 +528,7 @@ module.exports = {
     subscribeStoreByStoreId,
     UnSubscribeStoreByStoreId,
     ViewSubscribedStores,
+    viewMyProfileInfo,
     //for admin
     getAllBuyersDetails,
     getTotalNumberOfBuyers,

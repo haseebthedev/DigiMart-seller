@@ -155,6 +155,15 @@ export default function ViewProducts() {
 			hidden: true,
 			export: true,
 		},
+		{
+			title: "Owner",
+			field: "vendorCompanyName",
+			render: ({ vendorCompanyName }) => (
+				<div>{vendorCompanyName ? vendorCompanyName : "SELF"}</div>
+			),
+			hidden: false,
+			export: false,
+		},
 	];
 
 	// category list retrive from DB

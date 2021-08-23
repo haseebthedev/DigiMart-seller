@@ -1,5 +1,184 @@
 const Store = require('../../store/model/store.model')
 const Product = require('../model/product.model')
+const Review = require('../../review/model/review.model')
+
+//FOR BUYER
+
+const viewProductsOfSpecificBrand = async(req, res, next) => {
+    try{
+        const brand = req.params.brand
+        const products = await Product.find({brand})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`${brand} products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewProductsOfSpecificCategory = async(req, res, next) => {
+    try{
+        const category = req.params.category
+        const products = await Product.find({category})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`${category} products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewProductsOfSpecificSubCategory = async(req, res, next) => {
+    try{
+        const subCategory = req.params.subCategory
+        const products = await Product.find({subCategory})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`${subCategory} products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewProductsOnSale = async(req, res, next) => {
+    try{
+        const products = await Product.find({isOnSale: true})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Products On Sale fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const viewTopReviewedProducts = async(req, res, next) => {
+    try{
+        const productIdsAndRating = await Review.aggregate([
+
+            {
+              $group: {
+                _id: "$productId",
+                avgRating: {
+                  $avg: "$rating"
+                }
+              }
+            },
+            {
+                $sort: {
+                  avgRating: -1
+                }
+            },
+            {$set: {
+                productId:{
+                  $toObjectId:"$productId"
+                }
+             }
+            },
+            {
+                $lookup: {
+                      from: "Product",
+                      localField: "productId",
+                      foreignField: "_id",
+                      as: "product"
+                  }
+            },
+            // {
+            //   $unwind: "$product"
+            // },
+            
+            {
+              $project: {
+                "product": "$product",
+                "averageRating": { $round: ['$avgRating', 1] }
+              }
+            },
+
+          ]).then(async (result) => {
+            // result.forEach((item) => {
+            //     item.product = await Product.findOne({_id: item._id})
+            //     delete item._id
+            // })
+            return result
+         });
+         let productIds = []
+         productIdsAndRating.forEach((item) => {
+             productIds.push(item._id)
+         })
+        const products = await Product.find({_id: productIds})
+         
+        res.status(200).json({
+            message:`Top Reviewed Products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const searchProducts = async(req, res, next) => {
+    try{
+        let name = req.body.name
+        if(name){
+            req.body.name = { '$regex': `.*${name}.*` }
+        }
+        const filters = req.body
+        const products = await Product.find(filters)
+        console.log( filters)
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Filtered products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+//const viewProductsOfStore = 
+
+//FOR SELLER
 
 const addProductToMyStore = async(req, res, next) => {
 
@@ -443,5 +622,12 @@ module.exports = {
     getTotalNumberOfProducts,
     editProductById,
     deleteProductById,
-    addProductByStoreId
+    addProductByStoreId,
+    //BUYER
+    viewProductsOfSpecificBrand,
+    viewProductsOfSpecificCategory,
+    viewProductsOfSpecificSubCategory,
+    viewProductsOnSale,
+    viewTopReviewedProducts,
+    searchProducts,
 }

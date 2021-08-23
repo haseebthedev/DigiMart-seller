@@ -3,6 +3,15 @@ const router = express.Router()
 const productController = require('../controller/product.controller')
 const auth = require('../../users/auth')
 
+//ROUTES FOR BUYER
+router.get('/buyer/products' , productController.viewAllProductsInAllStores)
+router.get('/buyer/products/category/:category' , productController.viewProductsOfSpecificCategory)
+router.get('/buyer/products/subCategory/:subCategory' , productController.viewProductsOfSpecificSubCategory)
+router.get('/buyer/products/brand/:brand' , productController.viewProductsOfSpecificBrand)
+router.get('/buyer/products/onSale' , productController.viewProductsOnSale)
+router.get('/buyer/products/topReviewed' , productController.viewTopReviewedProducts)
+router.post('/buyer/products/search' , productController.searchProducts)
+
 //ROUTES FOR AUTHENTICATED SELLER
 router.post('/seller/store/product', auth.seller, productController.addProductToMyStore)
 router.patch('/seller/store/product/:id', auth.seller, productController.updateProduct)

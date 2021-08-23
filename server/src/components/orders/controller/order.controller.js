@@ -28,6 +28,60 @@ const addOrder = async(req, res, next) => {
     }
 }
 
+const viewOrdersPlacedByMe = async(req, res, next) => {
+    try{
+        
+        const orders = await Order.find({buyerId: req.user._id})
+        res.status(200).json({
+            message:`Orders Fetched !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getOrdersPlacedByMeByOrderStatus = async(req, res, next) => {
+
+    try{
+        const userId = req.user._id
+        const status = req.params.status
+        const orders = await Order.find({buyerId: userId, status: status})
+        res.status(200).json({
+            message:`Buyer ${status} Orders Fetched !`,
+            data:{
+                orders
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getMyOrderDetailsById = async(req, res, next) => {
+
+    try{
+        const _id = req.params.id
+        const order = await Order.findOne({_id, buyerId: req.user._id})
+        res.status(200).json({
+            message:`Order Fetched !`,
+            data:{
+                order
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 //for vendor
 const updateOrderById = async(req, res, next) => {
 
@@ -57,7 +111,7 @@ const updateOrderById = async(req, res, next) => {
             order[update] = req.body[update]
         })
         await order.save()
-        res.status(201).json({
+        res.status(200).json({
             message:`Order Updated !`,
             data:{
                 order
@@ -264,7 +318,7 @@ const getOrdersListBetweenDateRange = async(req, res, next) => {
         const greaterThanDate = new Date(req.body.greaterThanDate).toISOString()
         //console.log(new Date(greaterThanDate))
         const orders = await Order.find({
-            deliveryDate: {
+            createdAt: {
                 $gte: new Date(greaterThanDate),
                 $lte: new Date(lesserThanDate)
             },
@@ -572,6 +626,9 @@ const getAllCustomersOfStoreAndCountOfTheirOrdersByStoreId = async(req, res, nex
 module.exports = {
     //for buyer
     addOrder,
+    viewOrdersPlacedByMe,
+    getOrdersPlacedByMeByOrderStatus,
+    getMyOrderDetailsById,
     //for seller and admin
     updateOrderById,
     deleteOrderById,

@@ -68,6 +68,9 @@ import ContactMailIcon from "@material-ui/icons/ContactMail";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import ArtTrackIcon from "@material-ui/icons/ArtTrack";
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
+import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
+import LocalLibraryIcon from "@material-ui/icons/LocalLibrary";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
@@ -93,6 +96,8 @@ import ReportAProblem from "../Pages/ReportAProblem/ReportAProblem";
 import Complaints from "../Pages/Complaints/Complaints";
 import Subscribers from "../Pages/MySubscribers/MySubscribers";
 import PrivacyPolicy from "../Pages/PrivacyPolicy/PrivacyPolicy";
+import FAQs from "../Pages/FAQs/FAQs";
+import MyBuyers from "../Pages/MyBuyers/MyBuyers";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -341,7 +346,11 @@ const Layout = (props) => {
 									</ListItemIcon>
 									<ListItemText primary="Report Problem" />
 								</MenuItem>
-								<MenuItem onClick={handleClose}>
+								<MenuItem
+									onClick={handleClose}
+									component={Link}
+									to="/seller/FAQs"
+								>
 									<ListItemIcon
 										className={classes.listItemIcon}
 									>
@@ -559,9 +568,23 @@ const Layout = (props) => {
 						to="/seller/complaints"
 					>
 						<ListItemIcon>
-							<InboxIcon className={classes.iconColor} />
+							<ErrorOutlineIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="Complaints" />
+					</ListItem>
+
+					<ListItem
+						button
+						selected={pathname === "view-buyers"}
+						component={Link}
+						to="view-buyers"
+					>
+						<ListItemIcon>
+							<SupervisedUserCircleIcon
+								className={classes.iconColor}
+							/>
+						</ListItemIcon>
+						<ListItemText primary="My Buyers" />
 					</ListItem>
 
 					<ListItem
@@ -571,7 +594,7 @@ const Layout = (props) => {
 						to="/seller/view-subscribers"
 					>
 						<ListItemIcon>
-							<InboxIcon className={classes.iconColor} />
+							<LocalLibraryIcon className={classes.iconColor} />
 						</ListItemIcon>
 						<ListItemText primary="My Subscribers" />
 					</ListItem>
@@ -731,24 +754,6 @@ const Layout = (props) => {
 								<ListItemText primary="Promote Product" />
 							</ListItem>
 
-							{/* <ListItem
-								button
-								className={classes.dropdown}
-								selected={
-									pathname ===
-									"/seller/Promotion/Regular-Customers"
-								}
-								component={Link}
-								to="/seller/Promotion/Regular-Customers"
-							>
-								<ListItemIcon>
-									<AccountCircleIcon
-										className={classes.iconColor}
-									/>
-								</ListItemIcon>
-								<ListItemText primary="Regular Customers" />
-							</ListItem> */}
-
 							<ListItem
 								button
 								className={classes.dropdown}
@@ -824,6 +829,7 @@ const Layout = (props) => {
 						path="/seller/view-subscribers"
 						component={Subscribers}
 					/>
+					<Route path="/seller/view-buyers" component={MyBuyers} />
 					<Route
 						path="/seller/payments/PaymentMethod"
 						component={PaymentMethod}
@@ -864,6 +870,7 @@ const Layout = (props) => {
 						path="/seller/privacy-policy"
 						component={PrivacyPolicy}
 					/>
+					<Route path="/seller/FAQs" component={FAQs} />
 				</SwitchRouter>
 			</main>
 		</div>
