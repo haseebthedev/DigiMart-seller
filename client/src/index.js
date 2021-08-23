@@ -3,15 +3,12 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./context/UserContext";
-import { ThemeProvider, CssBaseline } from "@material-ui/core";
-import Themes from "./themes";
+import { CssBaseline } from "@material-ui/core";
 
 ReactDOM.render(
 	<UserProvider>
-		<ThemeProvider theme={Themes.default}>
-			<CssBaseline />
-			<App />
-		</ThemeProvider>
+		<CssBaseline />
+		<App />
 	</UserProvider>,
 	document.getElementById("root")
 );

@@ -81,9 +81,8 @@ export default function VendorCenter() {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then(function (res) {
-				// setIsLoggedOut(true);
-				// return logoutUser(dispatch);
-				console.log("delete account...");
+				setIsLoggedOut(true);
+				return logoutUser(dispatch);
 			})
 			.catch((error) =>
 				console.log(

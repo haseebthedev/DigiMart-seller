@@ -114,6 +114,8 @@ const Layout = (props) => {
 	// Current Path - URL Location
 	const {
 		location: { pathname },
+		darkState,
+		handleThemeChange,
 	} = props;
 
 	// navbar menu
@@ -269,8 +271,8 @@ const Layout = (props) => {
 								checkedIcon={
 									<Brightness7Icon color="primary" />
 								}
-								checked={!!modeType}
-								onChange={modeHandler}
+								checked={darkState}
+								onChange={handleThemeChange}
 							/>
 							<IconButton>
 								<Badge badgeContent={3} color="primary">

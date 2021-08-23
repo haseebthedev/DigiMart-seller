@@ -22,6 +22,7 @@ const VendorAnalytics = () => {
 	const classes = useStyles();
 	const { store } = useUserContext();
 	const token = store.data.token;
+	const { isDarkModeEnabled } = store.data.data;
 
 	const [showCompleteRegis, setCompleteRegis] = useState(
 		store.data.data.isStoreRegistered
@@ -49,6 +50,9 @@ const VendorAnalytics = () => {
 			xaxis: {
 				type: "datetime",
 			},
+			theme: {
+				mode: isDarkModeEnabled === true ? "dark" : "light",
+			},
 			colors: ["#DC143C"],
 			fill: {
 				colors: ["#DC143C"],
@@ -58,6 +62,7 @@ const VendorAnalytics = () => {
 				zoom: {
 					type: "x",
 				},
+				foreColor: isDarkModeEnabled === true ? "#f6f7f8" : "#373d3f",
 			},
 			stroke: {
 				curve: "smooth",
@@ -77,6 +82,7 @@ const VendorAnalytics = () => {
 				x: {
 					format: "dd/MM/yy HH:mm",
 				},
+				theme: isDarkModeEnabled === true,
 			},
 		},
 	};
@@ -84,6 +90,9 @@ const VendorAnalytics = () => {
 	var CategoryWiseStats = {
 		series: Object.values(categoryData),
 		options: {
+			theme: {
+				mode: isDarkModeEnabled === true ? "dark" : "light",
+			},
 			title: {
 				text: "Category-Wise Sales",
 				align: "center",
@@ -94,6 +103,7 @@ const VendorAnalytics = () => {
 			},
 			chart: {
 				type: "polarArea",
+				foreColor: isDarkModeEnabled === true ? "#f6f7f8" : "#373d3f",
 			},
 			labels: ["Delivered", "Cancelled", "Returned", "Active", "Pending"],
 			colors: ["#04e762", "#ff0a0a", "#ff4c00", "#1786dd", "#775DD0"],
@@ -128,6 +138,9 @@ const VendorAnalytics = () => {
 			},
 		],
 		options: {
+			theme: {
+				mode: isDarkModeEnabled === true ? "dark" : "light",
+			},
 			colors: [Pal.palette.primary.main],
 			title: {
 				text: "Orders",
@@ -140,6 +153,7 @@ const VendorAnalytics = () => {
 			chart: {
 				type: "bar",
 				height: 350,
+				foreColor: isDarkModeEnabled === true ? "#f6f7f8" : "#373d3f",
 			},
 			plotOptions: {
 				bar: {
@@ -231,6 +245,11 @@ const VendorAnalytics = () => {
 
 	const columns = [
 		{
+			title: "#",
+			field: "tableData.id",
+			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
+		},
+		{
 			title: "Image",
 			field: "images",
 			render: ({ images }) => (
@@ -319,7 +338,7 @@ const VendorAnalytics = () => {
 				</Grid>
 			</Grid>
 			<Grid container spacing={4}>
-				<Grid item xs={12} md={7}>
+				<Grid item xs={12} md={8}>
 					<Paper style={{ padding: 16 }}>
 						<Chart
 							options={SalesStats.options}
@@ -352,7 +371,7 @@ const VendorAnalytics = () => {
 						}}
 					/>
 				</Grid>
-				<Grid item xs={12} md={5}>
+				<Grid item xs={12} md={4}>
 					<Paper style={{ padding: 16 }}>
 						<Chart
 							options={CategoryWiseStats.options}

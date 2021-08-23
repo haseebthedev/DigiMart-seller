@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 // components
@@ -7,29 +8,76 @@ import Login from "./Components/Pages/Login/Login";
 import Register from "./Components/Pages/Register/Register";
 
 // context
-import { useUserContext } from "./context/UserContext";
+import { useUserContext, updateProfile } from "./context/UserContext";
 import "./App.css";
 
+// For Switch Theming
+import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import theme from "./themes/index";
+
 function App() {
-	const { store } = useUserContext();
+	const { store, dispatch } = useUserContext();
+	const token = store.data.token;
+	const { isDarkModeEnabled } = store.data.data;
+
+	// dark mode
+	const [darkState, setDarkState] = useState(
+		isDarkModeEnabled !== undefined ? isDarkModeEnabled : false
+	);
+	const palletType = darkState ? "dark" : "light";
+
+	const darkTheme = createMuiTheme({
+		...theme,
+		palette: {
+			primary: {
+				light: "#ff2450",
+				main: "#DC143C",
+				dark: "#bd062a",
+			},
+			secondary: {
+				light: "#BA55D3",
+				main: "#9932CC",
+				dark: "#9400D3",
+			},
+			type: palletType,
+		},
+	});
+
+	const handleThemeChange = () => {
+		setDarkState(!darkState);
+
+		// updating darkMode state in context
+		const oldData = store.data.data;
+		const newData = { ...oldData, isDarkModeEnabled: !darkState };
+		updateProfile(dispatch, newData, token);
+	};
 
 	return (
-		<BrowserRouter>
-			<div className="App">
-				<Switch>
-					<Route path="/seller/register" exact component={Register} />
-					<Route
-						path="/seller/forget-password"
-						exact
-						component={ForgetPassword}
-					/>
-					<Route path="/seller/login" exact component={Login} />
-					<PrivateRoute path="/seller">
-						<Layout />
-					</PrivateRoute>
-				</Switch>
-			</div>
-		</BrowserRouter>
+		<ThemeProvider theme={darkTheme}>
+			<BrowserRouter>
+				<div className="App">
+					<Switch>
+						<Route
+							path="/seller/register"
+							exact
+							component={Register}
+						/>
+						<Route
+							path="/seller/forget-password"
+							exact
+							component={ForgetPassword}
+						/>
+						<Route path="/seller/login" exact component={Login} />
+						<PrivateRoute path="/seller">
+							<Layout
+								darkState={darkState}
+								handleThemeChange={handleThemeChange}
+							/>
+						</PrivateRoute>
+					</Switch>
+				</div>
+			</BrowserRouter>
+		</ThemeProvider>
 	);
 
 	// HOC for Auth routes
