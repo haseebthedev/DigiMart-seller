@@ -97,35 +97,24 @@ export default function Orders() {
 		let productlist = ProductsDetails.map((el) =>
 			el._id === id ? { ...el, [input]: e.target.value } : el
 		);
-		calculateOrderStats(OrderDetails);
 		setProductsDetails(productlist);
-		// const {
-		// 	subTotalPrice,
-		// 	totalPurchasePrice,
-		// 	totalQuantity,
-		// 	totalDiscount,
-		// } = OrderDetails;
 
-		let subTotalPrice = 0;
-		let totalDiscount = 0;
-		let totalQuantity = 0;
-		let totalPurchasePrice = 0;
-
-		for (let i = 0; i < ProductsDetails.length; i++) {
-			subTotalPrice +=
-				ProductsDetails[i].salePrice * ProductsDetails[i].quantity;
-			totalDiscount += ProductsDetails[i].discount;
-			totalQuantity += ProductsDetails[i].quantity;
-			totalPurchasePrice += ProductsDetails[i].salePrice;
+		// Calculating subTotal Price
+		let stp = 0,
+			qty = 0,
+			disc = 0;
+		for (let i = 0; i < productlist.length; i++) {
+			qty += productlist[i].quantity;
+			stp += productlist[i].salePrice;
+			disc += productlist[i].discount * qty;
 		}
 
-		setOrderdetails({
-			...OrderDetails,
-			subTotalPrice,
-			totalQuantity,
-			totalDiscount,
-			totalPurchasePrice,
-		});
+		settotalQuantity(qty);
+		setsubTotal(stp * qty);
+		setdiscount(disc);
+
+		let totalSum = stp * qty - disc;
+		settotalPrice(totalSum);
 	};
 
 	const deleteProductfromOrder = (id) => {
@@ -147,7 +136,14 @@ export default function Orders() {
 		await api
 			.patch(
 				`/seller/store/order/${editOrderDetails._id}`,
-				{ ...editOrderDetails, products: ProductsDetails },
+				{
+					...editOrderDetails,
+					subTotalPrice: subTotal,
+					totalDiscount: discount,
+					totalPrice: totalPrice,
+					totalQuantity: totalQuantity,
+					products: ProductsDetails,
+				},
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
@@ -304,6 +300,22 @@ export default function Orders() {
 			render: ({ totalPrice }) => <div>{"Rs. " + totalPrice}</div>,
 		},
 		{
+			title: "Date",
+			field: "createdAt",
+			align: "center",
+			render: ({ createdAt }) => <div>{createdAt.split("T")[0]}</div>,
+		},
+		{
+			title: "Time",
+			field: "createdAt",
+			align: "center",
+			render: ({ createdAt }) => {
+				let time = new Date(createdAt);
+				return <div>{time.toLocaleTimeString()}</div>;
+			},
+			export: false,
+		},
+		{
 			title: "Status",
 			field: "status",
 			align: "center",
@@ -335,22 +347,6 @@ export default function Orders() {
 			),
 		},
 		{
-			title: "Date",
-			field: "createdAt",
-			align: "center",
-			render: ({ createdAt }) => <div>{createdAt.split("T")[0]}</div>,
-		},
-		{
-			title: "Time",
-			field: "createdAt",
-			align: "center",
-			render: ({ createdAt }) => {
-				let time = new Date(createdAt);
-				return <div>{time.toLocaleTimeString()}</div>;
-			},
-			export: false,
-		},
-		{
 			field: "",
 			title: "",
 			align: "center",
@@ -376,19 +372,6 @@ export default function Orders() {
 			export: false,
 		},
 	];
-
-	function calculateOrderStats(
-		subTotalPrice,
-		totalPrice,
-		totalDiscount,
-		totalPurchasePrice
-	) {
-		setsubTotal(subTotalPrice);
-		// setdiscount(orderData.totalDiscount);
-		// settotalPrice(orderData.totalPrice);
-		// settotalQuantity(orderData.totalQuantity);
-		console.log(subTotalPrice);
-	}
 
 	return (
 		<Grid container className={classes.root}>
@@ -419,13 +402,11 @@ export default function Orders() {
 									editOrderDetails,
 									...rowData,
 								});
-								calculateOrderStats(
-									rowData.subTotalPrice,
-									rowData.totalPrice,
-									rowData.totalDiscount,
-									rowData.totalPurchasePrice
-								);
 								setProductsDetails(rowData.products);
+								setsubTotal(rowData.subTotalPrice);
+								settotalQuantity(rowData.totalQuantity);
+								setdiscount(rowData.totalDiscount);
+								settotalPrice(rowData.totalPrice);
 								handleOpen();
 							},
 						}),

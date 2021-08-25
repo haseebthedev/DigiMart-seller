@@ -6,5 +6,4 @@ const myTheme = {
 	...typography,
 };
 
-// eslint-disable-next-line
 export default myTheme;

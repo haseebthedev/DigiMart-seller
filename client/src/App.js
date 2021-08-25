@@ -41,6 +41,30 @@ function App() {
 			},
 			type: palletType,
 		},
+		typography: {
+			fontFamily: "poppins, Arial",
+			h1: {
+				fontSize: "1.6rem",
+			},
+			h2: {
+				fontSize: "1.4rem",
+			},
+			h3: {
+				fontSize: "1.3rem",
+			},
+			h4: {
+				fontSize: "1.2rem",
+			},
+			h5: {
+				fontSize: "1rem",
+			},
+			h6: {
+				fontSize: "0.8rem",
+			},
+			body1: {
+				fontSize: "0.95rem",
+			},
+		},
 	});
 
 	const handleThemeChange = () => {

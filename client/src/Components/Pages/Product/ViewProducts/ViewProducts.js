@@ -99,7 +99,7 @@ export default function ViewProducts() {
 		{
 			title: "State",
 			field: "state",
-			hidden: false,
+			hidden: true,
 			export: true,
 		},
 		{

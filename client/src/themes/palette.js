@@ -4,8 +4,6 @@
 // const success = "#3CD4A0";
 // const info = "#9013FE";
 
-var mode = localStorage.getItem("THEME_MODE");
-
 const pal = {
 	palette: {
 		primary: {
@@ -18,7 +16,6 @@ const pal = {
 			main: "#9932CC",
 			dark: "#9400D3",
 		},
-		type: mode ? mode : "light",
 	},
 };
 

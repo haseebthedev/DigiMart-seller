@@ -71,6 +71,7 @@ import ArtTrackIcon from "@material-ui/icons/ArtTrack";
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline";
 import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import LocalLibraryIcon from "@material-ui/icons/LocalLibrary";
+import HelpIcon from "@material-ui/icons/Help";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
@@ -199,23 +200,6 @@ const Layout = (props) => {
 	};
 	const handleDDVendor = () => {
 		setOpenDDVendors(!openDDVendors);
-	};
-
-	// DARK MODE
-	const [setMode] = useState(false);
-	const modeType = localStorage.getItem("THEME_MODE");
-
-	// dark mode handler
-	const modeHandler = () => {
-		if (!modeType) {
-			localStorage.setItem("THEME_MODE", "dark");
-			window.location.reload();
-			setMode(true);
-		} else {
-			localStorage.removeItem("THEME_MODE");
-			window.location.reload();
-			setMode(false);
-		}
 	};
 
 	// activating profile again
@@ -427,7 +411,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<DashboardIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary={"Dashboard"} />
+						<ListItemText primary="1. Dashboard" />
 					</ListItem>
 
 					{/* Add a Vendor */}
@@ -435,7 +419,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<ProductIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Vendors" />
+						<ListItemText primary="2. Vendors" />
 						{openDDVendors ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
 					<Collapse in={openDDVendors} timeout="auto" unmountOnExit>
@@ -454,7 +438,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Add a Vendor" />
+								<ListItemText primary="2.1. Add a Vendor" />
 							</ListItem>
 
 							<ListItem
@@ -471,7 +455,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="View Vendors" />
+								<ListItemText primary="2.2. View Vendors" />
 							</ListItem>
 
 							<ListItem
@@ -489,7 +473,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Buy Vendor Product" />
+								<ListItemText primary="2.3. Buy from Vendor" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -498,7 +482,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<ArtTrackIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Products" />
+						<ListItemText primary="3. Products" />
 						{openDDProduct ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
 					<Collapse in={openDDProduct} timeout="auto" unmountOnExit>
@@ -517,7 +501,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Add a Product" />
+								<ListItemText primary="3.1. Add a Product" />
 							</ListItem>
 
 							<ListItem
@@ -535,10 +519,11 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="View Products" />
+								<ListItemText primary="3.2. View Products" />
 							</ListItem>
 						</List>
 					</Collapse>
+
 					<ListItem
 						button
 						selected={pathname === "/seller/orders"}
@@ -548,7 +533,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<InboxIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Orders" />
+						<ListItemText primary="4. Orders" />
 					</ListItem>
 
 					<ListItem
@@ -560,7 +545,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<SpeakerNotesIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Reviews" />
+						<ListItemText primary="5. Reviews" />
 					</ListItem>
 
 					<ListItem
@@ -572,7 +557,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<ErrorOutlineIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Complaints" />
+						<ListItemText primary="6. Complaints" />
 					</ListItem>
 
 					<ListItem
@@ -586,7 +571,7 @@ const Layout = (props) => {
 								className={classes.iconColor}
 							/>
 						</ListItemIcon>
-						<ListItemText primary="My Buyers" />
+						<ListItemText primary="7. My Buyers" />
 					</ListItem>
 
 					<ListItem
@@ -598,21 +583,21 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<LocalLibraryIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="My Subscribers" />
+						<ListItemText primary="8. My Subscribers" />
 					</ListItem>
 
 					<ListItem button>
 						<ListItemIcon>
 							<ChatIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Messages" />
+						<ListItemText primary="9. Messages" />
 					</ListItem>
 
 					<ListItem button onClick={handleDDPayments}>
 						<ListItemIcon>
 							<MonetizationOnIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Payments" />
+						<ListItemText primary="10. Payments" />
 						{openDDPayments ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
 					<Collapse in={openDDPayments} timeout="auto" unmountOnExit>
@@ -632,7 +617,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Payment Methods" />
+								<ListItemText primary="10.1. Payment Methods" />
 							</ListItem>
 							<ListItem
 								className={classes.dropdown}
@@ -648,7 +633,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Transactions" />
+								<ListItemText primary="10.2. Transactions" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -662,17 +647,16 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<AssessmentIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Business Analytics" />
+						<ListItemText primary="11. Business Analytics" />
 					</ListItem>
 
 					<ListItem button onClick={handleDDSettings}>
 						<ListItemIcon>
 							<TuneIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Settings" />
+						<ListItemText primary="12. Settings" />
 						{openDDSettings ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
-
 					<Collapse in={openDDSettings} timeout="auto" unmountOnExit>
 						<List component="div" disablePadding>
 							<ListItem
@@ -689,7 +673,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Profile Settings" />
+								<ListItemText primary="12.1. Profile Settings" />
 							</ListItem>
 							<ListItem
 								button
@@ -703,7 +687,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Store Settings" />
+								<ListItemText primary="12.2. Store Settings" />
 							</ListItem>
 							<ListItem
 								button
@@ -716,11 +700,9 @@ const Layout = (props) => {
 								to="/seller/setting/report-problem"
 							>
 								<ListItemIcon>
-									<LocalConvenienceStoreIcon
-										className={classes.iconColor}
-									/>
+									<HelpIcon className={classes.iconColor} />
 								</ListItemIcon>
-								<ListItemText primary="Report A Problem" />
+								<ListItemText primary="12.3. Report A Problem" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -729,7 +711,7 @@ const Layout = (props) => {
 						<ListItemIcon>
 							<AssistantIcon className={classes.iconColor} />
 						</ListItemIcon>
-						<ListItemText primary="Promotions" />
+						<ListItemText primary="13. Promotions" />
 						{openDDPromotions ? <ExpandLess /> : <ExpandMore />}
 					</ListItem>
 					<Collapse
@@ -753,7 +735,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Promote Product" />
+								<ListItemText primary="13.1. Promote Product" />
 							</ListItem>
 
 							<ListItem
@@ -771,7 +753,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="Advertised Products" />
+								<ListItemText primary="13.2. Advertised Products" />
 							</ListItem>
 
 							<ListItem
@@ -787,7 +769,7 @@ const Layout = (props) => {
 								<ListItemIcon>
 									<EventIcon className={classes.iconColor} />
 								</ListItemIcon>
-								<ListItemText primary="Scheduled Promotions" />
+								<ListItemText primary="13.3. Scheduled Promotions" />
 							</ListItem>
 						</List>
 					</Collapse>
