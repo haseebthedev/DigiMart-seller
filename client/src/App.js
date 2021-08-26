@@ -16,9 +16,8 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import theme from "./themes/index";
 
 function App() {
-	const { store, dispatch } = useUserContext();
-	const token = store.data.token;
-	const { isDarkModeEnabled } = store.data.data;
+	var { store, dispatch } = useUserContext();
+	const { isDarkModeEnabled } = false;
 
 	// dark mode
 	const [darkState, setDarkState] = useState(
@@ -71,6 +70,7 @@ function App() {
 		setDarkState(!darkState);
 
 		// updating darkMode state in context
+		var token = store.data.token;
 		const oldData = store.data.data;
 		const newData = { ...oldData, isDarkModeEnabled: !darkState };
 		updateProfile(dispatch, newData, token);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Grid,
 	Paper,
@@ -9,8 +9,9 @@ import {
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import SendIcon from "@material-ui/icons/Send";
+import Highlighter from "react-highlight-words";
+import "./hideScroll.css";
 import useStyles from "./styles";
-
 import Pal from "../../../themes/palette";
 import myImage from "./myImage.jpg";
 
@@ -77,10 +78,64 @@ const Chat = () => {
 			message: "No Prob. You're always welcome!",
 			sentOn: "",
 		},
+		{
+			id: 2,
+			name: "Ahmed",
+			profilePic: "https://avatars.dicebear.com/api/male/.svg",
+			message: "Yea. Now, its working on my side. Thanks!",
+			sentOn: "",
+		},
+		{
+			id: 1,
+			name: "Haseeb",
+			profilePic: myImage,
+			message: "No Prob. You're always welcome!",
+			sentOn: "",
+		},
+		{
+			id: 2,
+			name: "Ahmed",
+			profilePic: "https://avatars.dicebear.com/api/male/.svg",
+			message: "Yea. Now, its working on my side. Thanks!",
+			sentOn: "",
+		},
+		{
+			id: 1,
+			name: "Haseeb",
+			profilePic: myImage,
+			message: "No Prob. You're always welcome!",
+			sentOn: "",
+		},
+		{
+			id: 2,
+			name: "Ali",
+			profilePic: "https://avatars.dicebear.com/api/male/.svg",
+			message: "Yea. Now, its working on my side. Thanks!",
+			sentOn: "",
+		},
+		{
+			id: 1,
+			name: "Haseeb",
+			profilePic: myImage,
+			message: "No Prob. You're always welcome!",
+			sentOn: "",
+		},
 	];
 
 	const [SelectedChat, setSelectedChat] = useState("");
 	const [MyId] = useState(1);
+
+	const [textToSearch, setTextToSearch] = useState([""]);
+
+	const handlerSearchText = (e) => {
+		setTextToSearch([e.target.value]);
+	};
+
+	// Scroll to Bottom of Chat
+	useEffect(() => {
+		var myDiv = document.querySelector(".user-messages");
+		myDiv.scrollTop = myDiv.scrollHeight;
+	}, []);
 
 	return (
 		<Grid container className={classes.root}>
@@ -88,7 +143,7 @@ const Chat = () => {
 				item
 				xs={12}
 				sm={12}
-				md={12}
+				md={4}
 				lg={3}
 				component={Paper}
 				className={classes.leftSideBar}
@@ -114,16 +169,20 @@ const Chat = () => {
 				<Grid
 					container
 					direction="column"
-					justifyContent="center"
-					alignItems="stretch"
-					style={{ padding: "10px 0" }}
+					style={{
+						padding: "10px 0",
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "stretch",
+					}}
 				>
-					{DATA.map((el) => (
+					{DATA.map((el, index) => (
 						<Grid
 							item
-							key={el.id}
+							key={index}
 							xs={12}
 							style={{
+								cursor: "pointer",
 								padding: "10px 0px",
 								borderBottom: "1px solid #F8F8F8",
 								borderRight:
@@ -131,7 +190,7 @@ const Chat = () => {
 										? `4px solid ${Pal.palette.primary.light}`
 										: "",
 								background:
-									SelectedChat === el.id ? "#F8F8F8" : "",
+									SelectedChat === el.id ? "#F8F8F8" : "none",
 							}}
 							onClick={() => setSelectedChat(el.id)}
 						>
@@ -144,8 +203,8 @@ const Chat = () => {
 								<div
 									style={{
 										display: "flex",
-										justifyContent: "flex-start",
-										alignItems: "center",
+										// justifyContent: "flex-start",
+										// alignItems: "center",
 									}}
 								>
 									<Avatar
@@ -160,11 +219,19 @@ const Chat = () => {
 									<div style={{ marginLeft: 12 }}>
 										<Typography
 											variant="subtitle1"
-											style={{ fontWeight: "bold" }}
+											style={{
+												fontWeight: "bold",
+												fontSize: 14,
+											}}
 										>
 											{el.name}
 										</Typography>
-										<Typography style={{ color: "grey" }}>
+										<Typography
+											style={{
+												color: "grey",
+												fontSize: 12,
+											}}
+										>
 											{el.message}
 										</Typography>
 									</div>
@@ -188,9 +255,9 @@ const Chat = () => {
 
 			<Grid
 				item
-				xs={12}
-				sm={12}
-				md={12}
+				xs={false}
+				sm={false}
+				md={8}
 				lg={6}
 				// component={Paper}
 				className={classes.MainChatArea}
@@ -203,6 +270,7 @@ const Chat = () => {
 						paddingBottom: 15,
 						borderBottom: "1px solid #e1e1e1",
 						padding: "15px 0",
+						// position: "fixed",
 					}}
 				>
 					<Typography
@@ -215,6 +283,7 @@ const Chat = () => {
 					<TextField
 						variant="standard"
 						placeholder="Search here"
+						onChange={handlerSearchText}
 						InputProps={{
 							endAdornment: (
 								<SearchIcon
@@ -228,107 +297,135 @@ const Chat = () => {
 					/>
 				</div>
 
-				<Grid
-					container
-					direction="column"
-					justifyContent="center"
-					alignItems="stretch"
-					style={{ padding: "10px 0" }}
-				>
-					{CHAT.map((el) => (
-						<Grid
-							item
-							key={el.id}
-							xs={12}
-							style={{
-								padding: "10px 0px",
-							}}
-						>
-							<div
+				<Grid container style={{ padding: "10px 0" }}>
+					<div
+						style={{
+							width: "100%",
+							height: "80vh",
+							maxHeight: "470px",
+							display: "flex",
+							flexDirection: "column",
+							overflowY: "scroll",
+							position: "relative",
+						}}
+						className="user-messages"
+					>
+						{CHAT.map((el, index) => (
+							<Grid
+								item
+								key={index}
+								xs={12}
 								style={{
-									display: "flex",
-									justifyContent:
-										el.id === MyId
-											? "flex-end"
-											: "flex-start",
+									padding: "10px 0px",
 								}}
 							>
-								{el.id === MyId ? (
-									<div
-										style={{
-											display: "flex",
-										}}
-									>
-										<div style={{ marginLeft: 12 }}>
-											<Typography
-												variant="subtitle1"
-												component={Paper}
-												style={{
-													padding: 10,
-													color: "#FFF",
-													background:
-														Pal.palette.primary
-															.light,
-												}}
-											>
-												{el.message}
-												<Typography
-													align="right"
-													style={{ marginBottom: -5 }}
-												>
-													12:21 PM
-												</Typography>
-											</Typography>
-										</div>
-										<Avatar
-											src={el.profilePic}
-											alt="profile pic"
+								<div
+									style={{
+										display: "flex",
+										justifyContent:
+											el.id === MyId
+												? "flex-end"
+												: "flex-start",
+									}}
+								>
+									{el.id === MyId ? (
+										<div
 											style={{
-												width: 50,
-												height: 50,
-												marginLeft: 15,
-												marginRight: 15,
+												display: "flex",
 											}}
-										/>
-									</div>
-								) : (
-									<div
-										style={{
-											display: "flex",
-										}}
-									>
-										<Avatar
-											src={el.profilePic}
-											alt="profile pic"
-											style={{
-												width: 50,
-												height: 50,
-												marginLeft: 15,
-											}}
-										/>
-										<div style={{ marginLeft: 12 }}>
-											<Typography
-												variant="subtitle1"
-												component={Paper}
-												style={{
-													padding: 10,
-												}}
-											>
-												{el.message}
+										>
+											<div style={{ marginLeft: 12 }}>
 												<Typography
-													align="right"
-													style={{ marginBottom: -5 }}
+													variant="subtitle1"
+													component={Paper}
+													style={{
+														padding: 10,
+														color: "#FFF",
+														background:
+															Pal.palette.primary
+																.light,
+													}}
 												>
-													12:21 PM
+													<Highlighter
+														highlightClassName="YourHighlightClass"
+														searchWords={
+															textToSearch
+														}
+														autoEscape={true}
+														textToHighlight={
+															el.message
+														}
+													/>
+													<Typography
+														align="right"
+														style={{
+															marginBottom: -5,
+														}}
+													>
+														12:21 PM
+													</Typography>
 												</Typography>
-											</Typography>
+											</div>
+											<Avatar
+												src={el.profilePic}
+												alt="profile pic"
+												style={{
+													width: 50,
+													height: 50,
+													marginLeft: 15,
+													marginRight: 15,
+												}}
+											/>
 										</div>
-									</div>
-								)}
-							</div>
-						</Grid>
-					))}
-
+									) : (
+										<div
+											style={{
+												display: "flex",
+											}}
+										>
+											<Avatar
+												src={el.profilePic}
+												alt="profile pic"
+												style={{
+													width: 50,
+													height: 50,
+													marginLeft: 15,
+												}}
+											/>
+											<div style={{ marginLeft: 12 }}>
+												<Typography
+													variant="subtitle1"
+													component={Paper}
+													style={{
+														padding: 10,
+													}}
+												>
+													<Highlighter
+														highlightClassName="YourHighlightClass"
+														searchWords={
+															textToSearch
+														}
+														autoEscape={true}
+														textToHighlight={
+															el.message
+														}
+													/>
+													<Typography
+														align="right"
+														style={{
+															marginBottom: -5,
+														}}
+													>
+														12:21 PM
+													</Typography>
+												</Typography>
+											</div>
+										</div>
+									)}
+								</div>
+							</Grid>
+						))}
+					</div>
 					<Paper
 						style={{
 							position: "absolute",

@@ -8,10 +8,10 @@ const useStyles = makeStyles((theme) => ({
 		alignItems: "stretch",
 	},
 	leftSideBar: {
-		height: "80vh",
+		height: "82vh",
 	},
 	MainChatArea: {
-		height: "80vh",
+		height: "82vh",
 		// margin: "0px 40px",
 		position: "relative",
 	},
