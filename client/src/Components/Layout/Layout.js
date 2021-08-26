@@ -46,7 +46,6 @@ import LiveHelpIcon from "@material-ui/icons/LiveHelp";
 import AssistantPhotoIcon from "@material-ui/icons/AssistantPhoto";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ProductIcon from "@material-ui/icons/Ballot";
-// import SalesIcon from "@material-ui/icons/MonetizationOn";
 import SpeakerNotesIcon from "@material-ui/icons/SpeakerNotes";
 import ChatIcon from "@material-ui/icons/Chat";
 import PaymentIcon from "@material-ui/icons/Payment";
@@ -73,9 +72,6 @@ import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import LocalLibraryIcon from "@material-ui/icons/LocalLibrary";
 import HelpIcon from "@material-ui/icons/Help";
 
-import logo from "../../assets/images/logo.png";
-import useStyles from "./styles";
-
 // Page Components
 import VendorAnalytics from "../VendorAnalytics/VendorAnalytics";
 import AddVendor from "../Pages/Vendor/AddVendor/AddVendor";
@@ -99,6 +95,10 @@ import Subscribers from "../Pages/MySubscribers/MySubscribers";
 import PrivacyPolicy from "../Pages/PrivacyPolicy/PrivacyPolicy";
 import FAQs from "../Pages/FAQs/FAQs";
 import MyBuyers from "../Pages/MyBuyers/MyBuyers";
+import Messages from "../Pages/Messages/Chat";
+
+import logo from "../../assets/images/logo.png";
+import useStyles from "./styles";
 
 // User context
 import { useUserContext, logoutUser } from "../../context/UserContext";
@@ -586,7 +586,12 @@ const Layout = (props) => {
 						<ListItemText primary="8. My Subscribers" />
 					</ListItem>
 
-					<ListItem button>
+					<ListItem
+						button
+						selected={pathname === "/seller/messages"}
+						component={Link}
+						to="/seller/messages"
+					>
 						<ListItemIcon>
 							<ChatIcon className={classes.iconColor} />
 						</ListItemIcon>
@@ -814,6 +819,7 @@ const Layout = (props) => {
 						component={Subscribers}
 					/>
 					<Route path="/seller/view-buyers" component={MyBuyers} />
+					<Route path="/seller/messages" component={Messages} />
 					<Route
 						path="/seller/payments/PaymentMethod"
 						component={PaymentMethod}
