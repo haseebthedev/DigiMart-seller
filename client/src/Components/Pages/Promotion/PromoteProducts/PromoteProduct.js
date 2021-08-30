@@ -27,6 +27,10 @@ import {
 	KeyboardTimePicker,
 	KeyboardDatePicker,
 } from "@material-ui/pickers";
+import Pal from "../../../../themes/palette";
+import CSVReader from "react-csv-reader";
+import MaterialTable from "material-table";
+import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import promotion from "../../../../assets/images/promotion.svg";
@@ -34,11 +38,11 @@ import ImageNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
 import { useUserContext } from "../../../../context/UserContext";
 import useStyles from "./styles";
 
-export default function AddProduct() {
+export default function PromoteProduct(props) {
 	const classes = useStyles();
 	const { store } = useUserContext();
 	const token = store.data.token;
-	const storeName = store.data.data.storeName;
+	const city = store.data.data.city;
 
 	// Snackbar
 	const [snackBarstate, setSnackBar] = useState({
@@ -306,19 +310,103 @@ export default function AddProduct() {
 				.get(`/seller/promotion/audience/${PPdetails.category}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				})
-				.then((res) =>
-					setPPAudiencedetails(res.data.data.promotionAudience)
-				)
-				.catch((error) => {
-					setSnackBar({
-						...snackBarstate,
-						type: "error",
-						message:
-							"ERROR: System is busy or Server is not responding!",
-						open: true,
-					});
-				});
+				.then((res) => {
+					console.log(res);
+					setPPAudiencedetails(res.data.data.promotionAudience);
+				})
+				.catch(() => console.log("No Audience with this category!"));
 		}
+	};
+
+	const [promotionType, setPromotionType] = useState("");
+
+	// ========IC=============================================
+	const [contactsType, setContactsType] = useState("");
+	const [fileName, setfileName] = useState("");
+	const [contactsList, setContactsList] = useState([]);
+	const [constactsSelected, setContactsSelected] = useState([]);
+
+	// Contacts Type
+	const handlerType = (e) => {
+		setContactsType(e.target.value);
+		setContactsList([]);
+	};
+
+	// Contacts OnFileLoaded
+	const handlerOnFileLoaded = (data, fileInfo) => {
+		setfileName(fileInfo.name);
+
+		if (contactsType === "SMS") {
+			let validFields = ["name", "number"];
+			let isValid = data.map((el) =>
+				Object.keys(el).every((val) => validFields.includes(val))
+			);
+
+			if (isValid.includes(false)) {
+				console.log("Error exists!");
+			} else {
+				console.log("Success!");
+				const newData = data.map((el) => {
+					return { name: el.name, number: "+" + el.number };
+				});
+				setContactsList(newData);
+			}
+		} else {
+			let validFields = ["name", "email"];
+			let isValid = data.map((el) =>
+				Object.keys(el).every((val) => validFields.includes(val))
+			);
+
+			if (isValid.includes(false)) {
+				console.log("Error exists!");
+			} else {
+				console.log("Success!");
+				setContactsList(data);
+			}
+		}
+	};
+
+	const handleSelectContacts = (row) => {
+		setContactsSelected(row);
+	};
+
+	const SmsColumns = [
+		{
+			title: "ID",
+			field: "tableData.id",
+			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
+		},
+		{
+			title: "Name",
+			field: "name",
+		},
+		{
+			title: "Contact",
+			field: "number",
+		},
+	];
+
+	const EmailColumns = [
+		{
+			title: "ID",
+			field: "tableData.id",
+			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
+		},
+		{
+			title: "Name",
+			field: "name",
+		},
+		{
+			title: "Email",
+			field: "email",
+		},
+	];
+
+	const papaparseOptions = {
+		header: true,
+		dynamicTyping: true,
+		skipEmptyLines: true,
+		transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
 	};
 
 	// =======================================================
@@ -335,18 +423,6 @@ export default function AddProduct() {
 	}, []);
 
 	const addProductForPromotion = async () => {
-		let promotedAudienceId = "";
-		let promotionSource = "";
-		PPAudiencedetails.map((el) => {
-			promotedAudienceId = el._id;
-			promotionSource = el.promotionSource;
-			return el;
-		});
-		let promotionMessage = `Buy exciting '${PPdetails.category}' from ${storeName}. Enter our Promo Code '${PPdetails.promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${PPdetails.shortUrl}`;
-		let dateAndTime = new Date(selectedDate).toLocaleString();
-		let promotion_date = dateAndTime.split(", ")[0];
-		let promotion_Time = dateAndTime.split(", ")[1];
-
 		var {
 			isUrlAlreadyCreated,
 			productName,
@@ -360,12 +436,42 @@ export default function AddProduct() {
 			isScheduled,
 		} = PPdetails;
 
+		let promotionMessage = `Buy exciting '${category}' from ${city}. Enter our Promo Code '${promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+
 		var dataToSend = {
 			productId: pid,
-			promotionMessage,
-			promotedAudienceId,
-			promotionSource,
+			promotionMessage: promotionMessage,
 		};
+
+		// Import Contacts
+		if (promotionType === "IC") {
+			dataToSend["importedAudienceData"] = constactsSelected;
+			dataToSend["importedAudiencePromotionSource"] = contactsType;
+		}
+
+		// Previous Buyer
+		if (promotionType === "PB") {
+			dataToSend["isPromoteToAllBuyers"] = true;
+			dataToSend["buyerPromotionSource"] = "Both";
+		}
+
+		let promotedAudienceId = "";
+		let promotionSource = "";
+		PPAudiencedetails.map((el) => {
+			promotedAudienceId = el._id;
+			promotionSource = el.promotionSource;
+			return el;
+		});
+
+		// Scrapped Audience
+		if (promotionType === "TA") {
+			dataToSend["promotedAudienceId"] = promotedAudienceId;
+			dataToSend["promotedAudiencePromotionSource"] = promotionSource;
+		}
+
+		let dateAndTime = new Date(selectedDate).toLocaleString();
+		let promotion_date = dateAndTime.split(", ")[0];
+		let promotion_Time = dateAndTime.split(", ")[1];
 
 		if (isUrlAlreadyCreated === false) {
 			dataToSend["productName"] = productName;
@@ -388,6 +494,7 @@ export default function AddProduct() {
 		if (isScheduled === true) {
 			dataToSend["promotion_date"] = promotion_date;
 			dataToSend["promotion_Time"] = promotion_Time;
+			dataToSend["isPromotionScheduled"] = isScheduled;
 		}
 
 		var error = shortUrl === "" ? true : false;
@@ -397,6 +504,8 @@ export default function AddProduct() {
 
 		if (hasError === false) {
 			if (error === false) {
+				console.log(dataToSend);
+
 				await api
 					.post(
 						`/seller/store/product/${URL}`,
@@ -407,17 +516,18 @@ export default function AddProduct() {
 							headers: { Authorization: `Bearer ${token}` },
 						}
 					)
-					.then(
-						(res) =>
-							setSnackBar({
-								...snackBarstate,
-								type: "success",
-								message:
-									"CONGRATULATIONS: Your Product has been Added into Promotion List!",
-								open: true,
-							})
-						// console.log("res ", res)
-					)
+					.then((res) => {
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message:
+								"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+							open: true,
+						});
+						setTimeout(() => {
+							window.location.reload();
+						}, 1000);
+					})
 					.catch(() =>
 						setSnackBar({
 							...snackBarstate,
@@ -448,29 +558,46 @@ export default function AddProduct() {
 								Add Promotion Details
 							</Typography>
 							<Divider />
-							<form className={classes.form}>
+							<div className={classes.form}>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>
-										<TextField
-											margin="dense"
+										<Typography>
+											Select the Type of Promotion:
+										</Typography>
+										<Select
 											variant="outlined"
+											margin="dense"
 											required
 											fullWidth
-											label="Product Name"
-											name="productName"
-											value={PPdetails.productName}
-											onChange={handlePPdetails(
-												"productName"
-											)}
-											helperText={IFerrors.nameError}
-											error={
-												IFerrors.nameError.length > 0
-													? true
-													: false
+											style={{ marginTop: 8 }}
+											defaultValue="DEFAULT"
+											onChange={(e) =>
+												setPromotionType(e.target.value)
 											}
-										/>
+										>
+											<MenuItem value="DEFAULT" disabled>
+												Choose a Promotion Type
+											</MenuItem>
+											<MenuItem value="IC">
+												Using Import Contacts
+											</MenuItem>
+											<MenuItem value="TA">
+												Using Targeted Audience
+											</MenuItem>
+											<MenuItem value="PB">
+												Using Previous Buyers
+											</MenuItem>
+										</Select>
 									</Grid>
-									<Grid item xs={12}>
+								</Grid>
+							</div>
+
+							{promotionType === "IC" ? (
+								<div>
+									<form className={classes.form}>
+										<Typography>
+											Medium (EMAIL/SMS):
+										</Typography>
 										<Select
 											variant="outlined"
 											margin="dense"
@@ -480,297 +607,458 @@ export default function AddProduct() {
 											name="category"
 											style={{ marginTop: 8 }}
 											defaultValue="DEFAULT"
-											onChange={handlePPdetails(
-												"category"
-											)}
-											error={
-												IFerrors.categoryError.length >
-												0
-													? true
-													: false
-											}
+											onChange={handlerType}
 										>
 											<MenuItem value="DEFAULT" disabled>
-												Choose a Product Category
+												Choose Type of Contacts
 											</MenuItem>
-											{AllCategories.map((el, index) => (
-												<MenuItem
-													value={el.name}
-													key={index}
-												>
-													{el.name}
-												</MenuItem>
-											))}
+											<MenuItem value="SMS" key="sms">
+												SMS
+											</MenuItem>
+											<MenuItem value="EMAIL" key="email">
+												Email
+											</MenuItem>
 										</Select>
-									</Grid>
-								</Grid>
-								<Grid container spacing={2}>
-									<Grid item xs={12}>
-										<TextField
-											margin="dense"
-											variant="outlined"
-											required
-											fullWidth
-											multiline
-											rows={4}
-											label="Description"
-											name="description"
-											value={PPdetails.description}
-											onChange={handlePPdetails(
-												"description"
-											)}
-											helperText={
-												IFerrors.descriptionError
-											}
-											error={
-												IFerrors.descriptionError
-													.length > 0
-													? true
-													: false
-											}
-										/>
-									</Grid>
-								</Grid>
-								<Grid
-									container
-									spacing={2}
-									style={{ marginBottom: 10 }}
-								>
-									<Grid item xs={12} sm={6} md={6} lg={6}>
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Discount (%)"
-											name="discount"
-											value={PPdetails.discount}
-											onChange={handlePPdetails(
-												"discount"
-											)}
-											helperText={IFerrors.discountError}
-											error={
-												IFerrors.discountError.length >
-												0
-													? true
-													: false
-											}
-										/>
-									</Grid>
-									<Grid
-										item
-										xs={12}
-										sm={6}
-										md={3}
-										lg={3}
-										align="center"
-									>
-										<div
-											style={{
-												marginTop: 10,
-												border: "1px solid rgb(224 224 224)",
-												padding: 5,
-											}}
-										>
-											<Typography color="primary">
-												{PPdetails.promoCode}
-											</Typography>
-										</div>
-									</Grid>
-									<Grid item xs={12} sm={6} md={3} lg={3}>
-										<Button
-											fullWidth
-											variant="outlined"
-											style={{ marginTop: 9 }}
-											onClick={getCoupon}
-										>
-											Get Coupon
-										</Button>
-									</Grid>
-								</Grid>
-								<Divider />
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										marginTop: 20,
-										marginBottom: 20,
-										padding: 20,
-										border: "1px solid #c4c4c4",
-										borderRadius: 6,
-									}}
-								>
-									<Grid
-										container
-										style={{ margin: "10px 0" }}
-										spacing={2}
-									>
-										<Grid item>
-											<Button
-												size="small"
-												variant="contained"
-												color="primary"
-												onClick={OpenModalSP}
-											>
-												Select Product
-											</Button>
-										</Grid>
-										<Grid item>
-											<Typography
-												style={{ marginTop: 4 }}
-											>
-												{pid
-													? `Product ID: ${pid}`
-													: ""}
-											</Typography>
-										</Grid>
-									</Grid>
-								</div>
-								<Grid container spacing={2}>
-									<Grid item xs={6} sm={6} md={8} lg={8}>
-										<TextField
-											margin="dense"
-											variant="outlined"
-											fullWidth
-											label="Product URL"
-											name="productURL"
-											value={PPdetails.longUrl}
-											disabled
-										/>
-									</Grid>
-									<Grid item xs={6} sm={6} md={4} lg={4}>
-										<Button
-											variant="outlined"
-											fullWidth
-											style={{ marginTop: 9 }}
-											onClick={generateShortURL}
-										>
-											Shortener URL
-										</Button>
-									</Grid>
-								</Grid>
-								<Grid
-									container
-									spacing={2}
-									style={{ marginBottom: 10 }}
-								>
-									<Grid item xs={12} sm={12} md={12} lg={12}>
-										<Typography color="primary">
-											{PPdetails.shortUrl}
-										</Typography>
-									</Grid>
-								</Grid>
 
-								<Grid container spacing={2}>
-									<Grid item xs={12} sm={12}>
-										<FormGroup row>
-											<FormControlLabel
-												control={
-													<Checkbox
-														color="primary"
-														checked={
-															PPdetails.isScheduled
+										<div>
+											<div style={{ marginTop: 20 }}>
+												<label
+													htmlFor="contained-button-file"
+													style={{
+														display: "flex",
+														justifyContent:
+															"flex-start",
+														alignItems: "center",
+													}}
+												>
+													<Button
+														size="small"
+														startIcon={
+															<AddPhotoAlternateIcon />
 														}
-														onChange={handlePPSchedule(
-															"isScheduled"
-														)}
-													/>
-												}
-												label="Scheduling the Promotion of Product"
-											/>
-										</FormGroup>
-									</Grid>
-								</Grid>
-								<Grid item xs={12} sm={12} md={12} lg={12}>
-									<FormGroup row>
-										<Typography
-											variant="body2"
-											align="center"
-										>
-											Note: Scheduling the Promotion of
-											Product will start your promotion
-											upon given date.
-										</Typography>
-									</FormGroup>
-								</Grid>
+														variant="outlined"
+														color="primary"
+														component="span"
+													>
+														Upload CSV
+													</Button>
+													<Typography
+														style={{
+															marginLeft: 10,
+														}}
+													>
+														{fileName}
+													</Typography>
+												</label>
+												<CSVReader
+													inputId="contained-button-file"
+													onFileLoaded={
+														handlerOnFileLoaded
+													}
+													parserOptions={
+														papaparseOptions
+													}
+													inputStyle={{
+														display: "none",
+													}}
+												/>
+											</div>
+											<Typography
+												style={{ marginTop: 40 }}
+												variant="h4"
+											>
+												Select Contacts to Promote:
+											</Typography>
+											<div style={{ marginTop: 20 }}>
+												<MaterialTable
+													title="All Contacts"
+													data={contactsList}
+													columns={
+														contactsType === "SMS"
+															? SmsColumns
+															: EmailColumns
+													}
+													options={{
+														selection: true,
+														actionsColumnIndex: -1,
+														headerStyle: {
+															backgroundColor:
+																Pal.palette
+																	.primary
+																	.main,
+															color: "#fff",
+															fontWeight: "bold",
+														},
+														exportButton: false,
+														paging: false,
+														search: true,
+													}}
+													onSelectionChange={
+														handleSelectContacts
+													}
+												/>
+											</div>
+										</div>
+									</form>
+								</div>
+							) : (
+								<div></div>
+							)}
 
-								{PPdetails.isScheduled === true ? (
+							{promotionType !== "" ? (
+								<form className={classes.form}>
+									<Typography
+										style={{
+											marginTop: 40,
+											marginBottom: 20,
+										}}
+										variant="h4"
+									>
+										Enter Product Information:
+									</Typography>
+									<Grid container spacing={2}>
+										<Grid item xs={12}>
+											<TextField
+												margin="dense"
+												variant="outlined"
+												required
+												fullWidth
+												label="Product Name"
+												name="productName"
+												value={PPdetails.productName}
+												onChange={handlePPdetails(
+													"productName"
+												)}
+												helperText={IFerrors.nameError}
+												error={
+													IFerrors.nameError.length >
+													0
+														? true
+														: false
+												}
+											/>
+										</Grid>
+										<Grid item xs={12}>
+											<Select
+												variant="outlined"
+												margin="dense"
+												required
+												fullWidth
+												label="Category"
+												name="category"
+												style={{ marginTop: 8 }}
+												defaultValue="DEFAULT"
+												onChange={handlePPdetails(
+													"category"
+												)}
+												error={
+													IFerrors.categoryError
+														.length > 0
+														? true
+														: false
+												}
+											>
+												<MenuItem
+													value="DEFAULT"
+													disabled
+												>
+													Choose a Product Category
+												</MenuItem>
+												{AllCategories.map(
+													(el, index) => (
+														<MenuItem
+															value={el.name}
+															key={index}
+														>
+															{el.name}
+														</MenuItem>
+													)
+												)}
+											</Select>
+										</Grid>
+									</Grid>
+									<Grid container spacing={2}>
+										<Grid item xs={12}>
+											<TextField
+												margin="dense"
+												variant="outlined"
+												required
+												fullWidth
+												multiline
+												rows={4}
+												label="Description"
+												name="description"
+												value={PPdetails.description}
+												onChange={handlePPdetails(
+													"description"
+												)}
+												helperText={
+													IFerrors.descriptionError
+												}
+												error={
+													IFerrors.descriptionError
+														.length > 0
+														? true
+														: false
+												}
+											/>
+										</Grid>
+									</Grid>
 									<Grid
 										container
 										spacing={2}
 										style={{ marginBottom: 10 }}
-										align="center"
+									>
+										<Grid item xs={12} sm={6} md={6} lg={6}>
+											<TextField
+												margin="dense"
+												variant="outlined"
+												fullWidth
+												label="Discount (%)"
+												name="discount"
+												value={PPdetails.discount}
+												onChange={handlePPdetails(
+													"discount"
+												)}
+												helperText={
+													IFerrors.discountError
+												}
+												error={
+													IFerrors.discountError
+														.length > 0
+														? true
+														: false
+												}
+											/>
+										</Grid>
+										<Grid
+											item
+											xs={12}
+											sm={6}
+											md={3}
+											lg={3}
+											align="center"
+										>
+											<div
+												style={{
+													marginTop: 10,
+													border: "1px solid rgb(224 224 224)",
+													padding: 5,
+												}}
+											>
+												<Typography color="primary">
+													{PPdetails.promoCode}
+												</Typography>
+											</div>
+										</Grid>
+										<Grid item xs={12} sm={6} md={3} lg={3}>
+											<Button
+												fullWidth
+												variant="outlined"
+												style={{ marginTop: 9 }}
+												onClick={getCoupon}
+											>
+												Get Coupon
+											</Button>
+										</Grid>
+									</Grid>
+									<Divider />
+									<div
+										style={{
+											display: "flex",
+											alignItems: "center",
+											marginTop: 20,
+											marginBottom: 20,
+											padding: 20,
+											border: "1px solid #c4c4c4",
+											borderRadius: 6,
+										}}
+									>
+										<Grid
+											container
+											style={{ margin: "10px 0" }}
+											spacing={2}
+										>
+											<Grid item>
+												<Button
+													size="small"
+													variant="contained"
+													color="primary"
+													onClick={OpenModalSP}
+												>
+													Select Product
+												</Button>
+											</Grid>
+											<Grid item>
+												<Typography
+													style={{ marginTop: 4 }}
+												>
+													{pid
+														? `Product ID: ${pid}`
+														: ""}
+												</Typography>
+											</Grid>
+										</Grid>
+									</div>
+									<Grid container spacing={2}>
+										<Grid item xs={6} sm={6} md={8} lg={8}>
+											<TextField
+												margin="dense"
+												variant="outlined"
+												fullWidth
+												label="Product URL"
+												name="productURL"
+												value={PPdetails.longUrl}
+												disabled
+											/>
+										</Grid>
+										<Grid item xs={6} sm={6} md={4} lg={4}>
+											<Button
+												variant="outlined"
+												fullWidth
+												style={{ marginTop: 9 }}
+												onClick={generateShortURL}
+											>
+												Shortener URL
+											</Button>
+										</Grid>
+									</Grid>
+									<Grid
+										container
+										spacing={2}
+										style={{ marginBottom: 10 }}
 									>
 										<Grid
 											item
 											xs={12}
 											sm={12}
-											md={6}
-											lg={6}
+											md={12}
+											lg={12}
 										>
-											<MuiPickersUtilsProvider
-												utils={DateFnsUtils}
-											>
-												<KeyboardDatePicker
-													margin="normal"
-													label="Select Date"
-													format="MM/dd/yyyy"
-													value={selectedDate}
-													minDate={new Date().toLocaleString()}
-													onChange={handleDateChange}
-												/>
-											</MuiPickersUtilsProvider>
-										</Grid>
-										<Grid
-											item
-											xs={12}
-											sm={12}
-											md={6}
-											lg={6}
-										>
-											<MuiPickersUtilsProvider
-												utils={DateFnsUtils}
-											>
-												<KeyboardTimePicker
-													margin="normal"
-													label="Select Time"
-													value={selectedDate}
-													disablePast
-													onChange={handleDateChange}
-												/>
-											</MuiPickersUtilsProvider>
+											<Typography color="primary">
+												{PPdetails.shortUrl}
+											</Typography>
 										</Grid>
 									</Grid>
-								) : (
-									""
-								)}
 
-								<Grid
-									container
-									spacing={2}
-									style={{ marginTop: 20 }}
-								>
-									<Grid item xs={12} sm={6} md={6} lg={6}>
-										<Button
-											variant="contained"
-											color="primary"
-											fullWidth
-											style={{ marginTop: 9 }}
-											onClick={addProductForPromotion}
-										>
-											START PROMOTION
-										</Button>
+									<Grid container spacing={2}>
+										<Grid item xs={12} sm={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																PPdetails.isScheduled
+															}
+															onChange={handlePPSchedule(
+																"isScheduled"
+															)}
+														/>
+													}
+													label="Scheduling the Promotion of Product"
+												/>
+											</FormGroup>
+										</Grid>
 									</Grid>
-									<Grid item xs={12} sm={6} md={6} lg={6}>
-										<Button
-											variant="contained"
-											fullWidth
-											style={{ marginTop: 9 }}
-										>
-											SCHEDULE PROMOTIONS
-										</Button>
+									<Grid item xs={12} sm={12} md={12} lg={12}>
+										<FormGroup row>
+											<Typography
+												variant="body2"
+												align="center"
+											>
+												Note: Scheduling the Promotion
+												of Product will start your
+												promotion upon given date.
+											</Typography>
+										</FormGroup>
 									</Grid>
-								</Grid>
-							</form>
+
+									{PPdetails.isScheduled === true ? (
+										<Grid
+											container
+											spacing={2}
+											style={{ marginBottom: 10 }}
+											align="center"
+										>
+											<Grid
+												item
+												xs={12}
+												sm={12}
+												md={6}
+												lg={6}
+											>
+												<MuiPickersUtilsProvider
+													utils={DateFnsUtils}
+												>
+													<KeyboardDatePicker
+														margin="normal"
+														label="Select Date"
+														format="MM/dd/yyyy"
+														value={selectedDate}
+														minDate={new Date().toLocaleString()}
+														onChange={
+															handleDateChange
+														}
+													/>
+												</MuiPickersUtilsProvider>
+											</Grid>
+											<Grid
+												item
+												xs={12}
+												sm={12}
+												md={6}
+												lg={6}
+											>
+												<MuiPickersUtilsProvider
+													utils={DateFnsUtils}
+												>
+													<KeyboardTimePicker
+														margin="normal"
+														label="Select Time"
+														value={selectedDate}
+														disablePast
+														onChange={
+															handleDateChange
+														}
+													/>
+												</MuiPickersUtilsProvider>
+											</Grid>
+										</Grid>
+									) : (
+										""
+									)}
+
+									<Grid
+										container
+										spacing={2}
+										style={{ marginTop: 20 }}
+									>
+										<Grid item xs={12} sm={6} md={6} lg={6}>
+											<Button
+												variant="contained"
+												color="primary"
+												fullWidth
+												style={{ marginTop: 9 }}
+												onClick={addProductForPromotion}
+											>
+												START PROMOTION
+											</Button>
+										</Grid>
+										<Grid item xs={12} sm={6} md={6} lg={6}>
+											<Button
+												variant="contained"
+												fullWidth
+												style={{ marginTop: 9 }}
+											>
+												SCHEDULE PROMOTIONS
+											</Button>
+										</Grid>
+									</Grid>
+								</form>
+							) : (
+								""
+							)}
 						</Grid>
 						<Grid item xs={false} sm={false} md={false} lg={4}>
 							<div
@@ -804,6 +1092,7 @@ export default function AddProduct() {
 				</div>
 			</Grid>
 
+			{/* Select Product for Promotion */}
 			<Modal
 				open={modalSP}
 				onClose={CloseModalSP}

@@ -7,7 +7,7 @@ const Review = require('../../review/model/review.model')
 const viewProductsOfSpecificBrand = async(req, res, next) => {
     try{
         const brand = req.params.brand
-        const products = await Product.find({brand})
+        const products = await Product.find({brand, isVisibilityEnabled: true})
         if(!products){
             throw new Error('Products not found!')
         }
@@ -27,7 +27,7 @@ const viewProductsOfSpecificBrand = async(req, res, next) => {
 const viewProductsOfSpecificCategory = async(req, res, next) => {
     try{
         const category = req.params.category
-        const products = await Product.find({category})
+        const products = await Product.find({category, isVisibilityEnabled: true})
         if(!products){
             throw new Error('Products not found!')
         }
@@ -47,7 +47,7 @@ const viewProductsOfSpecificCategory = async(req, res, next) => {
 const viewProductsOfSpecificSubCategory = async(req, res, next) => {
     try{
         const subCategory = req.params.subCategory
-        const products = await Product.find({subCategory})
+        const products = await Product.find({subCategory, isVisibilityEnabled: true})
         if(!products){
             throw new Error('Products not found!')
         }
@@ -64,9 +64,29 @@ const viewProductsOfSpecificSubCategory = async(req, res, next) => {
     }
 }
 
+const viewProductsOfStoreById = async(req, res, next) => {
+    try{
+        const id = req.params.id
+        const products = await Product.find({storeID: id, isVisibilityEnabled: true})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`Store products fetched successfully!`,
+            data:{
+                products: products
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const viewProductsOnSale = async(req, res, next) => {
     try{
-        const products = await Product.find({isOnSale: true})
+        const products = await Product.find({isOnSale: true, isVisibilityEnabled: true})
         if(!products){
             throw new Error('Products not found!')
         }
@@ -86,7 +106,6 @@ const viewProductsOnSale = async(req, res, next) => {
 const viewTopReviewedProducts = async(req, res, next) => {
     try{
         const productIdsAndRating = await Review.aggregate([
-
             {
               $group: {
                 _id: "$productId",
@@ -136,7 +155,7 @@ const viewTopReviewedProducts = async(req, res, next) => {
          productIdsAndRating.forEach((item) => {
              productIds.push(item._id)
          })
-        const products = await Product.find({_id: productIds})
+        const products = await Product.find({_id: productIds, isVisibilityEnabled: true})
          
         res.status(200).json({
             message:`Top Reviewed Products fetched successfully!`,
@@ -157,6 +176,7 @@ const searchProducts = async(req, res, next) => {
         if(name){
             req.body.name = { '$regex': `.*${name}.*` }
         }
+        req.body.isVisibilityEnabled = true
         const filters = req.body
         const products = await Product.find(filters)
         console.log( filters)
@@ -176,7 +196,6 @@ const searchProducts = async(req, res, next) => {
     }
 }
 
-//const viewProductsOfStore = 
 
 //FOR SELLER
 
@@ -188,11 +207,29 @@ const addProductToMyStore = async(req, res, next) => {
         if(!req.store){
             throw new Error('Please register your store to add Product.')
         }
+        //check if store is not pending or blocked
+        if(req.store.status == "Pending"){
+            res.status(200).json({
+                message:`Cannot add product! Your store's status is still pending for approval!`,
+                data:{
+                }
+            })
+        }
+        if(req.store.status == "Blocked"){
+            res.status(200).json({
+                message:`Cannot add product! Your store is blocked temporarily for violating community rules!`,
+                data:{
+                }
+            })
+        }
         const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:req.store._id})
         if(isProductNamePresent){
             throw new Error('Product with this name already added before.')
         }
         req.body['storeID'] = req.store._id
+        req.body['storeName'] = req.store.name
+        req.body['sellerID'] = req.user._id
+        req.body['sellerName'] = req.user.name
         const product = new Product(req.body)
         await product.save()
         res.status(201).json({
@@ -254,6 +291,33 @@ const deleteProduct = async(req, res, next) => {
             message:`Your product has been deleted successfully!`,
             data:{
                 product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const deleteAllProductsOfStore = async(req, res, next) => {
+    try{
+        let storeID = ""
+        if(req.store){
+            storeID = req.store._id
+        }
+        else
+        {
+            storeID = req.params.id
+        }
+        const products = await Product.deleteMany({storeID:storeID})
+        if(!products){
+            throw new Error('Products not found!')
+        }
+        res.status(200).json({
+            message:`All Products of store deleted successfully!`,
+            data:{
+                deletedProductsCount : products.deletedCount
             }
         })
     }
@@ -447,7 +511,7 @@ const viewProductDetails = async(req, res, next) => {
 const viewProductsOfStore = async(req, res, next) => {
     try{
         const storeID = req.params.id
-        const product = await Product.findOne({storeID: storeID})
+        const product = await Product.find({storeID: storeID})
         if(!product){
             throw new Error('Store not found!')
         }
@@ -580,12 +644,30 @@ const addProductByStoreId = async(req, res, next) => {
         if(!store){
             throw new Error('Please register store to add Product.')
         }
+         //check if store is not pending or blocked
+         if(store.status == "Pending"){
+            res.status(200).json({
+                message:`Cannot add product! Store's status is still pending for approval!`,
+                data:{
+                }
+            })
+        }
+        if(store.status == "Blocked"){
+            res.status(200).json({
+                message:`Cannot add product! Store is blocked temporarily for violating community rules!`,
+                data:{
+                }
+            })
+        }
         const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:storeId})
         if(isProductNamePresent){
             throw new Error('Product with this name already added before.')
         }
 
-        req.body['storeID'] = storeId
+        req.body['storeID'] = store._id
+        req.body['storeName'] = store.name
+        req.body['sellerID'] = store.sellerId
+        req.body['sellerName'] = store.sellerName
         const product = new Product(req.body)
         await product.save()
         res.status(201).json({
@@ -613,6 +695,7 @@ module.exports = {
     viewMyStoreProduct,
     countMyStoreProductsStock,
     countTotalExpenseOfProducts,
+    deleteAllProductsOfStore,
     //ADMIN
     viewAllProductsInAllStores,
     viewProductDetails,
@@ -630,4 +713,5 @@ module.exports = {
     viewProductsOnSale,
     viewTopReviewedProducts,
     searchProducts,
+    viewProductsOfStoreById,
 }

@@ -9,10 +9,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	leftSideBar: {
 		height: "82vh",
+		marginBottom: "30px",
 	},
 	MainChatArea: {
 		height: "82vh",
-		// margin: "0px 40px",
+		width: "100%",
+		marginBottom: "30px",
 		position: "relative",
 	},
 }));

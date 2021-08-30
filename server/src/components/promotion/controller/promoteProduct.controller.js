@@ -1,19 +1,196 @@
 const PromoteProduct = require('../model/promoteProduct.model')
+const PromotionAudience = require('../model/promotionAudience.model')
+const Order = require('../../orders/model/order.model')
+const Buyer = require('../../users/buyer/models/buyer.model')
+const Store = require('../../store/model/store.model')
+const notification = require('../../notifications/account');
 const validUrl = require('valid-url')
 const shortid = require('shortid')
 const sendSMS = require('../sendSMS')
 
+
 const addPromotedProduct = async(req, res, next) => {
     try{
+        let storeId = ""
+        let store = ""
+        //for store
         if(!req.store){
-            throw new Error('Please register your store to promote Product.')
+            storeId = req.params.id
+        }
+        else{
+            storeId = req.store._id
+            store = await Store.find({_id: storeId})
+        }
+        //if promotion tool is not approved
+        if(store.isApprovedPromotionTool == false){
+            throw new Error('Sorry! You cannot promote your products. Contact admin to activate your promotoion tool!')
+        }
+        const messageBody = req.body.message
+        const subject = 'Digi-Mart Promotion Alert !'
+
+        ///////check if promote to promotion Audience
+        const promotionAudienceId = req.body.promotedAudienceId
+        const userEnteredPromotionSource = req.body.promotedAudiencePromotionSource
+        if(promotionAudienceId){
+            const promotionAudience = await PromotionAudience.findById(promotionAudienceId)
+            //check if user eneted promotion source is avalilable
+            if((promotionAudience.promotionSource != 'Both') && 
+            (promotionAudience.promotionSource != userEnteredPromotionSource)){
+                throw new Error('Sorry! you can only promote this product to our audience via '+promotionAudience.promotionSource)
+            }
+            //IF PROMOTION SOURCE IS SMS
+            if(userEnteredPromotionSource == "SMS"){
+                promotionAudience.promotionData.forEach((promotee) => {
+                    if(promotee.number)
+                    sendSMS.message(promotee.number , messageBody)
+                })
+            }
+            //IF PROMOTION SOURCE IS EMAIL
+            if(userEnteredPromotionSource== "Email"){
+                promotionAudience.promotionData.forEach((promotee) => {
+                    if(promotee.email)
+                    notification.sendNotificationMail(promotee.email,subject,messageBody,promotee.name)
+                })
+            }
+            //IF PROMOTION SOURCE IS BOTH
+            if(userEnteredPromotionSource == "Both"){
+                promotionAudience.promotionData.forEach((promotee) => {
+                    //send email
+                    if(promotee.email)
+                    notification.sendNotificationMail(promotee.email,subject,messageBody,promotee.name)
+                    //send sms
+                    if(promotee.number)
+                    sendSMS.message(promotee.number , messageBody)
+                })
+            }
         }
 
-        req.body['storeId'] = req.store._id
+        ///////check if promote to imported contacts
+        const importedAudienceData = req.body.importedAudienceData
+        const importedAudiencePromotionSource = req.body.importedAudiencePromotionSource
+        //SMS
+        if(importedAudiencePromotionSource == "SMS"){
+            importedAudienceData.forEach(async (user) => {
+                    if(user.number)
+                    sendSMS.message(user.number , messageBody)
+            })
+        }
+
+        //EMAIL
+        if(importedAudiencePromotionSource == "Email"){
+            const subject = 'Digi-Mart Promotion Alert !'
+            importedAudienceData.forEach((user) => {
+                    if(user.email)
+                    notification.sendNotificationMail(user.email,subject,messageBody,user.name != null ? user.name: 'Respeced Sir/Madam')
+            })
+        }
+        //BOTH
+        if(importedAudiencePromotionSource == "Both"){
+            const subject = 'Digi-Mart Promotion Alert !'
+            importedAudienceData.forEach((user) => {
+                    //send email
+                    if(user.email)
+                    notification.sendNotificationMail(user.email,subject,messageBody, user.name != null ? user.name: 'Respeced Sir/Madam')
+                    //send message
+                    if(user.number)
+                    sendSMS.message(user.number , messageBody)
+            })
+        }
+
+        //////check if promote to buyers of store
+        const buyerPromotionSource = req.body.buyerPromotionSource
+        const isPromoteToAllBuyers = req.body.isPromoteToAllBuyers
+        //PROMOTION TO ALL BUYERS OF STORE
+        if(isPromoteToAllBuyers){
+            let storeBuyersIds = await Order.find({storeId: storeId},{
+                "_id": 0,
+                "buyerId": 1
+              })
+            storeBuyersIds = storeBuyersIds.map(function (element) {
+                return element.buyerId;
+            });  
+
+            //IF PROMOTION SOURCE IS SMS
+            if(buyerPromotionSource == "SMS"){            
+                const storeBuyers = await Buyer.find({ '_id': { $in: storeBuyersIds } } ,{
+                    "_id": 0,
+                    "phoneNumber": 1
+                  })
+                storeBuyers.forEach((buyer) => {
+                    sendSMS.message(buyer.phoneNumber , messageBody)
+                })
+            }
+
+            //IF PROMOTION SOURCE IS EMAIL 
+            if(buyerPromotionSource == "Email"){ 
+                const storeBuyers = await Buyer.find({ '_id': { $in: storeBuyersIds } } ,{
+                    "_id": 0,
+                    "email": 1
+                  })
+                storeBuyers.forEach((buyer) => {
+                    notification.sendNotificationMail(buyer.email,subject,messageBody, buyer.name)
+                })
+            }           
+
+            //IF PROMOTION SOURCE IS BOTH            
+            if(buyerPromotionSource == "Both"){ 
+                const storeBuyers = await Buyer.find({ '_id': { $in: storeBuyersIds } } ,{
+                    "_id": 0,
+                    "email": 1,
+                    "phoneNumber": 1
+                  })
+                storeBuyers.forEach((buyer) => {
+                    //EMAIL
+                    notification.sendNotificationMail(buyer.email,subject,messageBody, buyer.name)
+                    //SMS
+                    sendSMS.message(buyer.phoneNumber , messageBody)
+                })
+            }  
+            
+        }
+
+        //PROMOTION TO SELECTED BUYERS OF STORE
+        const selectedBuyersData = req.body.selectedBuyersData
+        if(selectedBuyersData){
+            //SMS
+            if(buyerPromotionSource == "SMS"){
+                selectedBuyersData.forEach(async (user) => {
+                        if(user.number)
+                        sendSMS.message(user.number , messageBody)
+                })
+            }
+
+            //EMAIL
+            if(buyerPromotionSource == "Email"){
+                selectedBuyersData.forEach((user) => {
+                        if(user.email)
+                        notification.sendNotificationMail(user.email,subject,messageBody,user.name != null ? user.name: 'Respeced Sir/Madam')
+                })
+            }
+            //BOTH
+            if(buyerPromotionSource == "Both"){
+                selectedBuyersData.forEach((user) => {
+                        //send email
+                        if(user.email)
+                        notification.sendNotificationMail(user.email,subject,messageBody, user.name != null ? user.name: 'Respeced Sir/Madam')
+                        //send message
+                        if(user.number)
+                        sendSMS.message(user.number , messageBody)
+                })
+            }
+        }
+        
+        //for scheduled promotions
+        let scheduleMessage = ""
+        if(req.body.promotion_date){
+            req.body.promotion_date = (new Date(Date.parse(req.body.promotion_date+' GMT'))).toISOString()
+            scheduleMessage = 'On following date and time '+ req.body.promotion_date
+        }
+        req.body['storeId'] = storeId
         const product = new PromoteProduct(req.body)
         await product.save()
         res.status(201).json({
-            message:`Promoted product has been added successfully!`,
+            message:`Promoted product has been added successfully ${scheduleMessage}!`,
             data:{
                 product: product
             }
@@ -75,31 +252,6 @@ const checkIfProductPromotedBefore = async(req, res, next) => {
     }
 }
 
-const scheduleProductPromotion = async(req, res, next) => {
-    try{
-        if(!req.store){
-            throw new Error('Please register your store to promote Product.')
-        }
-
-        req.body['storeId'] = req.store._id
-        req.body['isPromotionScheduled'] = true
-        if(req.body.promotion_date){
-            req.body.promotion_date = (new Date(Date.parse(req.body.promotion_date+' GMT'))).toISOString()
-        }
-        const product = new PromoteProduct(req.body)
-        await product.save()
-        res.status(201).json({
-            message:`Product promotion scheduled successfully!`,
-            data:{
-                product: product
-            }
-        })
-    }
-    catch (err){
-        err.status = 404
-        next(err)
-    }
-}
 
 const editScheduledPromotionById = async(req, res, next) => {
     try{
@@ -338,47 +490,6 @@ const sendPromotionMessageToAudience = async(req, res, next) => {
 
 //FOR ADMIN
 
-const addPromotedProductToStoreById = async(req, res, next) => {
-    try{
-
-        req.body['storeId'] = req.params.id
-        const product = new PromoteProduct(req.body)
-        await product.save()
-        res.status(201).json({
-            message:`Promoted product has been added successfully!`,
-            data:{
-                product: product
-            }
-        })
-    }
-    catch (err){
-        err.status = 500
-        next(err)
-    }
-}
-
-const scheduleProductPromotionByStoreId = async(req, res, next) => {
-    try{
-
-        req.body['storeId'] = req.params.id
-        req.body['isPromotionScheduled'] = true
-        if(req.body.promotion_date){
-            req.body.promotion_date = (new Date(Date.parse(req.body.promotion_date+' GMT'))).toISOString()
-        }
-        const product = new PromoteProduct(req.body)
-        await product.save()
-        res.status(201).json({
-            message:`Product promotion scheduled successfully!`,
-            data:{
-                product: product
-            }
-        })
-    }
-    catch (err){
-        err.status = 404
-        next(err)
-    }
-}
 
 const getScheduledPromotionsOfStoreByStoreId = async(req, res, next) => {
     try{
@@ -419,7 +530,6 @@ module.exports = {
     //FOR VENDOR
     addPromotedProduct,
     checkIfProductPromotedBefore,
-    scheduleProductPromotion,
     getScheduledPromotionsOfStore,
     getPromotedProductsOfStore,
     generateShortURL,
@@ -431,8 +541,6 @@ module.exports = {
     sendPromotionMessageToAudience,
     //FOR ADMIN
     getAllPromotedProducts,
-    addPromotedProductToStoreById,
-    scheduleProductPromotionByStoreId,
     getPromotedProductsOfStoreByStoreId,
     getScheduledPromotionsOfStoreByStoreId
 

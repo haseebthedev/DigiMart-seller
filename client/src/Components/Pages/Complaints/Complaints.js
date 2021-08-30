@@ -208,7 +208,8 @@ export default function Reviews() {
 										>
 											Image Uploaded by User :
 										</Typography>
-										{ComplaintsList.screenShot !== "" ? (
+										{ComplaintsList.screenShot !==
+										undefined ? (
 											<img
 												src={ComplaintsList.screenShot}
 												alt="productImage1"

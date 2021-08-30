@@ -100,7 +100,7 @@ export default function ScheduledPromotions() {
 	};
 
 	const [setSPdetails] = useState({});
-	
+
 	const handlerUpdatePP = async () => {
 		let date = selectedDate.toLocaleString().split(", ")[0];
 		let time = selectedTime.toLocaleTimeString();
@@ -165,6 +165,7 @@ export default function ScheduledPromotions() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
+							fontWeight: "bold",
 						},
 						exportButton: true,
 					}}

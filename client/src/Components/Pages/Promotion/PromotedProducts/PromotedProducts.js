@@ -17,14 +17,30 @@ export default function PromotedProducts() {
 
 	const columns = [
 		{ title: "PID", field: "productId" },
-		{ title: "PNAME", field: "productName" },
+		{ title: "Product Name", field: "productName" },
 		{ title: "Discount", field: "discount" },
 		{ title: "Promo Code", field: "promoCode" },
-		{ title: "P. Medium", field: "promotionSource" },
+		{
+			title: "Medium",
+			field: "promotionSource",
+		},
 		{ title: "Product URL", field: "shortUrl" },
 		{
-			title: "Promoted On",
+			title: "Date",
 			field: "promotion_date",
+			render: ({ promotion_date }) => (
+				<div>{promotion_date.split("T")[0]}</div>
+			),
+		},
+		{
+			title: "Time",
+			field: "promotion_date",
+			align: "center",
+			render: ({ promotion_date }) => {
+				let time = new Date(promotion_date);
+				return <div>{time.toLocaleTimeString()}</div>;
+			},
+			export: false,
 		},
 	];
 
@@ -54,6 +70,7 @@ export default function PromotedProducts() {
 						headerStyle: {
 							backgroundColor: Pal.palette.primary.main,
 							color: "#fff",
+							fontWeight: "bold",
 						},
 						exportButton: true,
 					}}

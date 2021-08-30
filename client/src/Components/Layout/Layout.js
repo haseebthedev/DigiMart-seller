@@ -457,24 +457,6 @@ const Layout = (props) => {
 								</ListItemIcon>
 								<ListItemText primary="2.2. View Vendors" />
 							</ListItem>
-
-							<ListItem
-								button
-								className={classes.dropdown}
-								selected={
-									pathname ===
-									"/seller/vendors/buy-vendor-product"
-								}
-								component={Link}
-								to="/seller/vendors/buy-vendor-product"
-							>
-								<ListItemIcon>
-									<ShoppingCartIcon
-										className={classes.iconColor}
-									/>
-								</ListItemIcon>
-								<ListItemText primary="2.3. Buy from Vendor" />
-							</ListItem>
 						</List>
 					</Collapse>
 
@@ -521,6 +503,24 @@ const Layout = (props) => {
 								</ListItemIcon>
 								<ListItemText primary="3.2. View Products" />
 							</ListItem>
+
+							<ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/seller/vendors/buy-vendor-product"
+								}
+								component={Link}
+								to="/seller/vendors/buy-vendor-product"
+							>
+								<ListItemIcon>
+									<ShoppingCartIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="3.3. Buy from Vendor" />
+							</ListItem>
 						</List>
 					</Collapse>
 
@@ -562,9 +562,9 @@ const Layout = (props) => {
 
 					<ListItem
 						button
-						selected={pathname === "view-buyers"}
+						selected={pathname === "/seller/view-buyers"}
 						component={Link}
-						to="view-buyers"
+						to="/seller/view-buyers"
 					>
 						<ListItemIcon>
 							<SupervisedUserCircleIcon
@@ -743,6 +743,24 @@ const Layout = (props) => {
 								<ListItemText primary="13.1. Promote Product" />
 							</ListItem>
 
+							{/* <ListItem
+								button
+								className={classes.dropdown}
+								selected={
+									pathname ===
+									"/seller/Promotion/import-contacts"
+								}
+								component={Link}
+								to="/seller/Promotion/import-contacts"
+							>
+								<ListItemIcon>
+									<DeveloperBoardIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="13.2. Import Contacts" />
+							</ListItem> */}
+
 							<ListItem
 								button
 								className={classes.dropdown}
@@ -848,6 +866,10 @@ const Layout = (props) => {
 						path="/seller/Promotion/promote-product"
 						component={PromoteProduct}
 					/>
+					{/* <Route
+						path="/seller/Promotion/import-contacts"
+						component={ImportContacts}
+					/> */}
 					<Route
 						path="/seller/Promotion/promoted-products"
 						component={PromotedProducts}

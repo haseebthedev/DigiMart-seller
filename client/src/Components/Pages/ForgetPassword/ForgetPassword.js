@@ -62,7 +62,7 @@ const ForgetPassword = () => {
 
 		if (errorExists === false) {
 			await api
-				.patch("/seller/forgetPassword", { email: userEmail })
+				.patch("/seller/forget/password", { email: userEmail })
 				.then((res) => {
 					setSnackBar({
 						...snackBarstate,
@@ -126,7 +126,7 @@ const ForgetPassword = () => {
 									color="primary"
 									onClick={getPassword}
 								>
-									Get Password
+									Reset Password
 								</Button>
 							</Grid>
 						</Grid>

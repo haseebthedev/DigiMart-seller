@@ -28,20 +28,47 @@ const promoteProductSchema = new mongoose.Schema({
         type: String,
         required: [true,'Please enter promotion message !']
     },
-    //refrence ID from promoted audience schema
+    //imported audience promotion
+    importedAudienceData:[
+        {
+            name: String,
+            email: String,
+            number: String
+        }
+    ],
+    importedAudiencePromotionSource:{
+        type: String,
+        enum:['Email', 'SMS', 'Both']
+    },
+    //buyer promotion
+    buyerPromotionSource:{
+        type: String,
+        enum:['Email', 'SMS', 'Both']
+    },
+    selectedBuyersData:[
+        {
+            name: String,
+            email: String,
+            number: String
+        }
+    ],
+    isPromoteToAllBuyers:{
+        type: Boolean
+    },
+    //promotion to scrapped audience
     promotedAudienceId:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: 'PromotionAudience'
     },
-    promotionSource:{
+    promotedAudiencePromotionSource:{
         type: String,
-        lowercase:true,
-        required:[true, "Please enter source of promotion !"]
+        enum:['Email', 'SMS', 'Both']
     },
+    //for Shorted URL
     urlCode: String,
     longUrl: String,
     shortUrl: String,
+    ///for scheduling
     isPromotionScheduled:{
         type: Boolean,
         default: false

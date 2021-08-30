@@ -31,6 +31,7 @@ import { useUserContext } from "../../../../context/UserContext";
 import Pal from "../../../../themes/palette";
 import useStyles from "./styles";
 import DeleteProduct from "../../../FormDialog/DeleteProduct";
+import DeleteAllProducts from "../../../FormDialog/DeleteAllProducts";
 import ImgNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
 
 export default function ViewProducts() {
@@ -499,6 +500,8 @@ export default function ViewProducts() {
 
 	// Delete Product Dialog
 	const [isDeletingProduct, setIsDeletingProduct] = useState(false);
+	// Delete All Products Modal
+	const [isDelAllProducts, setDelAllProdmodalOpen] = useState(false);
 
 	// show delete Account Dialog
 	const handlerAccountDelete = () => {
@@ -523,6 +526,34 @@ export default function ViewProducts() {
 					...snackBarstate,
 					type: "success",
 					message: "SUCCESS: Product has been deleted!",
+					open: true,
+				});
+			})
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong!",
+					open: true,
+				});
+			});
+	};
+
+	// show delete Account Dialog
+	const handlerAllProductsDelete = () => {
+		setDelAllProdmodalOpen(true);
+	};
+	// Delete Account Handler
+	const confirmedDeleteProducts = () => {
+		api.delete(`/seller/store/products`, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+			.then(() => {
+				setDetails([]);
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: All of your Products have been deleted!",
 					open: true,
 				});
 			})
@@ -674,6 +705,15 @@ export default function ViewProducts() {
 				align="right"
 				style={{ marginBottom: 20 }}
 			>
+				<Button
+					variant="contained"
+					color="primary"
+					align="right"
+					onClick={handlerAllProductsDelete}
+					style={{ marginRight: 20 }}
+				>
+					DELETE ALL PRODUCTS
+				</Button>
 				<Button
 					variant="contained"
 					color="primary"
@@ -1880,6 +1920,12 @@ export default function ViewProducts() {
 				DeletingProduct={isDeletingProduct}
 				setDeletingProduct={setIsDeletingProduct}
 				confirmedDelete={confirmedDelete}
+			/>
+
+			<DeleteAllProducts
+				DeletingAllProduct={isDelAllProducts}
+				setDeletingAllProduct={setDelAllProdmodalOpen}
+				confirmedDelete={confirmedDeleteProducts}
 			/>
 		</Grid>
 	);

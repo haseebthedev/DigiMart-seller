@@ -23,28 +23,36 @@ const Chat = () => {
 			id: 1,
 			name: "Haseeb",
 			profilePic: "https://avatars.dicebear.com/api/male/.svg",
-			message: "This is a msg",
+			message: "Yea. Now, its working on my side. Thanks!"
+				.substr(0, 23)
+				.concat("..."),
 			lastChatTime: "26/8/21",
 		},
 		{
 			id: 2,
 			name: "Jamal",
-			profilePic: myImage,
-			message: "This is a msg",
+			profilePic: "https://randomuser.me/api/portraits/med/men/11.jpg",
+			message: "No Prob. You're always welcome!"
+				.substr(0, 23)
+				.concat("..."),
 			lastChatTime: "12/8/21",
 		},
 		{
 			id: 3,
 			name: "Ahmed",
-			profilePic: myImage,
-			message: "This is a msg",
+			profilePic: "https://randomuser.me/api/portraits/med/men/27.jpg",
+			message: "Why is my order still pending? Kindly process that!"
+				.substr(0, 23)
+				.concat("..."),
 			lastChatTime: "09/8/21",
 		},
 		{
 			id: 4,
 			name: "Ameen",
-			profilePic: myImage,
-			message: "This is a msg",
+			profilePic: "https://randomuser.me/api/portraits/med/men/43.jpg",
+			message: "Yea. Now, its working on my side. Thanks!"
+				.substr(0, 23)
+				.concat("..."),
 			lastChatTime: "02/8/21",
 		},
 	];
@@ -274,7 +282,7 @@ const Chat = () => {
 					}}
 				>
 					<Typography
-						variant="h2"
+						variant="h3"
 						color="primary"
 						style={{ fontWeight: "bold" }}
 					>
@@ -338,9 +346,13 @@ const Chat = () => {
 												<Typography
 													variant="subtitle1"
 													component={Paper}
+													elevation={0}
 													style={{
 														padding: 10,
+														fontSize: 14,
 														color: "#FFF",
+														boxShadow:
+															"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
 														background:
 															Pal.palette.primary
 																.light,
@@ -360,6 +372,7 @@ const Chat = () => {
 														align="right"
 														style={{
 															marginBottom: -5,
+															fontSize: 12,
 														}}
 													>
 														12:21 PM
@@ -374,6 +387,8 @@ const Chat = () => {
 													height: 50,
 													marginLeft: 15,
 													marginRight: 15,
+													boxShadow:
+														"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
 												}}
 											/>
 										</div>
@@ -390,14 +405,20 @@ const Chat = () => {
 													width: 50,
 													height: 50,
 													marginLeft: 15,
+													boxShadow:
+														"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
 												}}
 											/>
 											<div style={{ marginLeft: 12 }}>
 												<Typography
 													variant="subtitle1"
 													component={Paper}
+													elavation={0}
 													style={{
 														padding: 10,
+														fontSize: 14,
+														boxShadow:
+															"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
 													}}
 												>
 													<Highlighter
@@ -414,6 +435,7 @@ const Chat = () => {
 														align="right"
 														style={{
 															marginBottom: -5,
+															fontSize: 12,
 														}}
 													>
 														12:21 PM
@@ -453,7 +475,15 @@ const Chat = () => {
 				</Grid>
 			</Grid>
 
-			<Grid item xs={12} sm={12} md={12} lg={2} component={Paper}>
+			<Grid
+				item
+				xs={12}
+				sm={12}
+				md={12}
+				lg={2}
+				component={Paper}
+				style={{ height: "82vh", zIndex: 1 }}
+			>
 				<div
 					style={{
 						paddingBottom: 15,
@@ -475,32 +505,44 @@ const Chat = () => {
 							height: 120,
 							marginTop: 25,
 							marginBottom: 15,
+							boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
 						}}
 					/>
 					<div style={{ margin: "20px 0px" }}>
 						<Typography style={{ fontWeight: "bold" }}>
 							Name:
 						</Typography>
-						<Typography>Haseeb Ahmed</Typography>
+						<Typography style={{ fontSize: 14 }}>
+							Haseeb Ahmed
+						</Typography>
 					</div>
 					<div style={{ margin: "20px 0px" }}>
 						<Typography style={{ fontWeight: "bold" }}>
 							Email
 						</Typography>
-						<Typography>haseeb@gmail.com</Typography>
+						<Typography style={{ fontSize: 14 }}>
+							haseeb@gmail.com
+						</Typography>
 					</div>
 					<div style={{ margin: "20px 0px" }}>
 						<Typography style={{ fontWeight: "bold" }}>
 							Phone
 						</Typography>
-						<Typography>+92 3455488210</Typography>
+						<Typography style={{ fontSize: 14 }}>
+							+92 3455488210
+						</Typography>
 					</div>
 					<div style={{ margin: "20px 0px" }}>
 						<Typography style={{ fontWeight: "bold" }}>
 							Location
 						</Typography>
-						<Typography>Satellite Town, RWP</Typography>
+						<Typography style={{ fontSize: 14 }}>
+							Satellite Town, RWP
+						</Typography>
 					</div>
+					<Button variant="contained" color="primary">
+						Block User
+					</Button>
 				</div>
 			</Grid>
 		</Grid>

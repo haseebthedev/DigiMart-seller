@@ -33,11 +33,11 @@ function App() {
 				main: "#DC143C",
 				dark: "#bd062a",
 			},
-			secondary: {
-				light: "#BA55D3",
-				main: "#9932CC",
-				dark: "#9400D3",
-			},
+			// secondary: {
+			// 	light: "#BA55D3",
+			// 	main: "#9932CC",
+			// 	dark: "#9400D3",
+			// },
 			type: palletType,
 		},
 		typography: {

@@ -307,28 +307,28 @@ const VendorAnalytics = () => {
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="PRODUCT STOCK"
-						count={StatsCount.stock}
+						count={"# " + StatsCount.stock}
 						icon={<FeaturedVideoIcon style={{ fontSize: 50 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL INVESTMENT"
-						count={"$" + StatsCount.investment}
+						count={"Rs. " + StatsCount.investment}
 						icon={<LocalAtmIcon style={{ fontSize: 50 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL REVENUE"
-						count={"$" + StatsCount.revenue}
+						count={"Rs. " + StatsCount.revenue}
 						icon={<WhatshotIcon style={{ fontSize: 50 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL PROFIT"
-						count={"$" + StatsCount.profit}
+						count={"Rs. " + StatsCount.profit}
 						icon={
 							<AccountBalanceWalletIcon
 								style={{ fontSize: 50 }}
