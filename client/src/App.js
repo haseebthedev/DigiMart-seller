@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 // components
 import Layout from "./Components/Layout/Layout";
 import ForgetPassword from "./Components/Pages/ForgetPassword/ForgetPassword";
+import NewPassword from "./Components/Pages/ForgetPassword/NewPassword";
 import Login from "./Components/Pages/Login/Login";
 import Register from "./Components/Pages/Register/Register";
 
@@ -90,6 +91,10 @@ function App() {
 							path="/seller/forget-password"
 							exact
 							component={ForgetPassword}
+						/>
+						<Route
+							path="/seller/set-password"
+							component={NewPassword}
 						/>
 						<Route path="/seller/login" exact component={Login} />
 						<PrivateRoute path="/seller">

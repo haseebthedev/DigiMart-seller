@@ -14,7 +14,7 @@ import Logo from "../../../assets/images/logo.png";
 import { withRouter } from "react-router-dom";
 import { useStyles } from "./styles";
 
-const ForgetPassword = () => {
+const ForgetPassword = (props) => {
 	const classes = useStyles();
 
 	// Snackbar
@@ -60,9 +60,11 @@ const ForgetPassword = () => {
 	const getPassword = async () => {
 		const errorExists = InputValidation();
 
+		console.log("userEmail: ", userEmail);
+
 		if (errorExists === false) {
 			await api
-				.patch("/seller/forget/password", { email: userEmail })
+				.post("/seller/forget/password", { email: userEmail })
 				.then((res) => {
 					setSnackBar({
 						...snackBarstate,
