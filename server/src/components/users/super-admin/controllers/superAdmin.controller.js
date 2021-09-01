@@ -23,7 +23,7 @@ const loginSuperAdmin = async(req, res, next) => {
     try{
         const superAdmin=await SuperAdmin.findByCredientials(req.body.email,req.body.password)
         if(superAdmin.isAccountBlock){
-            throw new Error('Sorry! Your account is Blocked')
+            throw new Error('Sorry! Your account is Blocked.')
         }
         const token=await superAdmin.generateAuthToken()
         superAdmin['isAccountActive'] = true
@@ -194,8 +194,8 @@ const changePassword = async(req, res, next) => {
 const registerSuperAdmin = async(req, res, next) => {
 
     try{
-        if(!req.user.role == "owner" || !req.user.role == "Owner"){
-            throw new Error(' Sorry! you are Not authorized as owner')
+        if(req.user.role != "owner"){
+            throw new Error(' Sorry! You are Not authorized as owner.')
         }
         const superAdmin = new SuperAdmin(req.body)
         await superAdmin.save()
@@ -222,12 +222,16 @@ const registerSuperAdmin = async(req, res, next) => {
 
 const editOtherSuperAdminProfile = async(req, res, next) => {
     try{
-            if(!req.user.role == "owner" || !req.user.role == "Owner"){
-                throw new Error(' Sorry! you are Not authorized as owner')
+            if(req.user.role != "owner"){
+                throw new Error(' Sorry! You are not authorized as owner.')
             }
             const superAdminID = req.params.id
             const superAdmin = await SuperAdmin.findOne({_id: superAdminID})
             const updates=Object.keys(req.body)
+            //logout from all devices if blocked
+            if(req.body.isAccountBlock){
+                superAdmin.tokens = []
+            }
             updates.forEach((update) => {
                 superAdmin[update]=req.body[update]
             })
@@ -248,8 +252,8 @@ const editOtherSuperAdminProfile = async(req, res, next) => {
 
 const blockOtherSuperAdmin = async(req, res, next) => {
     try{
-        if(!req.user.role == "owner" || !req.user.role == "Owner"){
-            throw new Error(' Sorry! you are Not authorized as owner')
+        if(req.user.role != "owner"){
+            throw new Error(' Sorry! you are not authorized as owner')
         }
         const superAdminID = req.params.id
         const superAdmin = await SuperAdmin.findOne({_id: superAdminID})
@@ -271,8 +275,8 @@ const blockOtherSuperAdmin = async(req, res, next) => {
 
 const unBlockOtherSuperAdmin = async(req, res, next) => {
     try{
-        if(!req.user.role == "owner" || !req.user.role == "Owner"){
-            throw new Error(' Sorry! you are Not authorized as owner')
+        if(req.user.role != "owner"){
+            throw new Error(' Sorry! you are not authorized as owner')
         }
         const superAdminID = req.params.id
         const superAdmin = await SuperAdmin.findOne({_id: superAdminID})

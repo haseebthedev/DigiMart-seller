@@ -10,6 +10,9 @@ const promoteProductSchema = new mongoose.Schema({
     productName:{
         type: String
     },
+    productCategory:{
+        type: String
+    },
     description:{
         type: String
     },
@@ -56,13 +59,19 @@ const promoteProductSchema = new mongoose.Schema({
         type: Boolean
     },
     //promotion to scrapped audience
-    promotedAudienceId:{
+    promotionAudienceId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PromotionAudience'
     },
-    promotedAudiencePromotionSource:{
+    promotionAudienceCategory:{
+        type: String
+    },
+    promotionAudiencePromotionSource:{
         type: String,
         enum:['Email', 'SMS', 'Both']
+    },
+    isPromoteToSavedPromotionAudience:{
+        type: Boolean
     },
     //for Shorted URL
     urlCode: String,

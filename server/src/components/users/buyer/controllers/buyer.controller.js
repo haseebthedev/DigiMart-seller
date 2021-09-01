@@ -470,6 +470,10 @@ const editBuyerById = async(req, res, next) => {
         if(user.length == 0){
             throw new Error('No buyer find of this id !')
         }
+        if(req.body.isAccountBlocked){
+            //logout buyer from all devices
+            user.tokens = []
+        }
         updates.forEach((update) => user[update] = req.body[update])
         await user.save()
         //send email here

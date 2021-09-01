@@ -50,6 +50,8 @@ export default function AddProduct() {
 		description: "",
 		category: "",
 		subCategory: "",
+		vendorCompanyName: "Other",
+		vendorCategory: "Other",
 		brand: "",
 		manufactureDate: "11/06/2003",
 		purchasePrice: "",

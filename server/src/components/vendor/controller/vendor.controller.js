@@ -191,7 +191,7 @@ const updateVendor = async(req, res, next) => {
         const vendor = await Vendor.findOne({_id:vendorID})
         //set all products visisbilty to false if block vendor
         if(req.body.status == "Blocked"){
-            const products = await VendorProduct.find({vendorId: _id})
+            const products = await VendorProduct.find({vendorId: vendorID})
             products.forEach(async(product) => {
                 product.isVisibilityEnabled = false
                 await product.save()
@@ -202,7 +202,7 @@ const updateVendor = async(req, res, next) => {
         
         //set all products visisbilty to true if active vendor
         if(req.body.status == "Active"){
-            const products = await VendorProduct.find({vendorId: _id})
+            const products = await VendorProduct.find({vendorId: vendorID})
             products.forEach(async(product) => {
                 product.isVisibilityEnabled = true
                 await product.save()

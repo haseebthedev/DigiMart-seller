@@ -29,31 +29,34 @@ const addPromotedProduct = async(req, res, next) => {
         const subject = 'Digi-Mart Promotion Alert !'
 
         ///////check if promote to promotion Audience
-        const promotionAudienceId = req.body.promotedAudienceId
-        const userEnteredPromotionSource = req.body.promotedAudiencePromotionSource
-        if(promotionAudienceId){
-            const promotionAudience = await PromotionAudience.findById(promotionAudienceId)
-            //check if user eneted promotion source is avalilable
-            if((promotionAudience.promotionSource != 'Both') && 
-            (promotionAudience.promotionSource != userEnteredPromotionSource)){
-                throw new Error('Sorry! you can only promote this product to our audience via '+promotionAudience.promotionSource)
+        const isPromoteToSavedPromotionAudience = req.body.isPromoteToSavedPromotionAudience
+        const productCategory = req.body.productCategory
+        if(isPromoteToSavedPromotionAudience){
+            const promotionAudience = await PromotionAudience.findOne({productCategory: { $in: productCategory }});
+            if(!promotionAudience){
+                throw new Error('Sorry! No promotion audience found of this product category!')
             }
+            
+            //add promotion audience Id, source and audienceInterestCategory in req.body to save in db
+            req.body.promotionAudienceId = promotionAudience._id
+            req.body.promotionAudienceCategory = promotionAudience.audienceInterestCategory
+            req.body.promotionAudiencePromotionSource = promotionAudience.promotionSource
             //IF PROMOTION SOURCE IS SMS
-            if(userEnteredPromotionSource == "SMS"){
+            if(promotionAudience.promotionSource == "SMS"){
                 promotionAudience.promotionData.forEach((promotee) => {
                     if(promotee.number)
                     sendSMS.message(promotee.number , messageBody)
                 })
             }
             //IF PROMOTION SOURCE IS EMAIL
-            if(userEnteredPromotionSource== "Email"){
+            if(promotionAudience.promotionSource == "Email"){
                 promotionAudience.promotionData.forEach((promotee) => {
                     if(promotee.email)
                     notification.sendNotificationMail(promotee.email,subject,messageBody,promotee.name)
                 })
             }
             //IF PROMOTION SOURCE IS BOTH
-            if(userEnteredPromotionSource == "Both"){
+            if(promotionAudience.promotionSource == "Both"){
                 promotionAudience.promotionData.forEach((promotee) => {
                     //send email
                     if(promotee.email)

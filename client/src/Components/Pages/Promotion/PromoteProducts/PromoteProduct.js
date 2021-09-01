@@ -75,7 +75,6 @@ export default function PromoteProduct(props) {
 
 	const [pid, setPid] = useState("");
 	const [AllCategories, setAllCategories] = useState([]);
-	const [PPAudiencedetails, setPPAudiencedetails] = useState([]);
 	const [productList, setProductList] = useState([]);
 	const [PPdetails, setPPdetails] = useState({
 		productName: "",
@@ -304,20 +303,6 @@ export default function PromoteProduct(props) {
 			});
 	};
 
-	const getPPAudienceByCategory = async () => {
-		if (PPdetails.category !== "") {
-			await api
-				.get(`/seller/promotion/audience/${PPdetails.category}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				})
-				.then((res) => {
-					console.log(res);
-					setPPAudiencedetails(res.data.data.promotionAudience);
-				})
-				.catch(() => console.log("No Audience with this category!"));
-		}
-	};
-
 	const [promotionType, setPromotionType] = useState("");
 
 	// ========IC=============================================
@@ -412,11 +397,6 @@ export default function PromoteProduct(props) {
 	// =======================================================
 
 	useEffect(() => {
-		getPPAudienceByCategory();
-		// eslint-disable-next-line
-	}, [PPdetails.category]);
-
-	useEffect(() => {
 		getAllCategory();
 		getAllProducts();
 		// eslint-disable-next-line
@@ -455,27 +435,19 @@ export default function PromoteProduct(props) {
 			dataToSend["buyerPromotionSource"] = "Both";
 		}
 
-		let promotedAudienceId = "";
-		let promotionSource = "";
-		PPAudiencedetails.map((el) => {
-			promotedAudienceId = el._id;
-			promotionSource = el.promotionSource;
-			return el;
-		});
-
 		// Scrapped Audience
 		if (promotionType === "TA") {
-			dataToSend["promotedAudienceId"] = promotedAudienceId;
-			dataToSend["promotedAudiencePromotionSource"] = promotionSource;
+			dataToSend["isPromoteToSavedPromotionAudience"] = true;
 		}
 
 		let dateAndTime = new Date(selectedDate).toLocaleString();
+
 		let promotion_date = dateAndTime.split(", ")[0];
 		let promotion_Time = dateAndTime.split(", ")[1];
 
 		if (isUrlAlreadyCreated === false) {
 			dataToSend["productName"] = productName;
-			dataToSend["category"] = category;
+			dataToSend["productCategory"] = category;
 			dataToSend["description"] = description;
 			dataToSend["discount"] = discount;
 			dataToSend["promoCode"] = promoCode;
@@ -484,7 +456,7 @@ export default function PromoteProduct(props) {
 			dataToSend["urlCode"] = urlCode;
 		} else {
 			dataToSend["productName"] = productName;
-			dataToSend["category"] = category;
+			dataToSend["productCategory"] = category;
 			dataToSend["description"] = description;
 			dataToSend["discount"] = discount;
 			dataToSend["promoCode"] = promoCode;

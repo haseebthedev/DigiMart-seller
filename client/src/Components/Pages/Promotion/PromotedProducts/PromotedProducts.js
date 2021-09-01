@@ -28,17 +28,18 @@ export default function PromotedProducts() {
 		{
 			title: "Date",
 			field: "promotion_date",
-			render: ({ promotion_date }) => (
-				<div>{promotion_date.split("T")[0]}</div>
-			),
+			render: ({ promotion_date }) => {
+				let date = new Date(promotion_date);
+				return <div>{date.toLocaleDateString()}</div>;
+			},
 		},
 		{
 			title: "Time",
 			field: "promotion_date",
 			align: "center",
 			render: ({ promotion_date }) => {
-				let time = new Date(promotion_date);
-				return <div>{time.toLocaleTimeString()}</div>;
+				let date = new Date(promotion_date);
+				return <div>{date.toLocaleTimeString()}</div>;
 			},
 			export: false,
 		},

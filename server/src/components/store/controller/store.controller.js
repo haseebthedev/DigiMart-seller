@@ -275,6 +275,14 @@ const editStoreById = async(req, res, next) => {
                 await product.save()
             })
         }
+        //also logout seller if store blocks
+        
+        if(req.body.status == "Blocked" || req.body.status == "Deactivate"){
+            const seller = await Seller.findOneAndUpdate({storeId: _id},{tokens:[]},{new: true})
+            if(!seller){
+                throw new Error('No seller found who registered this store!')
+            }
+        }
         updates.forEach((update) => store[update] = req.body[update])
         await store.save()
         return res.status(200).json({

@@ -12,12 +12,20 @@ const useStyles = makeStyles((theme) => {
 		logo: {
 			width: "120px",
 			marginLeft: theme.spacing(1),
+			filter:
+				theme.palette.type === "light"
+					? "none"
+					: "brightness(0) invert(1)",
+		},
+		badgeIcons: {
+			background: theme.palette.type === "light" ? "grey" : "#fff",
 		},
 		root: {
 			display: "flex",
 		},
 		appBar: {
-			background: theme.palette.type === "light" ? "#FFF" : "#FFF",
+			background:
+				theme.palette.type === "light" ? "#FFF" : theme.palette.primary,
 			transition: theme.transitions.create(["margin", "width"], {
 				easing: theme.transitions.easing.sharp,
 				duration: theme.transitions.duration.leavingScreen,

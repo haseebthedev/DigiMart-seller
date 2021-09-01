@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../../Axios/api";
 import MaterialTable from "material-table";
-// import Snackbar from "@material-ui/core/Snackbar";
-// import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {
@@ -31,6 +31,19 @@ export default function ScheduledPromotions() {
 	// const classes = useStyles();
 	const { store } = useUserContext();
 	const token = store.data.token;
+
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
 
 	// PP details
 	const [pid, setPid] = useState("");
@@ -62,21 +75,20 @@ export default function ScheduledPromotions() {
 					(prod) => prod._id !== pid
 				);
 				setPPdetails(newPPdetails);
-				// setSnackBar({
-				// 	...snackBarstate,
-				// 	type: "success",
-				// 	message: "SUCCESS: Schuduled Promotiom has been deleted!",
-				// 	open: true,
-				// });
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Schuduled Promotion has been deleted!",
+					open: true,
+				});
 			})
 			.catch((error) => {
-				// setSnackBar({
-				// 	...snackBarstate,
-				// 	type: "error",
-				// 	message: "ERROR: Something went wrong!",
-				// 	open: true,
-				// });
-				console.log("error");
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					message: "ERROR: Something went wrong!",
+					open: true,
+				});
 			});
 		setIsDeletingPP(false);
 	};
@@ -258,6 +270,24 @@ export default function ScheduledPromotions() {
 				setDeletingPP={setIsDeletingPP}
 				confirmedDelete={confirmedDelete}
 			/>
+
+			{/* Alert Snackbar */}
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical, horizontal }}
+				autoHideDuration={1000}
+				onClose={handleCloseSnackBar}
+				key={vertical + horizontal}
+			>
+				<MuiAlert
+					elevation={6}
+					variant="filled"
+					onClose={handleCloseSnackBar}
+					severity={snackBarstate.type}
+				>
+					{snackBarstate.message}
+				</MuiAlert>
+			</Snackbar>
 		</Grid>
 	);
 }

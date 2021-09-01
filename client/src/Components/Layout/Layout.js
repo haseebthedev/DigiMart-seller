@@ -15,14 +15,14 @@ import {
 	ListItem,
 	ListItemIcon,
 	ListItemText,
-	Switch,
 	Badge,
 	MenuItem,
 	Menu,
 	Collapse,
 	Avatar,
+	FormControlLabel,
 } from "@material-ui/core";
-
+import IOSSwitch from "../IOSSwitch/IOSSwitch";
 import {
 	Switch as SwitchRouter,
 	withRouter,
@@ -56,8 +56,6 @@ import SaveAltIcon from "@material-ui/icons/SaveAlt";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import LocalConvenienceStoreIcon from "@material-ui/icons/LocalConvenienceStore";
 import ViewComfyIcon from "@material-ui/icons/ViewComfy";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import StorageIcon from "@material-ui/icons/Storage";
 import SurroundSoundIcon from "@material-ui/icons/SurroundSound";
@@ -202,21 +200,6 @@ const Layout = (props) => {
 		setOpenDDVendors(!openDDVendors);
 	};
 
-	// activating profile again
-	// useEffect(() => {
-	// 	const activateAccount = () => {
-	// 		api.patch(
-	// 			"/seller/activateAccount",
-	// 			{},
-	// 			{
-	// 				headers: { Authorization: `Bearer ${token}` },
-	// 			}
-	// 		).catch((error) => console.log("ERROR: " + error));
-	// 	};
-	// 	activateAccount();
-	// 	// eslint-disable-next-line
-	// }, []);
-
 	return (
 		<div className={classes.root}>
 			{isLoggedOut ? <Redirect to="/seller/login" /> : ""}
@@ -249,22 +232,19 @@ const Layout = (props) => {
 							/>
 						</div>
 						<div>
-							<Switch
-								color="primary"
-								icon={<Brightness4Icon color="primary" />}
-								checkedIcon={
-									<Brightness7Icon color="primary" />
+							<FormControlLabel
+								control={
+									<IOSSwitch
+										checked={darkState}
+										onChange={handleThemeChange}
+									/>
 								}
-								checked={darkState}
-								onChange={handleThemeChange}
 							/>
 							<IconButton>
 								<Badge badgeContent={3} color="primary">
 									<MailIcon
 										fontSize="small"
-										style={{
-											color: "grey",
-										}}
+										className="badgeIcons"
 									/>
 								</Badge>
 							</IconButton>
@@ -272,9 +252,7 @@ const Layout = (props) => {
 								<Badge badgeContent={9} color="primary">
 									<NotificationsIcon
 										fontSize="small"
-										style={{
-											color: "grey",
-										}}
+										className="badgeIcons"
 									/>
 								</Badge>
 							</IconButton>
@@ -866,10 +844,6 @@ const Layout = (props) => {
 						path="/seller/Promotion/promote-product"
 						component={PromoteProduct}
 					/>
-					{/* <Route
-						path="/seller/Promotion/import-contacts"
-						component={ImportContacts}
-					/> */}
 					<Route
 						path="/seller/Promotion/promoted-products"
 						component={PromotedProducts}
