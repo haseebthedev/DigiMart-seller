@@ -3,31 +3,36 @@ const validator=require('validator')
 var uniqueValidator = require('mongoose-unique-validator');
 
 const productCategorySchema = new mongoose.Schema({
-    name:{
+    //Product Main category
+    mainCategoryName:{
         type: String,
-        unique:[true,'Category already present!'],
+        required:[true,'Please enter category name!'],
     },
-    subCategory:{
-        type: [{
-            name: {
+    mainCategoryDescription:{
+        type: String,
+    },
+
+    //Product Sub category
+    subCategories:{
+        type:[{
+            name:{
                 type: String,
+                required:[true,'Please enter sub-category name!'],
             },
             description:{
-                type: String
-            }
-        }],
-        unique:[true,'Sub-Category already present!'],
-    },
-    brands:{
-        type:[{
-            name: String,
-            description: String,
-            logo: String
+                type: String,
+            },
         }]
     },
-    description:{
+    //Select Vendor Category
+    vendorCategory:{
         type: String,
-        required: [true,'Please enter category description']
+        required: [true, 'Please select vendor category!']
+    },
+    //Select Vendor
+    vendorName:{
+        type: String,
+        required: [true, 'Please select vendor!']
     }
 })
 

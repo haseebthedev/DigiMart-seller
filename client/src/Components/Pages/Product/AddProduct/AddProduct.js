@@ -44,7 +44,6 @@ export default function AddProduct() {
 	// category list retrive from DB
 	const [productCategories, setProductCategories] = useState([]);
 	const [productSubCategories, setProductSubCategories] = useState([]);
-	const [productBrand, setProductBrand] = useState([]);
 	const [productDetails, setProductDetails] = useState({
 		name: "",
 		description: "",
@@ -52,7 +51,6 @@ export default function AddProduct() {
 		subCategory: "",
 		vendorCompanyName: "Other",
 		vendorCategory: "Other",
-		brand: "",
 		manufactureDate: "11/06/2003",
 		purchasePrice: "",
 		salePrice: "",
@@ -165,9 +163,16 @@ export default function AddProduct() {
 
 	const getAllCategory = async () => {
 		// Parent Category
-		api.get("/seller/product/categories", {
-			headers: { Authorization: `Bearer ${token}` },
-		})
+		api.post(
+			"/seller/categories/vendor/category",
+			{
+				vendorName: "Other",
+				vendorCategory: "Other",
+			},
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			}
+		)
 			.then((res) => {
 				const categoryList = res.data.data.categories;
 				setProductCategories(categoryList);
@@ -178,18 +183,21 @@ export default function AddProduct() {
 	const getSubCategory = async () => {
 		if (productDetails.category !== "") {
 			await api
-				.get(
-					`/seller/subCategories/brands/${productDetails.category}`,
+				.post(
+					"/seller/categories/vendor/category",
+					{
+						vendorName: "Other",
+						vendorCategory: "Other",
+						mainCategoryName: productDetails.category,
+					},
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
 				.then((res) => {
 					let categoryList = res.data.data.categories;
-					let subCat = categoryList.map((el) => el.subCategory);
-					let brands = categoryList.map((el) => el.brands);
+					let subCat = categoryList.map((el) => el.subCategories);
 					setProductSubCategories(subCat[0]);
-					setProductBrand(brands[0]);
 				})
 				.catch((error) => console.log("Error: " + error));
 		}
@@ -211,7 +219,6 @@ export default function AddProduct() {
 		descriptionError: "",
 		categoryError: "",
 		subCategoryError: "",
-		brandError: "",
 		purchasePriceError: "",
 		salePriceError: "",
 		stateError: "",
@@ -263,14 +270,6 @@ export default function AddProduct() {
 			errors.subCategoryError = "Please Choose Sub-Category for Product!";
 		} else {
 			errors.subCategoryError = "";
-		}
-
-		// brand
-		if (productDetails.brand.length === 0) {
-			hasError = true;
-			errors.brandError = "Please Choose the Product brand!";
-		} else {
-			errors.brandError = "";
 		}
 
 		// state
@@ -377,7 +376,6 @@ export default function AddProduct() {
 			description: "",
 			category: "",
 			subCategory: "",
-			brand: "",
 			manufactureDate: "11/06/2003",
 			purchasePrice: "",
 			salePrice: "",
@@ -554,10 +552,12 @@ export default function AddProduct() {
 											{productCategories.map(
 												(el, index) => (
 													<MenuItem
-														value={el.name}
+														value={
+															el.mainCategoryName
+														}
 														key={index}
 													>
-														{el.name}
+														{el.mainCategoryName}
 													</MenuItem>
 												)
 											)}
@@ -597,38 +597,7 @@ export default function AddProduct() {
 											)}
 										</Select>
 									</Grid>
-									<Grid item xs={12}>
-										<Select
-											variant="outlined"
-											margin="dense"
-											required
-											fullWidth
-											label="Brand"
-											name="brand"
-											style={{ marginTop: 8 }}
-											defaultValue={"DEFAULT"}
-											onChange={handleProductDetails(
-												"brand"
-											)}
-											error={
-												IFerrors.brandError.length > 0
-													? true
-													: false
-											}
-										>
-											<MenuItem value="DEFAULT" disabled>
-												Select Brand of Product
-											</MenuItem>
-											{productBrand.map((el, index) => (
-												<MenuItem
-													value={el.name}
-													key={index}
-												>
-													{el.name}
-												</MenuItem>
-											))}
-										</Select>
-									</Grid>
+
 									<Grid item xs={12}>
 										<TextField
 											variant="outlined"

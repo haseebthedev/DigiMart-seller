@@ -2,19 +2,19 @@ const ProductCategory = require('../model/productCategories.model')
 
 const addCategory= async(req, res, next) => {
     try{
-        const isCategoryPresent = await ProductCategory.findOne({name: req.body.name})
+        const isCategoryPresent = await ProductCategory.findOne({
+            vendorName: req.body.vendorName,
+            vendorCategory: req.body.vendorCategory,
+            mainCategoryName: req.body.mainCategoryName,
+        })
         if(isCategoryPresent){
-            res.status(200).json({
-                message:`Sorry ! This product category is already present.`,
-                data:{
-                }
-            })
+            throw new Error('Sorry ! This vendor product category is already present.')
         }
         else{
             const productCategory = new ProductCategory(req.body)
-        await productCategory.save()
-        res.status(200).json({
-            message:`Your product category has been added successfully!`,
+            await productCategory.save()
+            res.status(200).json({
+            message:`Product category has been added successfully!`,
             data:{
                 productCategory
             }
@@ -106,10 +106,10 @@ const getAllCategories = async(req, res, next) => {
     }
 }
 
-const getAllChildCategoriesOfParent = async(req, res, next) => {
+const getAllSubCategoriesOfVendorMainCategory = async(req, res, next) => {
     try{
-        const category = req.params.category
-        const categories = await ProductCategory.find({name: category})
+        const filters = req.body
+        const categories = await ProductCategory.find(filters)
         if(categories.length == 0){
             throw new Error('No child categories found of this category!')
         }
@@ -132,28 +132,36 @@ const getAllChildCategoriesOfParent = async(req, res, next) => {
 const addSubCategory = async(req, res, next) => {
     try{
         let isCategoryPresent = ""
-        const parentCategoryName = req.params.category
-        isCategoryPresent = await ProductCategory.findOne({
-            subCategory:{$elemMatch :{name: req.body.name}}
-        })
+        //check if product sub category is already present in vendor's product subCategories
+        isCategoryPresent = await ProductCategory.findOne(
+            {
+            mainCategoryName: req.body.mainCategoryName,
+            vendorCategory: req.body.vendorCategory,
+            vendorName: req.body.vendorName,
+            subCategories:{$elemMatch :{name: req.body.subCategoryName}}
+            }
+        )
         if(isCategoryPresent){
-            res.status(200).json({
-                message:`Sorry ! This product category is already present.`,
-                data:{
-                }
-            })
+            throw new Error(`Sorry! This product sub-category is already present.`)
         }
         else{
-            const subCategory = await ProductCategory.findOneAndUpdate(
-                {name: parentCategoryName}, 
-                { $push: { subCategory: req.body} 
-                })
-            const category = await ProductCategory.findOne({name: parentCategoryName})
+            const category = await ProductCategory.findOne(
+                {
+                mainCategoryName: req.body.mainCategoryName,
+                vendorCategory: req.body.vendorCategory,
+                vendorName: req.body.vendorName,
+                }
+            )
             if(!category){
-                throw new Error('No category found!')
+                throw new Error('No category found containing these details!')
             }
+            category.subCategories.push({
+                name: req.body.subCategoryName,
+                description: req.body.subCategoryDescription
+            })
+            await category.save()
             res.status(200).json({
-                message:`Your product category has been added successfully!`,
+                message:`Your product sub-category has been added successfully!`,
                 data:{
                     category
                 }
@@ -172,12 +180,12 @@ const updateSubCategoryById = async(req, res, next) => {
         const updates = Object.keys(req.body)
         const _id = req.params.id
         const category = await ProductCategory.findOne({
-            subCategory:{$elemMatch :{_id: _id}}
+            subCategories:{$elemMatch :{_id: _id}}
         })
         if(!category){
             throw new Error('No category found!')
         }
-        category.subCategory.forEach((category) => {
+        category.subCategories.forEach((category) => {
             if(category._id == _id){
                 updates.forEach((update) => category[update] = req.body[update])
             }
@@ -201,13 +209,13 @@ const deleteSubCategoryById = async(req, res, next) => {
     try{
         const _id = req.params.id
         const category = await ProductCategory.findOne({
-            subCategory:{$elemMatch :{_id: _id}}
+            subCategories:{$elemMatch :{_id: _id}}
         })
         if(!category){
             throw new Error('Category not found !')
         }
         //filter category
-        category['subCategory'] = category['subCategory'].filter(function(subCategory){
+        category['subCategories'] = category['subCategories'].filter(function(subCategory){
             return subCategory._id != _id; 
         });
         await category.save()
@@ -228,13 +236,13 @@ const getSubCategoryById = async(req, res, next) => {
     try{
         const _id = req.params.id
         const category = await ProductCategory.findOne({
-            subCategory:{$elemMatch :{_id: _id}}
+            subCategories:{$elemMatch :{_id: _id}}
         })
         if(!category){
             throw new Error('Category not found !')
         }
         let subCategory = ""
-        category.subCategory.forEach((category) => {
+        category.subCategories.forEach((category) => {
             if(category._id == _id){
                 subCategory = category
             }
@@ -386,7 +394,7 @@ module.exports = {
     updateCategory,
     getCategoryById,
     getAllCategories,
-    getAllChildCategoriesOfParent,
+    getAllSubCategoriesOfVendorMainCategory,
     //FOR SUB CATEGORY
     addSubCategory,
     deleteSubCategoryById,
