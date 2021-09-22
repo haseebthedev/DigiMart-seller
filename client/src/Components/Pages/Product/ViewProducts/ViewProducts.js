@@ -641,18 +641,12 @@ export default function ViewProducts() {
 	// Get Categories and Sub Categories from API
 	const getAllCategory = async () => {
 		// Parent Category
-		api.post(
-			"/seller/categories/vendor/category",
-			{
-				vendorName: "Other",
-				vendorCategory: "Other",
-			},
-			{
+		await api
+			.get("/seller/product/mainCategories/list", {
 				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
+			})
 			.then((res) => {
-				const categoryList = res.data.data.categories;
+				const categoryList = res.data.data.mainCategories;
 				setProductCategories(categoryList);
 			})
 			.catch((error) => console.log("Error: " + error));
@@ -882,11 +876,8 @@ export default function ViewProducts() {
 											Choose a Product Category
 										</MenuItem>
 										{productCategories.map((el, index) => (
-											<MenuItem
-												value={el.mainCategoryName}
-												key={index}
-											>
-												{el.mainCategoryName}
+											<MenuItem value={el} key={index}>
+												{el}
 											</MenuItem>
 										))}
 									</Select>
@@ -1424,11 +1415,8 @@ export default function ViewProducts() {
 											Choose a Product Category
 										</MenuItem>
 										{productCategories.map((el, index) => (
-											<MenuItem
-												value={el.mainCategoryName}
-												key={index}
-											>
-												{el.mainCategoryName}
+											<MenuItem value={el} key={index}>
+												{el}
 											</MenuItem>
 										))}
 									</Select>

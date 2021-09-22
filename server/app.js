@@ -6,7 +6,10 @@ const glob = require('glob')
 const bodyParser = require('body-parser')
 const path = require('path')
 const cors = require('cors')
+const http = require('http');
 const app = express()
+const socketio = require('socket.io');
+const WebSockets = require('./src/components/chat/utils/webSockets')
 
 //setting path for env variables and PORT
 dotenv.config({path: './config/config.env'})
@@ -48,5 +51,10 @@ app.use((error,req,res,next) =>{
     next()
 })
 
+/** Create HTTP server. */
+const server = http.createServer(app);
+/** Create socket connection */
+global.io = socketio(server);
+global.io.on('connection', WebSockets.connection)
 //checking connection established with db
-app.listen(PORT, () => console.log('server is on port : '+PORT))
+server.listen(PORT, () => console.log('server is on port : '+PORT))

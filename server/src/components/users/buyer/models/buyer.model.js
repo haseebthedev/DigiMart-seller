@@ -81,8 +81,18 @@ const buyerSchema=new mongoose.Schema({
             }
         }
     },
+    address:{
+        type: String
+    },
+    city:{
+        type: String
+    },
     isAccountActive:{
         type:Boolean
+    },
+    userType:{
+        type: String,
+        default:'buyers'
     },
     isAccountBlocked:{
         type: Boolean,

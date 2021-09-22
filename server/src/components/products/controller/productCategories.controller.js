@@ -106,17 +106,94 @@ const getAllCategories = async(req, res, next) => {
     }
 }
 
+const getAllMainCategories = async(req, res, next) => {
+    try{
+        const categories = await ProductCategory.find({}).select({'mainCategoryName':1, '_id': 0})
+        let mainCategories = []
+        categories.forEach((category) => mainCategories.push(category.mainCategoryName))
+        res.status(200).json({
+            message:`All Main Categories fetched successfully!`,
+            data:{
+                mainCategories
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getAllMainCategoriesByVendorNameAndCategory = async(req, res, next) => {
+    try{
+        const vendorName = req.params.vendor
+        const vendorCategory = req.params.category
+        const categories = await ProductCategory.find({vendorName, vendorCategory}).select({'mainCategoryName':1, '_id': 0})
+        let mainCategories = []
+        categories.forEach((category) => mainCategories.push(category.mainCategoryName))
+        res.status(200).json({
+            message:`All Main Categories of vendor fetched successfully!`,
+            data:{
+                mainCategories
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const getAllSubCategoriesOfVendorMainCategory = async(req, res, next) => {
     try{
         const filters = req.body
+        if(filters.vendorName == "other" || filters.vendorName == "Other"){
+            delete filters.vendorName
+        }
+        if(filters.vendorCategory == "other" || filters.vendorCategory == "Other"){
+            delete filters.vendorCategory
+        }
         const categories = await ProductCategory.find(filters)
+        let subCategories = []
+        categories.forEach((category) => {
+            category.subCategories.forEach((subCategry) => {
+                subCategories.push(subCategry)
+            })
+        })
         if(categories.length == 0){
             throw new Error('No child categories found of this category!')
         }
         res.status(200).json({
-            message:`Categories fetched successfully!`,
+            message:`Sub-Categories fetched successfully!`,
             data:{
-                categories
+                subCategories
+            }
+        })
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+const getAllSubCategoriesOfMainCategory = async(req, res, next) => {
+    try{
+        const mainCategory = req.params.mainCategory
+        const categories = await ProductCategory.find({mainCategoryName: mainCategory})
+        let subCategories = []
+        categories.forEach((category) => {
+            category.subCategories.forEach((subCategry) => {
+                subCategories.push(subCategry)
+            })
+        })
+        if(categories.length == 0){
+            throw new Error('No child categories found of this category!')
+        }
+        res.status(200).json({
+            message:`Sub-Categories fetched successfully!`,
+            data:{
+                subCategories
             }
         })
         
@@ -260,6 +337,30 @@ const getSubCategoryById = async(req, res, next) => {
     }
 }
 
+const getAllSubCategories = async(req, res, next) => {
+    try{
+        const categories = await ProductCategory.find({})
+        let subCategories = []
+        categories.forEach((category) => {
+            category.subCategories.forEach((subCategry) => {
+                subCategories.push(subCategry)
+            })
+        })
+
+        res.status(200).json({
+            message:`Sub Categories fetched successfully!`,
+            data:{
+                subCategories
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 //for brands
 
 const addBrandOfCategory = async(req, res, next) => {
@@ -276,6 +377,7 @@ const addBrandOfCategory = async(req, res, next) => {
                 }
             })
         }
+        
         else{
             const brand = await ProductCategory.findOneAndUpdate(
                 {name: parentCategoryName}, 
@@ -395,11 +497,15 @@ module.exports = {
     getCategoryById,
     getAllCategories,
     getAllSubCategoriesOfVendorMainCategory,
+    getAllMainCategories,
+    getAllMainCategoriesByVendorNameAndCategory,
+    getAllSubCategoriesOfMainCategory,
     //FOR SUB CATEGORY
     addSubCategory,
     deleteSubCategoryById,
     updateSubCategoryById,
     getSubCategoryById,
+    getAllSubCategories,
     //FOR BRANDS
     addBrandOfCategory,
     deleteBrandById,

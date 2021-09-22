@@ -44,7 +44,6 @@ const loginSeller = async (req, res, next) => {
         if(seller.status == "Blocked"){
             throw new Error('Your seller account is blocked by admin for violating rules !')
         }
-        console.log(store)
         //check if store of seller is blocked
         if(store.status == "Blocked"){
             throw new Error('Your Store is blocked by admin for violating rules !')
@@ -300,7 +299,7 @@ const forgetAccountPassword = async(req, res, next) => {
         //save new user obj
         await user.save()
         //reset password link
-        let link = "http://" + req.headers.host + "/seller/reset/password/auth/" + user.resetPasswordToken;
+        let link = "http://" + req.headers.host + "/seller/set-password?auth=" + user.resetPasswordToken;
         //send reset password link to user via. email
         notification.sendForgetPasswordMail(user.email,user.name,link)
         return res.status(200).json({

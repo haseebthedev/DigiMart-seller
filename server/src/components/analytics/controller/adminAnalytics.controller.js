@@ -17,10 +17,12 @@ const BuyerCustomizations = require('../../customizations/model/buyerCustomizati
 const OrderProblemSubjects = require('../../reportProblem/model/orderReportSubject.model')
 const VendorCategories = require('../../vendor/model/vendorCategory.model')
 const Productcategories = require('../../products/model/productCategories.model')
+const mongoose=require('mongoose')
 
 const getAllSystemAnalytics = async(req, res, next) => {
     try{
         const TOP_REVIEWED_PRODUCTS_QUANTITY = 12
+        const TOP_SELLED_PRODUCTS_QUANTITY = 12
             //STORAGE DETAILS
             const sellerSize = await Seller.getStorageDetails() + await SellerCustomizations.getStorageDetails()
             const buyerSize = await Buyer.getStorageDetails() + await BuyerCustomizations.getStorageDetails()
@@ -115,20 +117,6 @@ const getAllSystemAnalytics = async(req, res, next) => {
                       avgRating: -1
                     }
                 },
-                {$set: {
-                    productId:{
-                      $toObjectId:"$productId"
-                    }
-                 }
-                },
-                {
-                    $lookup: {
-                          from: "Product",
-                          localField: "productId",
-                          foreignField: "_id",
-                          as: "product"
-                      }
-                },
                 {
                   $project: {
                     "product": "$product",
@@ -142,10 +130,11 @@ const getAllSystemAnalytics = async(req, res, next) => {
              //seperating productID from rating
              let productIds = []
              productIdsAndRating.forEach((item) => {
-                 productIds.push(item._id)
+                 if(mongoose.Types.ObjectId.isValid(item._id))
+                 productIds.push(item._id.toString())
              })
              //finding products with those ids
-             const products = await Product.find({_id: productIds})
+             const products = await Product.find({_id: {$in: productIds}})
              .limit(TOP_REVIEWED_PRODUCTS_QUANTITY)
              //pushing product and its rating in same object
              let topReviewedProductsAndAvgRating = []
@@ -221,16 +210,114 @@ const getAllSystemAnalytics = async(req, res, next) => {
             },
             { $group: 
                 {
-                    _id: '$deliveryDate',
-                     orders: { $sum: "$totalQuantity"}
+                    _id: {$substr : ["$createdAt", 0,10]},
+                     orders: { $sum: 1},
+                }
+            },
+            {
+                "$sort": {
+                  "orders": -1
                 }
             },
             {$project: {date: '$_id', orders: 1, _id: 0}}
                 // {$project: {date: '$_id', patients: 1, _id: 0}}
         ])
 
+        //TOP 5 STORES
+        const monthBeforeDate = new Date();
+        const month = monthBeforeDate.getMonth();
+        monthBeforeDate.setMonth(monthBeforeDate.getMonth() - 1);
+        while (monthBeforeDate.getMonth() === month) {
+            monthBeforeDate.setDate(monthBeforeDate.getDate() - 1);
+        }
+        const lesserThanDate = new Date().toISOString()
+        const greaterThanDate = new Date(monthBeforeDate).toISOString()
+        const topSellersOfMonthList = await Order.aggregate([
+            { $match: {
+                status: "Delivered",
+                createdAt: {
+                    $gte: new Date(greaterThanDate),
+                    $lte: new Date(lesserThanDate)
+                }
+            }
+            },
+            { $group: 
+                {
+                    _id: {
+                        storeName: "$storeName",
+                        storeId: "$storeId"
+                    },
+                     orders: { $sum: 1},
+                }
+            },
+            {
+                "$sort": {
+                  "orders": -1
+                }
+            },
+            {$project: {storeName: '$_id.storeName',storeId: "$_id.storeId", orders: 1, _id: 0}}
+                // {$project: {date: '$_id', patients: 1, _id: 0}}
+        ])
+
+        
+
+
+        //TOP SELLER PRODUCTS
+        const topSellingProducts = await Order.aggregate([
+            {
+            "$match": {
+                "$expr": {
+                "$and": [
+                    
+                    {
+                    "$eq": [
+                        "$status",
+                        "Delivered"
+                    ]
+                    }
+                ]
+                }
+            }
+            },
+            {
+            "$unwind": {
+                "path": "$products"
+            }
+            },
+            {
+            "$replaceRoot": {
+                "newRoot": "$products"
+                // "$mergeObjects": [
+                //     {"storeName": "$storeName"},
+                //     {"$arrayToObject": { "$map": { input: "$products", in: [ "$$this.name", "$$this.quantity"] } } }
+                // ]
+            }
+            },
+            {
+            "$group": {
+                "_id": {
+                "productId": "$productId",
+                "productName": "$name",
+                },
+                "totalQuantity": {
+                "$sum": "$quantity"
+                },
+                "totalOrders":{
+                    "$sum": 1
+                }
+            }
+            },
+            { "$limit" : TOP_SELLED_PRODUCTS_QUANTITY },
+            {
+            "$sort": {
+                "count": -1
+            }
+            }
+        ])
+
+
             return res.status(200).json({
-                message:`Total size in KB's fetched successfully!.`,
+                message:`All Admin Analytics Fetched Successfully!.`,
                 data:{
                     storage: {
                         occupiedSpace,
@@ -246,7 +333,7 @@ const getAllSystemAnalytics = async(req, res, next) => {
                         ordersSize,
                         promotionAudienceSize,
                         promotedProductsSize,
-                        orderProblemsReportsSize
+                        orderProblemsReportsSize,
                     },
                     allCounts,
                     topReviewedProductsAndAvgRating,
@@ -255,7 +342,10 @@ const getAllSystemAnalytics = async(req, res, next) => {
                     totalProfitOfAllStores: ordersAnalytics[0].totalProfit,
                     salesListByDate,
                     storesProductsAnalytics,
-                    vendorsProductsAnalytics
+                    vendorsProductsAnalytics,
+                    topSellersOfMonthList,
+                    topSellingProducts 
+
                 }
             })
         

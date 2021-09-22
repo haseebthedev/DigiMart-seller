@@ -8,7 +8,9 @@ const auth = require('../../users/auth')
 router.get('/seller/store/analytics', auth.seller, sellerAnalyticsController.getAllSellerAnalytics)
 
 //ADMIN ANALYTICS
-//Analytics related to database
+//Analytics related to all the system
 router.get('/superAdmin/system/analytics', auth.superAdmin, adminAnalyticsController.getAllSystemAnalytics)
+//Analytics of store
+router.get('/superAdmin/store/:id/analytics', auth.superAdmin, sellerAnalyticsController.getAllSellerAnalytics)
 
 module.exports = router

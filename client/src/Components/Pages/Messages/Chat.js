@@ -6,17 +6,23 @@ import {
 	Button,
 	Avatar,
 	TextField,
+	Modal,
+	Container,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import SendIcon from "@material-ui/icons/Send";
 import Highlighter from "react-highlight-words";
-import "./hideScroll.css";
 import useStyles from "./styles";
 import Pal from "../../../themes/palette";
-import myImage from "./myImage.jpg";
+import myImage from "../../../assets/images/myImage.jpg";
+
+import io from "socket.io-client";
+
+const SERVER = "http://127.0.0.1:8080";
 
 const Chat = () => {
 	const classes = useStyles();
+	const socket = io(SERVER);
 
 	const DATA = [
 		{
@@ -56,7 +62,6 @@ const Chat = () => {
 			lastChatTime: "02/8/21",
 		},
 	];
-
 	const CHAT = [
 		{
 			id: 2,
@@ -139,8 +144,19 @@ const Chat = () => {
 		setTextToSearch([e.target.value]);
 	};
 
-	// Scroll to Bottom of Chat
+	const [SearchModal, setSearchModal] = useState(true);
+	const [searchUser, setSearchUser] = useState("");
+
+	const OpenSearchModal = () => {
+		setSearchModal(true);
+	};
+
+	const handleSearchModal = () => {
+		setSearchModal(false);
+	};
+
 	useEffect(() => {
+		// Scroll to Bottom of Chat
 		var myDiv = document.querySelector(".user-messages");
 		myDiv.scrollTop = myDiv.scrollHeight;
 	}, []);
@@ -169,7 +185,11 @@ const Chat = () => {
 					<Typography variant="h4" color="primary">
 						Messages
 					</Typography>
-					<Button variant="contained" color="primary">
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={OpenSearchModal}
+					>
 						NEW
 					</Button>
 				</div>
@@ -545,6 +565,98 @@ const Chat = () => {
 					</Button>
 				</div>
 			</Grid>
+
+			{/* Sort Orders by Date  */}
+			<Modal
+				open={SearchModal}
+				onClose={handleSearchModal}
+				onBackdropClick={handleSearchModal}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container
+					component={Paper}
+					style={{
+						padding: "40px",
+						maxWidth: "70vw",
+						height: "80vh",
+						position: "relative",
+					}}
+				>
+					<Grid container spacing={4} align="center">
+						<Grid item xs={12} sm={12} md={12}>
+							<Typography variant="h5">Search Users</Typography>
+						</Grid>
+						<Grid item xs={12} style={{ backgroundColor: "red" }}>
+							<Grid
+								container
+								style={{ marginBottom: 10 }}
+								justify="center"
+							>
+								<Grid item>
+									<TextField
+										variant="outlined"
+										margin="normal"
+										fullWidth
+										size="small"
+										label=" Username"
+										placeholder="Username"
+									/>
+								</Grid>
+								<Grid item>
+									<Button
+										fullWidth
+										variant="contained"
+										color="primary"
+										style={{ marginTop: 16 }}
+									>
+										SEARCH
+									</Button>
+								</Grid>
+							</Grid>
+						</Grid>
+						<Grid item xs={12} style={{ backgroundColor: "green" }}>
+							<Grid
+								container
+								style={{ marginBottom: 10 }}
+								justify="flex-start"
+							>
+								<Grid item>
+									
+								</Grid>
+							</Grid>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							style={{
+								position: "absolute",
+								bottom: 0,
+								right: 0,
+							}}
+						>
+							<Button
+								variant="outlined"
+								color="primary"
+								style={{ marginRight: 20 }}
+								onClick={handleSearchModal}
+							>
+								CANCEL
+							</Button>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={handleSearchModal}
+							>
+								Start Chat
+							</Button>
+						</Grid>
+					</Grid>
+				</Container>
+			</Modal>
 		</Grid>
 	);
 };

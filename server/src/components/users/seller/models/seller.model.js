@@ -110,6 +110,10 @@ const sellerSchema=new mongoose.Schema({
         default: "Pending",
         enum: ["Active", "Pending", "Blocked", "Deactivate"]
     },
+    userType:{
+        type: String,
+        default:'sellers'
+    },
     city:{
         type: String
     },
@@ -143,7 +147,8 @@ const sellerSchema=new mongoose.Schema({
 },
 {
     //to create track of when user was created or updated
-    timestamps: true
+    timestamps: true,
+    collection: "sellers"
 })
 
 //crating index on email

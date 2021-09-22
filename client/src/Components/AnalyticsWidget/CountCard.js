@@ -18,8 +18,8 @@ const CountCard = ({ title, count, icon }) => {
 		<Paper className={classes.card}>
 			<Grid container justify="space-between">
 				<Grid>
-					<Typography style={{ fontSize: 14 }}>{title}</Typography>
-					<Typography style={{ fontSize: 36, fontWeight: "bold" }}>
+					<Typography style={{ fontSize: 12 }}>{title}</Typography>
+					<Typography style={{ fontSize: 26, fontWeight: "bold" }}>
 						{count}
 					</Typography>
 				</Grid>

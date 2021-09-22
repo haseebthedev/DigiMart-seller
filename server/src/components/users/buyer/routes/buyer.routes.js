@@ -31,4 +31,8 @@ router.patch('/superAdmin/buyer/:id/store/subscribe', auth.superAdmin ,buyerCont
 router.patch('/superAdmin/buyer/:id/store/unsubscribe', auth.superAdmin ,buyerController.UnSubscribeStoreOfBuyerByBuyerId)
 router.get('/superAdmin/buyer/:id/stores/subscribed', auth.superAdmin ,buyerController.ViewSubscribedStoresOfBuyerByBuyerId)
 
+//ROUTES FOR SELLER
+router.get('/seller/list/buyers', auth.seller, buyerController.getAllBuyersDetailsForSeller)
+router.get('/seller/search/buyer/:name', auth.seller, buyerController.searchBuyerByName)
+
 module.exports = router 

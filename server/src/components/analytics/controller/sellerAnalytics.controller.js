@@ -1,13 +1,25 @@
 const Product = require('../../products/model/product.model')
 const Order = require('../../orders/model/order.model')
+const Review = require('../../review/model/review.model')
+const mongoose = require("mongoose");
 
 const getAllSellerAnalytics = async(req, res, next) => {
     try{
+        const TOP_REVIEWED_PRODUCTS_QUANTITY = 12
         const NUM_OF_DOCUMENTS = 5
-        if(!req.store){
+        const TOP_SELLED_PRODUCTS_QUANTITY = 12
+        let storeId = ""
+        if(!req.store && !req.params.id){
             throw new Error('Please register your store to view analytics !')
         }
-        const storeId = req.store._id
+        //for store analytics of admin
+        if(req.params.id){
+          storeId = req.params.id
+        }
+        //for user's own store
+        if(req.store){
+          storeId = req.store._id
+        }
         //aggregates
         const productsAnalytics = await Product.aggregate([
             { $match: { 
@@ -70,8 +82,8 @@ const getAllSellerAnalytics = async(req, res, next) => {
             },
             { $group: 
                 {
-                    _id: '$deliveryDate',
-                     orders: { $sum: "$totalQuantity"}
+                  _id: {$substr : ["$createdAt", 0,10]},
+                  orders: { $sum: 1},
                 }
             },
             {$project: {date: '$_id', orders: 1, _id: 0}}
@@ -84,43 +96,59 @@ const getAllSellerAnalytics = async(req, res, next) => {
         .sort({ _id: -1 }).limit(NUM_OF_DOCUMENTS)
         const highestAmountOrders = await Order.find({storeId: storeId, status:"Delivered"})
         .sort({ totalPrice: -1 }).limit(NUM_OF_DOCUMENTS).select('products')
-        
-        // const popularProducts = await Order.aggregate([
-        //     {
-        //         "$match": {
-        //             storeId: storeId,
-        //             status: "Delivered" 
-        //         }
-        //     },
-        //     {
-        //         "$group": {
-        //             "_id": {
-        //                 "productId": "$products.productId",
-        //                 "productName": "$products.name",
-        //                 //"quantity": {"$sum":"$products.quantity"}
-        //             },
-        //             "count": { "$sum": 1}
-        //         }
-        //     },
-        //     {
-        //         "$unwind": {
-        //           "path": "$products"
-        //         }
-        //     },
-        //     {
-        //         "$replaceRoot": {
-        //           "newRoot": "$products"
-        //         }
-        //     },
-        //     {
-        //         "$sort": {count: -1}
-        //     },
-        //     {
-        //         "$limit": NUM_OF_DOCUMENTS
-        //     }
-        // ])
 
-        const popularProducts = await Order.aggregate([
+        //TOP REVIWED PRODUCTS OF STORE
+        //TOP REVIEWED PRODUCTS
+        const productIdsAndRating = await Review.aggregate([
+          { $match: {
+            storeId: storeId
+           }
+          },
+          {
+            $group: {
+              _id: "$productId",
+              avgRating: {
+                $avg: "$rating"
+              }
+            }
+          },
+          {
+              $sort: {
+                avgRating: -1
+              }
+          },
+          {
+            $project: {
+              "product": "$product",
+              "averageRating": { $round: ['$avgRating', 1] }
+            }
+          },
+
+        ]).then(async (result) => {
+          return result
+       });
+       //seperating productID from rating
+       let productIds = []
+       
+       productIdsAndRating.forEach((item) => {
+           if(mongoose.Types.ObjectId.isValid(item._id))
+           productIds.push(item._id.toString())
+       })
+      
+       //finding products with those ids
+       const products = await Product.find({_id: {$in: productIds}})
+       .limit(TOP_REVIEWED_PRODUCTS_QUANTITY)
+       
+       //pushing product and its rating in same object
+       let topReviewedProductsAndAvgRating = []
+       products.forEach((product, index) => {
+           topReviewedProductsAndAvgRating.push({
+               product: product,
+               avgRating: productIdsAndRating[index].averageRating
+           })
+       })
+
+      const topSellingProducts = await Order.aggregate([
             {
               "$match": {
                 "$expr": {
@@ -128,7 +156,7 @@ const getAllSellerAnalytics = async(req, res, next) => {
                     {
                       "$eq": [
                         "$storeId",
-                        "610a52f7e60d0016e4f98f63"
+                        storeId
                       ]
                     },
                     {
@@ -162,6 +190,7 @@ const getAllSellerAnalytics = async(req, res, next) => {
                 }
               }
             },
+            { "$limit" : TOP_SELLED_PRODUCTS_QUANTITY },
             {
               "$sort": {
                 "count": -1
@@ -188,7 +217,8 @@ const getAllSellerAnalytics = async(req, res, next) => {
                 salesByDate,
                 recentDeliveredOrders,
                 recentPendingOrders,
-                // popularProducts,
+                topReviewedProductsAndAvgRating,
+                topSellingProducts,
             }
         })
 

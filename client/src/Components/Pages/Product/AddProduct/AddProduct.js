@@ -161,20 +161,18 @@ export default function AddProduct() {
 		}
 	};
 
+	// {
+	// 	vendorName: "Other",
+	// 	vendorCategory: "Other",
+	// },
+
 	const getAllCategory = async () => {
 		// Parent Category
-		api.post(
-			"/seller/categories/vendor/category",
-			{
-				vendorName: "Other",
-				vendorCategory: "Other",
-			},
-			{
-				headers: { Authorization: `Bearer ${token}` },
-			}
-		)
+		api.get("/seller/product/mainCategories/list", {
+			headers: { Authorization: `Bearer ${token}` },
+		})
 			.then((res) => {
-				const categoryList = res.data.data.categories;
+				const categoryList = res.data.data.mainCategories;
 				setProductCategories(categoryList);
 			})
 			.catch((error) => console.log("Error: " + error));
@@ -552,12 +550,10 @@ export default function AddProduct() {
 											{productCategories.map(
 												(el, index) => (
 													<MenuItem
-														value={
-															el.mainCategoryName
-														}
+														value={el}
 														key={index}
 													>
-														{el.mainCategoryName}
+														{el}
 													</MenuItem>
 												)
 											)}

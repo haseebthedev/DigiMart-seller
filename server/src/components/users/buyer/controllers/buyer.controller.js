@@ -556,6 +556,44 @@ const ViewSubscribedStoresOfBuyerByBuyerId = async(req, res, next) => {
     }
 }
 
+//FOR SELLER
+const getAllBuyersDetailsForSeller = async(req, res, next) => {
+    try{
+        const filters = {}
+        const Buyers = await Buyer.find(filters).select({'_id':1, 'name':1, 'email':1})
+        return res.status(200).json({
+            message:`Buyers data fetched successfully!.`,
+            data:{
+                Buyers: Buyers
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
+const searchBuyerByName = async(req, res, next) => {
+    try{
+        let name = req.params.name
+        if(name){
+            name = { '$regex': `.*${name}.*` }
+        }
+        const Buyers = await Buyer.find({name}).select({'_id':1, 'name':1, 'email':1})
+        return res.status(200).json({
+            message:`Searched Buyers data fetched successfully!.`,
+            data:{
+                Buyers: Buyers
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 
 module.exports = {
@@ -582,5 +620,8 @@ module.exports = {
     editBuyerById,
     addSubscribeStoreOfBuyerByBuyerId,
     ViewSubscribedStoresOfBuyerByBuyerId,
-    UnSubscribeStoreOfBuyerByBuyerId
+    UnSubscribeStoreOfBuyerByBuyerId,
+    //for seller
+    getAllBuyersDetailsForSeller,
+    searchBuyerByName
 }

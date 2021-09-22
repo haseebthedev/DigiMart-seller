@@ -17,10 +17,6 @@ const productSchema = new mongoose.Schema({
         type: String,
         //required: [true,'Please select category of product.']
     },
-    //drop down
-    brand:{
-        type: String
-    },
     description:{
         type: String,
         //required:[true,'Please enter product description.']

@@ -69,6 +69,10 @@ const superAdminSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    userType:{
+        type: String,
+        default:'superadmins'
+    },
     password:{
         type:String,
         required:true,
@@ -108,7 +112,8 @@ const superAdminSchema = new mongoose.Schema({
 },
 {
     //to create track of when user was created or updated
-    timestamps: true
+    timestamps: true,
+    collection: "superadmins"
 })
 
 //crating index on email
