@@ -161,11 +161,6 @@ export default function AddProduct() {
 		}
 	};
 
-	// {
-	// 	vendorName: "Other",
-	// 	vendorCategory: "Other",
-	// },
-
 	const getAllCategory = async () => {
 		// Parent Category
 		api.get("/seller/product/mainCategories/list", {
@@ -181,21 +176,15 @@ export default function AddProduct() {
 	const getSubCategory = async () => {
 		if (productDetails.category !== "") {
 			await api
-				.post(
-					"/seller/categories/vendor/category",
-					{
-						vendorName: "Other",
-						vendorCategory: "Other",
-						mainCategoryName: productDetails.category,
-					},
+				.get(
+					`/seller/subCategories/category/${productDetails.category}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
 				.then((res) => {
-					let categoryList = res.data.data.categories;
-					let subCat = categoryList.map((el) => el.subCategories);
-					setProductSubCategories(subCat[0]);
+					let subCategories = res.data.data.subCategories;
+					setProductSubCategories(subCategories);
 				})
 				.catch((error) => console.log("Error: " + error));
 		}

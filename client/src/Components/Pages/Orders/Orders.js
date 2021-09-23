@@ -3,7 +3,6 @@ import api from "../../../Axios/api";
 import MaterialTable from "material-table";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-// import VisibilityIcon from "@material-ui/icons/Visibility";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
@@ -323,9 +322,9 @@ export default function Orders() {
 				<div
 					style={{
 						height: 30,
-						width: 100,
+						width: 110,
 						display: "flex",
-						justifyContent: "right",
+						justifyContent: "center",
 						alignItems: "center",
 						background: checkStatusColor(status),
 						color: "#262626",
