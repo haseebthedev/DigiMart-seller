@@ -144,6 +144,7 @@ const Chat = () => {
 		setTextToSearch([e.target.value]);
 	};
 
+	// Search User Modal
 	const [SearchModal, setSearchModal] = useState(true);
 	const [searchUser, setSearchUser] = useState("");
 
@@ -566,7 +567,7 @@ const Chat = () => {
 				</div>
 			</Grid>
 
-			{/* Sort Orders by Date  */}
+			{/* Search User by Name  */}
 			<Modal
 				open={SearchModal}
 				onClose={handleSearchModal}
@@ -624,9 +625,7 @@ const Chat = () => {
 								style={{ marginBottom: 10 }}
 								justify="flex-start"
 							>
-								<Grid item>
-									
-								</Grid>
+								<Grid item></Grid>
 							</Grid>
 						</Grid>
 						<Grid
