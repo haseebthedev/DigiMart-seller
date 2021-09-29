@@ -695,7 +695,6 @@ const viewAllSellersWhoseStoresAreRegistered = async(req, res, next) => {
 }
 
 
-
 module.exports={
     //for seller
     registerSeller,

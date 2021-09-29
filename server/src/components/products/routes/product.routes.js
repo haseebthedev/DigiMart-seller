@@ -37,6 +37,7 @@ router.patch('/superAdmin/product/:id', auth.superAdmin, productController.editP
 router.delete('/superAdmin/product/:id', auth.superAdmin, productController.deleteProductById)
 router.delete('/superAdmin/store/:id/products', auth.superAdmin, productController.deleteAllProductsOfStore)
 router.post('/superAdmin/product/store/:id', auth.superAdmin, productController.addProductByStoreId)
+router.post('/superAdmin/product/storeName/:name', auth.superAdmin, productController.addProductByStoreName)
 router.get('/superAdmin/store/:id/products/vendor', auth.superAdmin, productController.viewStoreProductsSelectedByVendorsProducts)
 router.get('/superAdmin/store/:id/products/own', auth.superAdmin, productController.viewStoreOwnProducts)
 

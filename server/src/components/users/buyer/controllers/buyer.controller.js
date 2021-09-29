@@ -594,6 +594,35 @@ const searchBuyerByName = async(req, res, next) => {
     }
 }
 
+const searchBuyerByAnything = async(req, res, next) => {
+    try{
+        let searchParameter = req.params.query
+        if(searchParameter){
+            query = { '$regex': `.*${searchParameter}.*` }
+        }
+        //check if name matching
+        let Buyers = await Buyer.find({name: query})
+        //check if email matching
+        if(Buyers.length == 0){
+            Buyers = await Buyer.find({email: query})
+        }
+        //check if number matching
+        if(Buyers.length == 0){
+            Buyers = await Buyer.find({phoneNumber: query})
+        }
+        return res.status(200).json({
+            message:`Searched Buyers data fetched successfully!.`,
+            data:{
+                Buyers: Buyers
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
+
 
 
 module.exports = {
@@ -623,5 +652,7 @@ module.exports = {
     UnSubscribeStoreOfBuyerByBuyerId,
     //for seller
     getAllBuyersDetailsForSeller,
-    searchBuyerByName
+    searchBuyerByName,
+    searchBuyerByAnything,
+    searchBuyerByAnything
 }

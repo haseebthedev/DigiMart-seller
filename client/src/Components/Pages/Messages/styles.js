@@ -16,6 +16,31 @@ const useStyles = makeStyles((theme) => ({
 		width: "100%",
 		marginBottom: "30px",
 		position: "relative",
+		paddingLeft: 5,
+		paddingRight: 5,
+	},
+	badge: {
+		backgroundColor: "red",
+		color: "#fff",
+		display: "inline-block",
+		paddingLeft: "8px",
+		paddingRight: "8px",
+		textAlign: "center",
+		borderRadius: "50%",
+	},
+	flexContainer: {
+		padding: 0,
+		margin: "auto",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+	rowItem: {
+		paddingLeft: 60,
+		paddingRight: 60,
+	},
+	table: {
+		minWidth: 650,
 	},
 }));
 

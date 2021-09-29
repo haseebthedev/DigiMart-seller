@@ -34,6 +34,40 @@ const addVendorProductById = async(req, res, next) => {
     }
 }
 
+const addVendorProductByVendorName = async(req, res, next) => {
+    try{
+        const vendorName = req.params.name
+        const vendor = await Vendor.findOne({companyName: vendorName})
+        if(!vendor){
+            throw new Error('No vendor found with this Id !')
+        }
+        if(vendor.status)
+        console.log(vendor)
+        if(vendor.isAuthenticBrand){
+            req.body.isAuthenticVendorProduct = true
+        }
+        //set vendor Id from params into body
+        req.body.vendorId = vendor._id
+        req.body.vendorCompanyName = vendor.companyName
+        req.body.vendorCategory = vendor.category
+        req.body.vendorTypeOfBusiness = vendor.typeOfBusiness
+        const vendorProduct = new VendorProduct(req.body)
+        await vendorProduct.save()
+        res.status(201).json({
+            message:`${vendor.companyName} product has been added successfully!`,
+            data:{
+                product: vendorProduct
+            }
+        })
+
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 const updateVendorProductById = async(req, res, next) => {
     try{
         const updates = Object.keys(req.body)
@@ -208,6 +242,7 @@ module.exports = {
     addVendorProductById,
     updateVendorProductById,
     deleteVendorProductById,
+    addVendorProductByVendorName,
     //for vendor and admin
     viewVendorAllProductsById,
     viewActiveVendorAllProducts,

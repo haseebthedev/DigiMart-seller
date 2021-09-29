@@ -684,6 +684,49 @@ const addProductByStoreId = async(req, res, next) => {
 }
 
 
+const addProductByStoreName = async(req, res, next) => {
+
+    try{
+        const storeName = req.params.name
+        const store = await Store.findOne({name: storeName})
+        //check if product name added before in this store DB
+        if(!store){
+            throw new Error('Please register store to add Product.')
+        }
+         //check if store is not pending or blocked
+         if(store.status == "Pending"){
+            throw new Error(
+                `Cannot add product! Store's status is still pending for approval!`)
+        }
+        if(store.status == "Blocked"){
+            throw new Error(
+                `Cannot add product! Store is blocked temporarily for violating community rules!`)
+        }
+        const isProductNamePresent = await Product.findOne({name:req.body.name,storeID:store._id})
+        if(isProductNamePresent){
+            throw new Error('Product with this name already added before.')
+        }
+
+        req.body['storeID'] = store._id
+        req.body['storeName'] = store.name
+        req.body['sellerID'] = store.sellerId
+        req.body['sellerName'] = store.sellerName
+        const product = new Product(req.body)
+        await product.save()
+        res.status(201).json({
+            message:`Product has been added successfully to store!`,
+            data:{
+                product: product
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 module.exports = {
     //SELLER
     addProductToMyStore,
@@ -706,6 +749,7 @@ module.exports = {
     editProductById,
     deleteProductById,
     addProductByStoreId,
+    addProductByStoreName,
     //BUYER
     viewProductsOfSpecificBrand,
     viewProductsOfSpecificCategory,

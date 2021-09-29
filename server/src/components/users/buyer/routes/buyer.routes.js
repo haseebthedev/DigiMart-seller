@@ -34,5 +34,6 @@ router.get('/superAdmin/buyer/:id/stores/subscribed', auth.superAdmin ,buyerCont
 //ROUTES FOR SELLER
 router.get('/seller/list/buyers', auth.seller, buyerController.getAllBuyersDetailsForSeller)
 router.get('/seller/search/buyer/:name', auth.seller, buyerController.searchBuyerByName)
+router.get('/seller/search/buyer/query/:query', auth.seller, buyerController.searchBuyerByAnything)
 
 module.exports = router 

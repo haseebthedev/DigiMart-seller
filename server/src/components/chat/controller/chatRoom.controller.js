@@ -7,6 +7,7 @@ const Buyer = require('../../users/buyer/models/buyer.model');
 
 const initiate = async (req, res, next) => {
     try {
+        let newConversationCreated = ""
         const validation = makeValidation(types => ({
           payload: req.body,
           checks: {
@@ -26,11 +27,30 @@ const initiate = async (req, res, next) => {
         //at 1 index we have _id of msg reciever
         allUserIds = [...allUserIds, req.body.userIds];
         const chatRoom = await ChatRoomModel.initiateChat(allUserIds, type, chatInitiator);
+        const messagePayload = {
+            messageText: `${req.user.name} started a new chat !`,
+        };
+        // if some other use created new chat then send new chat conversations with it
+        let recentConversations = await getMyConversations(req.user,'seller-to-buyer')
+        if(chatRoom.isNew){
+            const post = await ChatMessageModel.createPostInChatRoom(chatRoom.chatRoomId, messagePayload, req.user._id);
+            global.io.sockets.emit('newConversation', {recentConversations,
+                 chatInitiatorId: req.user._id, chatRecieverId: req.body.userIds[0]});
+            global.io.sockets.in(chatRoom._id).emit('message', {message: post});
+        }
+        //get new conversation initaited and send it with response
+        recentConversations.forEach((conversation) =>{
+            if(conversation.chatRoomId == chatRoom.chatRoomId){
+                newConversationCreated = conversation
+            }
+        })
+        
         return res.status(200).json({
             success: true,
             message:`Chat Created !`,
             data:{
-                chatRoom
+                chatRoom,
+                newConversationInitiated: newConversationCreated
             }
         })
     }
@@ -41,90 +61,97 @@ const initiate = async (req, res, next) => {
     }
 }
 
-const postMessage = async (req, res, next) => {
+const postMessage = async ( currentLoggedUser, roomId, message) => {
     try {
-        const { roomId } = req.params;
+        // const { roomId } = req.params;
+        
         const validation = makeValidation(types => ({
-          payload: req.body,
+          payload: message,
           checks: {
-            messageText: { type: types.string },
+            message: { type: types.string },
           }
         }));
-        if (!validation.success) return res.status(400).json({ ...validation });
+        //if (!validation.success) throw new Error('Not Valid message!');
     
         const messagePayload = {
-          messageText: req.body.messageText,
+          messageText: message,
         };
-        const currentLoggedUser = req.user._id;
         const post = await ChatMessageModel.createPostInChatRoom(roomId, messagePayload, currentLoggedUser);
-        global.io.sockets.in(roomId).emit('new message', { message: post });
-        return res.status(200).json({ success: true, post });
+        global.io.sockets.in(roomId).emit('message', {message: post});
+        // console.log("messageEmitted")
+        //return res.status(200).json({ success: true, post });
       } 
     catch (err){
-        err.status = 500
-        err.success = false
-        next(err)
+        console.log(err)
     }
+}
+
+const getMyConversations = async (currentLoggedUser, roomType, page, limit) => {
+    let RECIEVER_TYPE = ""
+    const options = {
+        page: parseInt(page) || 0,
+        limit: parseInt(limit) || 10,
+      };
+      //get all chatRooms of (seller-to-admin)
+      if(roomType == 'seller-to-admin'){
+          //if seller is logged in then recieverType is superAdmin
+          if(currentLoggedUser.userType == 'sellers'){
+              RECIEVER_TYPE = 'superadmins'
+          }
+          //if superAdmin is logged in then recieverType is seller
+          if(currentLoggedUser.userType == 'superadmins'){
+              RECIEVER_TYPE = 'sellers'
+          }
+      }
+
+      //get all chatRooms of (seller-to-buyer)
+      if(roomType == 'seller-to-buyer'){
+          //if seller is logged in then recieverType is buyer
+          if(currentLoggedUser.userType == 'sellers'){
+              RECIEVER_TYPE = 'buyers'
+          }
+          //if buyer is logged in then recieverType is seller
+          if(currentLoggedUser.userType == 'buyers'){
+              RECIEVER_TYPE = 'sellers'
+          }
+      }
+      
+      const rooms = await ChatRoomModel.getChatRoomsByUserId(currentLoggedUser);
+      const roomIds = rooms.map(room => room._id);
+      //console.log(roomIds, options, currentLoggedUser, RECIEVER_TYPE)
+      const recentConversation = await ChatMessageModel.getRecentConversation(
+        roomIds, options, currentLoggedUser, RECIEVER_TYPE
+      );
+      let conversationUsers = []
+      for(const conversation of recentConversation){
+          let conversationUser = ""
+          for(const roomUserId of conversation.roomUsers){
+              //getting user profile with whom conversation is generated
+              if(roomUserId.toString() != currentLoggedUser.toString()){
+                  if(RECIEVER_TYPE == 'sellers'){
+                      conversationUser = await Seller.findById(roomUserId)
+                  }
+                  if(RECIEVER_TYPE == 'superadmins'){
+                      conversationUser = await SuperAdmin.findById(roomUserId)
+                  }
+                  if(RECIEVER_TYPE == 'buyers'){
+                      conversationUser = await Buyer.findById(roomUserId)
+                  }
+              }
+          }
+          conversation.conversationUser = conversationUser;
+          let countOfUnReadMessages = await ChatMessageModel.getUnreadMessages(conversation.chatRoomId, currentLoggedUser._id);
+          conversation.countOfUnReadMessages = countOfUnReadMessages
+
+      }
+      return recentConversation;
 }
 
 const getRecentConversation = async (req, res, next) => {
     try {
-        let RECIEVER_TYPE = ""
-        const currentLoggedUser = req.user._id;
+        const currentLoggedUser = req.user;
         const roomType = req.params.roomType
-        const options = {
-          page: parseInt(req.query.page) || 0,
-          limit: parseInt(req.query.limit) || 10,
-        };
-        //get all chatRooms of (seller-to-admin)
-        if(roomType == 'seller-to-admin'){
-            //if seller is logged in then recieverType is superAdmin
-            if(req.user.userType == 'sellers'){
-                RECIEVER_TYPE = 'superadmins'
-            }
-            //if superAdmin is logged in then recieverType is seller
-            if(req.user.userType == 'superadmins'){
-                RECIEVER_TYPE = 'sellers'
-            }
-        }
-
-        //get all chatRooms of (seller-to-buyer)
-        if(roomType == 'seller-to-buyer'){
-            //if seller is logged in then recieverType is buyer
-            if(req.user.userType == 'sellers'){
-                RECIEVER_TYPE = 'buyers'
-            }
-            //if buyer is logged in then recieverType is seller
-            if(req.user.userType == 'buyers'){
-                RECIEVER_TYPE = 'sellers'
-            }
-        }
-        
-        const rooms = await ChatRoomModel.getChatRoomsByUserId(currentLoggedUser);
-        const roomIds = rooms.map(room => room._id);
-        //console.log(roomIds, options, currentLoggedUser, RECIEVER_TYPE)
-        const recentConversation = await ChatMessageModel.getRecentConversation(
-          roomIds, options, currentLoggedUser, RECIEVER_TYPE
-        );
-        let conversationUsers = []
-        for(const conversation of recentConversation){
-            let conversationUser = ""
-            for(const roomUserId of conversation.roomUsers){
-                //getting user profile with whom conversation is generated
-                if(roomUserId.toString() != currentLoggedUser.toString()){
-                    if(RECIEVER_TYPE == 'sellers'){
-                        conversationUser = await Seller.findById(roomUserId)
-                    }
-                    if(RECIEVER_TYPE == 'superadmins'){
-                        conversationUser = await SuperAdmin.findById(roomUserId)
-                    }
-                    if(RECIEVER_TYPE == 'buyers'){
-                        conversationUser = await Buyer.findById(roomUserId)
-                    }
-                }
-            }
-            conversation.conversationUser = conversationUser;
-        }
+        const recentConversation = await getMyConversations(currentLoggedUser, roomType, req.query.page, req.query.limit)
         return res.status(200).json({ success: true, recentConversation });
     }
     catch (err){

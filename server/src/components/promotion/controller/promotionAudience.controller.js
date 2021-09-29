@@ -67,7 +67,7 @@ const deletePromotionAudienceByCategory = async(req, res, next) => {
 const getPromotionAudienceOfProductCategory = async(req, res, next) => {
     try{
         const category = req.params.category
-        const promotionAudience = await PromotionAudience.find({productCategory: { $in: [category] }});
+        const promotionAudience = await PromotionAudience.findOne({productCategory: { $in: [category] }});
         if(promotionAudience.length == 0){
             throw new Error('No audience found of this category!')
         }

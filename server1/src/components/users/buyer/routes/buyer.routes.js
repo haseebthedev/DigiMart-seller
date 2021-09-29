@@ -1,0 +1,38 @@
+const express = require('express')
+const router = express.Router()
+const buyerController = require('../controllers/buyer.controller')
+const buyerAuth = require('../middlewares/buyerAuth')
+const auth = require('../../auth')
+
+router.post('/buyer/register',buyerController.registerBuyer)
+router.post('/buyer/login',buyerController.loginBuyer)
+router.post('/buyer/logout', buyerAuth ,buyerController.logoutBuyer)
+router.patch('/buyer/activateAccount', buyerAuth ,buyerController.activateMyAccount)
+router.patch('/buyer/deActivateAccount', buyerAuth ,buyerController.deActivateMyAccount)
+router.delete('/buyer/me', buyerAuth, buyerController.deleteMyAccount)
+router.get('/buyer/me', buyerAuth, buyerController.viewMyProfileInfo)
+router.post('/buyer/forget/password' , buyerController.forgetAccountPassword)
+router.post('/buyer/reset/password/auth/:token' , buyerController.resetPassword)
+router.patch('/buyer/me', buyerAuth ,buyerController.updateProfile)
+router.patch('/buyer/updatePassword', buyerAuth ,buyerController.changePassword)
+router.patch('/buyer/store/subscribe', buyerAuth ,buyerController.subscribeStoreByStoreId)
+router.patch('/buyer/store/Unsubscribe', buyerAuth ,buyerController.UnSubscribeStoreByStoreId)
+router.get('/buyer/stores/subscribed', buyerAuth ,buyerController.ViewSubscribedStores)
+
+//ROUTES FOR ADMIN
+router.get('/superAdmin/buyers', auth.superAdmin, buyerController.getAllBuyersDetails)
+router.get('/superAdmin/buyers/totalNumber', auth.superAdmin, buyerController.getTotalNumberOfBuyers)
+router.patch('/superAdmin/buyer/block/:id', auth.superAdmin, buyerController.blockBuyerById)
+router.patch('/superAdmin/buyer/unblock/:id', auth.superAdmin, buyerController.unBlockBuyerById)
+router.get('/superAdmin/buyer/:id', auth.superAdmin, buyerController.viewBuyerById)
+router.post('/superAdmin/buyer/register', auth.superAdmin, buyerController.registerBuyer)
+router.patch('/superAdmin/buyer/:id', auth.superAdmin, buyerController.editBuyerById)
+router.patch('/superAdmin/buyer/:id/store/subscribe', auth.superAdmin ,buyerController.addSubscribeStoreOfBuyerByBuyerId)
+router.patch('/superAdmin/buyer/:id/store/unsubscribe', auth.superAdmin ,buyerController.UnSubscribeStoreOfBuyerByBuyerId)
+router.get('/superAdmin/buyer/:id/stores/subscribed', auth.superAdmin ,buyerController.ViewSubscribedStoresOfBuyerByBuyerId)
+
+//ROUTES FOR SELLER
+router.get('/seller/list/buyers', auth.seller, buyerController.getAllBuyersDetailsForSeller)
+router.get('/seller/search/buyer/:name', auth.seller, buyerController.searchBuyerByName)
+
+module.exports = router 

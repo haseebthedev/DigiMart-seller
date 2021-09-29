@@ -248,6 +248,19 @@ chatMessageSchema.statics.getConversationByRoomId = async function (chatRoomId, 
     }
   }
 
+  chatMessageSchema.statics.getUnreadMessages = async function (chatRoomId, currentUserOnlineId) {
+    try {
+      return this.countDocuments(
+        {
+          chatRoomId,
+          'readByRecipients.readByUserId': { $ne: currentUserOnlineId }
+        }
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
   chatMessageSchema.statics.markMessageRead = async function (chatRoomId, currentUserOnlineId) {
     try {
       return this.updateMany(

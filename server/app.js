@@ -8,6 +8,8 @@ const path = require('path')
 const cors = require('cors')
 const http = require('http');
 const app = express()
+/** Create HTTP server. */
+const server = http.createServer(app);
 const socketio = require('socket.io');
 const WebSockets = require('./src/components/chat/utils/webSockets')
 
@@ -51,10 +53,13 @@ app.use((error,req,res,next) =>{
     next()
 })
 
-/** Create HTTP server. */
-const server = http.createServer(app);
 /** Create socket connection */
-global.io = socketio(server);
+global.io = socketio(server, {
+	cors: {
+		origin: "*",
+	}
+});
 global.io.on('connection', WebSockets.connection)
+//global.io.on('connection', (socket) => console.log("connected"))
 //checking connection established with db
 server.listen(PORT, () => console.log('server is on port : '+PORT))

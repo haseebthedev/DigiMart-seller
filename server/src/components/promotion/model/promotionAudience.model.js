@@ -19,7 +19,6 @@ const promotionAudienceSchema = new mongoose.Schema({
     },
     promotionSource:{
         type: String,
-        lowercase:true,
         required:[true, "Please enter source of promotion !"],
         enum: ['Email','SMS', 'Both']
     },

@@ -24,4 +24,7 @@ router.get('/superAdmin/store/:id', auth.superAdmin, storeController.viewStoreBy
 router.patch('/superAdmin/store/:id', auth.superAdmin, storeController.editStoreById)
 router.get('/superAdmin/store/:id/subscribers', auth.superAdmin, storeController.viewSubscribersOfStoreByStoreId)
 
+//Routes for buyer
+router.get("/buyer/search/store/:query", storeController.searchStoreByAnything)
+
 module.exports = router

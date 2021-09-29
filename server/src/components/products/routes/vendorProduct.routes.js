@@ -5,6 +5,7 @@ const auth = require('../../users/auth')
 
 //ROUTES FOR ADMIN
 router.post('/superAdmin/vendor/:id/product', auth.superAdmin, vendorProductController.addVendorProductById)
+router.post('/superAdmin/vendorName/:name/product', auth.superAdmin, vendorProductController.addVendorProductByVendorName)
 router.patch('/superAdmin/vendor/product/:id', auth.superAdmin, vendorProductController.updateVendorProductById)
 router.delete('/superAdmin/vendor/product/:id', auth.superAdmin, vendorProductController.deleteVendorProductById)
 router.delete('/superAdmin/vendor/:id/products', auth.superAdmin, vendorProductController.deleteAllVendorProductsById)

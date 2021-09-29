@@ -341,6 +341,35 @@ const addStoreOfSellerById = async(req, res, next) => {
     }
 }
 
+//for buyer
+const searchStoreByAnything = async(req, res, next) => {
+    try{
+        let searchParameter = req.params.query
+        if(searchParameter){
+            query = { '$regex': `.*${searchParameter}.*` }
+        }
+        //check if name matching
+        let Stores = await Store.find({name: query})
+        //check if email matching
+        if(Stores.length == 0){
+            Stores = await Store.find({sellerName: query})
+        }
+        //check if number matching
+        if(Stores.length == 0){
+            Stores = await Store.find({category: query})
+        }
+        return res.status(200).json({
+            message:`Searched Stores data fetched successfully!.`,
+            data:{
+                Stores
+            }
+        })
+    }
+    catch(e){
+        e.status = 404
+        next(e)
+    }
+}
 
 
  
@@ -362,5 +391,7 @@ module.exports = {
     viewStoreById,
     addStoreOfSellerById,
     viewAllStoreApprovalsPending,
-    viewAllStoresApprovedActive
+    viewAllStoresApprovedActive,
+    //for buyer
+    searchStoreByAnything
 }

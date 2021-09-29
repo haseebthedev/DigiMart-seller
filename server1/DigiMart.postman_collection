@@ -1,0 +1,4615 @@
+{
+	"info": {
+		"_postman_id": "ae12e8a0-e2d1-4ad4-9925-d0851e98096f",
+		"name": "DigiMart-API Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Buyer",
+			"item": [
+				{
+					"name": "AdminActions",
+					"item": [
+						{
+							"name": "getAllBuyersDetails",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/buyers",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "blockBuyerById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/buyer/block/610420743061871a04e937c4",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyer",
+										"block",
+										"610420743061871a04e937c4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "unBlockBuyerById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/buyer/unblock/610420743061871a04e937c4",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyer",
+										"unblock",
+										"610420743061871a04e937c4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewBuyerById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/buyer/610420743061871a04e937c4",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyer",
+										"610420743061871a04e937c4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addBuyer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"ameen sheikh\",\r\n    \"email\":\"sh.eikhameen252@gmail.com\",\r\n    \"gender\":\"male\",\r\n    \"birthday\":\"21/06/2010\",\r\n    \"phoneNumber\":\"+923009500876\",\r\n    \"password\":\"ameen321\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/buyer/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyer",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "editBuyerById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"isNotificationsEnabled\":\"false\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/buyer/610420743061871a04e937c4",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyer",
+										"610420743061871a04e937c4"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "myProfile",
+					"item": [
+						{
+							"name": "logout",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/buyer/logout",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"ameen sheikh\",\r\n    \"email\":\"sh.eikhameen252@gmail.com\",\r\n    \"gender\":\"male\",\r\n    \"birthday\":\"21/06/2010\",\r\n    \"phoneNumber\":\"+923009500876\",\r\n    \"password\":\"ameen321\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SignIn",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " \r\n {  \r\n    \"email\":\"sh.eikhameen252@gmail.com\",\r\n    \"password\":\"ameen321\"\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProfile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"ameen Sheikhs\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete Account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/buyer/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ForgetPassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"sheikh.ameen252@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/forgetPassword",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"forgetPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updatePassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"oldPassword\":\"ameen321\",\r\n    \"newPassword\":\"ameen123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/updatePassword",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"updatePassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deActivateAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/buyer/deActivateAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"deActivateAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "activateAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/buyer/activateAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"activateAccount"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Vendor",
+			"item": [
+				{
+					"name": "AdminActions",
+					"item": [
+						{
+							"name": "getAllSellersDetails",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/sellers",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"sellers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "blockSellerById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/seller/block/60ffc9c211aa370198a42b49",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"seller",
+										"block",
+										"60ffc9c211aa370198a42b49"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "unBlockSllerById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/seller/unblock/60ffc9c211aa370198a42b49",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"seller",
+										"unblock",
+										"60ffc9c211aa370198a42b49"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "regsiterSeller",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"ameen\",\r\n    \"email\":\"sheikhameen252@gmail.com\",\r\n    \"gender\":\"male\",\r\n    \"birthday\":\"11/06/1999\",\r\n    \"phoneNumber\":\"+923400904169\",\r\n    \"password\":\"ameen321\",\r\n    \"storeName\":\"salim store\",\r\n    \"CNIC\":\"37567-0004005-7\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/seller/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"seller",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "editVendorById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"jamal\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/seller/account/60ffc9c211aa370198a42b49",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"seller",
+										"account",
+										"60ffc9c211aa370198a42b49"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewVendorById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/seller/account/60ffc9c211aa370198a42b49",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"seller",
+										"account",
+										"60ffc9c211aa370198a42b49"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "myProfile",
+					"item": [
+						{
+							"name": "activateAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/activateAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"activateAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deActivate Account",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/deActivateAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"deActivateAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "forgetPassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"digimart.cui@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/forgetPassword",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"forgetPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProfile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Muhammad Amin\",\r\n    \"CNIC\":\"37590-9094005-7\",\r\n    \"isDarkModeEnabled\":true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getMyProfileDetails",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/personalDetails",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"personalDetails"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updatePassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"oldPassword\":\"bGdMwcAs\",\r\n    \"newPassword\":\"ameen123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/updatePassword",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"updatePassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "logout",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/logout",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"ameen\",\r\n    \"email\":\"sheikh.ameen252@gmail.com\",\r\n    \"gender\":\"male\",\r\n    \"city\":\"Islamabad\",\r\n    \"birthday\":\"11/06/1999\",\r\n    \"phoneNumber\":\"+923400904109\",\r\n    \"password\":\"ameen321\",\r\n    \"CNIC\":\"37567-0004005-0\",\r\n    \"address\":\"B1330, satelliet town , rwp\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "signin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"sheikh.a.meen252@gmail.com\",\r\n    \"password\":\"ameen321\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPaymentAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"AccountHolderName\":\"haseeb\",\r\n    \"accountNumber\":\"0300-09856098\",\r\n    \"paymentMethod\":\"easypaisa\",\r\n    \"isPrimaryAccount\": true\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/addPaymentAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"addPaymentAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updatePaymentAccount",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountNumber\":\"0300-7654123\",\r\n    \"isPrimaryAccount\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/updatePaymentAccount/60ffef7456e1db1134eb4615",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"updatePaymentAccount",
+										"60ffef7456e1db1134eb4615"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePaymentAccount",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/PaymentAccount/60ffef7456e1db1134eb4615",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"PaymentAccount",
+										"60ffef7456e1db1134eb4615"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllPaymentAccounts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/bankDetails",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"bankDetails"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "registerStore",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{Vendor-token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Store",
+			"item": [
+				{
+					"name": "VendorActions",
+					"item": [
+						{
+							"name": "register",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Stylo\",\r\n    \"warehouseAddress\":\"B1339, satellite town\",\r\n    \"type\":\"shop\",\r\n    \"city\":\"Rwp\",\r\n    \"category\":\"Electronics\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateStore",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"city\":\"isb\",\r\n    \"name\":\"stylo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "StoreDetails",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getStoreCategory",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/category",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"category"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "AdminActions",
+					"item": [
+						{
+							"name": "approveOrActivateStore",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/approveStore/60b350358ba1f50ac473fd60",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"approveStore",
+										"60b350358ba1f50ac473fd60"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "disApproveOrDeactivateStore",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/disApproveStore/60b350358ba1f50ac473fd60",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"disApproveStore",
+										"60b350358ba1f50ac473fd60"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "enableMarkringTool",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/enableMarketingTool/60b350358ba1f50ac473fd60",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"enableMarketingTool",
+										"60b350358ba1f50ac473fd60"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "disableMarketingTool",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/disableMarketingTool/60b350358ba1f50ac473fd60",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"disableMarketingTool",
+										"60b350358ba1f50ac473fd60"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllStores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/stores",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"stores"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/store/610144b88cac6915c80a6f17",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"610144b88cac6915c80a6f17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "editStoreById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Infinix shop\",\r\n    \"country\":\"Afganistan\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/store/610144b88cac6915c80a6f17",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"610144b88cac6915c80a6f17"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addStoreByVendorId",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Stylo\",\r\n    \"buissnessAddress\":\"B1339, satellite town\",\r\n    \"warehouseAddress\":\"B1348, satellite town\",\r\n    \"logo\":\"eug21iuey9821eg128gd1s28o..\",\r\n    \"biography\":\"A store to sell eletronics products on cheap prices.\",\r\n    \"type\":\"shop\",\r\n    \"city\":\"Rwp\",\r\n    \"category\":\"Electronic media\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/store/register/vendor/610a4fd24f6cab19ccf2b1e3",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"register",
+										"vendor",
+										"610a4fd24f6cab19ccf2b1e3"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "myProfile",
+					"item": [
+						{
+							"name": "login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"sh.eikhameen252@gmail.com\",\r\n    \"password\":\"ameen321\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/login",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "logout",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/logout",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getMyDetails",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deActivateAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/deActivateMyAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"deActivateMyAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "activateMyAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/activateMyAccount",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"activateMyAccount"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteMyAccount",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateProfile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"aslam shabar\",\r\n    \"email\":\"sheikhameen25@gmail.com\",\r\n    \"password\":\"askam321\",\r\n    \"gender\":\"other\",\r\n    \"phoneNumber\":\"+923315416864\",\r\n    \"profilePic\":\"kjdjkhsdo21372073h128w8ghwg28oywe82oihewo2h8o2\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/me",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updatePassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"oldPassword\":\"ameen321\",\r\n    \"newPassword\":\"ameen123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/updatePassword",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"updatePassword"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "SuperAdminActions",
+					"item": [
+						{
+							"name": "AddAdmin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": " {\r\n    \"name\":\"Ameen\",\r\n    \"email\":\"sheikhameen252@gmail.com\",\r\n    \"gender\":\"male\",\r\n    \"phoneNumber\":\"+923119544909\",\r\n    \"CNIC\":\"12365-0950949-0\",\r\n    \"password\":\"ameen321\",\r\n    \"roles\":[\"HR\",\"Super Admin\"]\r\n }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "EditOtherAdmins",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"sheikhameen@gmail.com\",\r\n    \"roles\":[\"Accounts\",\"HR\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/superAdmin/updateAdmin/610a5716f768aa1b20f4b976",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"updateAdmin",
+										"610a5716f768aa1b20f4b976"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "blockOrDeativateAdmin",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/blockAdmin/60b5073351c1b52a7ca781ea",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"blockAdmin",
+										"60b5073351c1b52a7ca781ea"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "unBlockOrActivateOtherAdmin",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/unBlockAdmin/60b5073351c1b52a7ca781ea",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"unBlockAdmin",
+										"60b5073351c1b52a7ca781ea"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAllAdmins",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/admins",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"admins"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewAdminById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/admin/610418f91a8bed3a38b88fd0",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"admin",
+										"610418f91a8bed3a38b88fd0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAdminDetailsByRole",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/admin/role/HR",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"admin",
+										"role",
+										"HR"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTotalNumOfAdmins",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/admins/number",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"admins",
+										"number"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Vendor'sActions",
+					"item": [
+						{
+							"name": "updateProduct",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"images\":[\"dwqdwqdqwdqw1231wes   s\",\"swqkjbds2geiu1sb2ks\"],\r\n    \"colors\":[\"red\",\"green\"],\r\n    \"sizeAndStock\":[\r\n        {\r\n            \"size\":\"XL\",\r\n            \"stock\":20\r\n        },\r\n        {\r\n            \"size\":\"XS\",\r\n            \"stock\":30\r\n        },\r\n        {\r\n            \"size\":\"M\",\r\n            \"stock\":20\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/6109b819d3eb7e20a8bea1d6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"6109b819d3eb7e20a8bea1d6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewMyStoreAllProducts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/products",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewMyStoreProductById",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/60afba8c6535804550226347",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"60afba8c6535804550226347"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete Product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/610144bc8cac6915c80a6f18",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"610144bc8cac6915c80a6f18"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProduct",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"Hoodie For Men\",\r\n    \"category\":\"Clothing\",\r\n    \"subCategory\":\"Hoodies\",\r\n    \"brand\":\"Nike\",\r\n    \"purchasePrice\":2000,\r\n    \"salePrice\": 2500,\r\n    \"dimensions\":{\r\n        \"length\":\"10cm\",\r\n        \"width\":\"20cm\",\r\n        \"height\":\"30cm\"\r\n    },\r\n    \"sizeAndStock\":[\r\n        {\r\n            \"size\":\"XL\",\r\n            \"stock\":10\r\n        },\r\n        {\r\n            \"size\":\"L\",\r\n            \"stock\":20\r\n        },\r\n        {\r\n            \"size\":\"S\",\r\n            \"stock\":30\r\n        }\r\n    ],\r\n    \"shippingCost\":100,\r\n    \"state\":\"new\",\r\n    \"isOnSale\":true,\r\n    \"discountPercentage\":10,\r\n    \"discountPrice\":2250,\r\n    \"stockAvailable\":60,\r\n    \"manufactureDate\":\"16/03/2021\",\r\n    \"description\":\"The Redmi Note 10 sports a 6.5-inch FHD+ display with a 90Hz AdaptiveSync refresh rate, and 2400 x 1080 pixels resolution. ... Connectivity features include 5G, 4G LTE, dual-band Wi-Fi, Bluetooth 5.1, GPS, and USB Type-C port for charging and data sync.\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteSizeAndStockBySizeAndStockID",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/sizeAndStock/6109b819d3eb7e20a8bea1d9",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"sizeAndStock",
+										"6109b819d3eb7e20a8bea1d9"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "AdminActions",
+					"item": [
+						{
+							"name": "viewAllProductsInAllStores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/products",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewProductDetailsById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/product/60afbda3b7be502f60cae05d",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"product",
+										"60afbda3b7be502f60cae05d"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewProductsOfStore",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/products/store/60afbd9ab7be502f60cae05c",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"products",
+										"store",
+										"60afbd9ab7be502f60cae05c"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "blockProduct",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/product/block/60b299bd5f0a6a3910fb9ad9",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"product",
+										"block",
+										"60b299bd5f0a6a3910fb9ad9"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "unBlockProduct",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/product/unblock/610143f91d6f992118ebd2c8",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"product",
+										"unblock",
+										"610143f91d6f992118ebd2c8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "editProductById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"images\":[\"dwqdwqdqwdqw1231wes   s\",\"swqkjbds2geiu1sb2ks\"],\r\n    \"colors\":[\"red\",\"green\"],\r\n    \"sizeAndStock\":[\r\n        {\r\n            \"size\":\"XL\",\r\n            \"stock\":20\r\n        },\r\n        {\r\n            \"size\":\"XS\",\r\n            \"stock\":30\r\n        },\r\n        {\r\n            \"size\":\"M\",\r\n            \"stock\":80\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/product/6109b819d3eb7e20a8bea1d6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"product",
+										"6109b819d3eb7e20a8bea1d6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductById",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/product/610143f91d6f992118ebd2c8",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"product",
+										"610143f91d6f992118ebd2c8"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Analytics",
+			"item": [
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "getTotalNumOfBuyers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/buyers/totalNumber",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"buyers",
+										"totalNumber"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTotalNumberOfVendors",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/sellers/totalNumber",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"sellers",
+										"totalNumber"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewDatabaseUsage",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/database/details",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"database",
+										"details"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTotalNumOfProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/products/totalNumber",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"products",
+										"totalNumber"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTotalNumOfStoreApprovals",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/store/approvals/number",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"approvals",
+										"number"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getTotalNumberOfStoresApproved",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/stores/approved/number",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"stores",
+										"approved",
+										"number"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Report a Problem",
+			"item": [
+				{
+					"name": "Admin Actions",
+					"item": [
+						{
+							"name": "viewVendorProblems",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/view/seller/problems",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"view",
+										"seller",
+										"problems"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewBuyerProblems",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/view/buyer/problems",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"view",
+										"buyer",
+										"problems"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "adminReportProblem",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Admin-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject\":\"server error\",\r\n    \"description\":\"cannot login with my account\",\r\n    \"screenShot\":\"dhqwiud2y8oeh12ljebi1u2geiu2heoi1b2d1s2he9eoil1h\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/reportProblem",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"reportProblem"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "changeProblemStatusToSolvedById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/problem/6107a99f2c52e011d81ea318",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"problem",
+										"6107a99f2c52e011d81ea318"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "SuperAdmin Actions",
+					"item": [
+						{
+							"name": "viewAdminProblems",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/superAdmin/view/admin/problems",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"superAdmin",
+										"view",
+										"admin",
+										"problems"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Vendor Actions",
+					"item": [
+						{
+							"name": "sellerReportProblem",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Vendor-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject\":\"server error\",\r\n    \"description\":\"cannot login with my account\",\r\n    \"screenShot\":\"dhqwiud2y8oeh12ljebi1u2geiu2heoi1b2d1s2he9eoil1h\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/reportProblem",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"reportProblem"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Buyer Actions",
+					"item": [
+						{
+							"name": "buyerReportProblem",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{Buyer-token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject\":\"server error\",\r\n    \"description\":\"cannot login with my account\",\r\n    \"screenShot\":\"dhqwiud2y8oeh12ljebi1u2geiu2heoi1b2d1s2he9eoil1h\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/reportProblem",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"reportProblem"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Product Categories",
+			"item": [
+				{
+					"name": "Admin's Actions",
+					"item": [
+						{
+							"name": "Main category",
+							"item": [
+								{
+									"name": "getChildCategoriesAndBrandsOfCategory",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"parentCategory\":\"Fashion and Design\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/subCategories/Electronics media",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"subCategories",
+												"Electronics media"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "addProductOrStoreCategory",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"Electronics media\",\r\n    \"description\":\"Things related to Electronics\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/category",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"category"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "getAllCategoriesOfStoreOrProduct",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/categories/view",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"categories",
+												"view"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "deleteProductCategory",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/category/610962dc651db208703217d8",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"category",
+												"610962dc651db208703217d8"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "getProductCategoryById",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/category/61092b09e421703e70cd6d89",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"category",
+												"61092b09e421703e70cd6d89"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "updateProductCategory",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"Electronics media\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/category/61092b09e421703e70cd6d89",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"category",
+												"61092b09e421703e70cd6d89"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Sub categories",
+							"item": [
+								{
+									"name": "addProductSubCategoryByCategory",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"Handsfree\",\r\n    \"description\":\"To listen to music\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/subCategory/Electronics",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"subCategory",
+												"Electronics"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "deleteSubCategoryBySubCategoryID",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/subCategory/61096582bea2a0335c683b52",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"subCategory",
+												"61096582bea2a0335c683b52"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "updateSubCategoryBySubCategoryId",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"Music devices\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/subCategory/61092b7afa76b732fc519001",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"subCategory",
+												"61092b7afa76b732fc519001"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "getSubCategoryBySubCategoryID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/subCategory/61092b7afa76b732fc519001",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"subCategory",
+												"61092b7afa76b732fc519001"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Brands",
+							"item": [
+								{
+									"name": "addBrandOfCategory",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"name\":\"Audionic\",\r\n    \"logo\":\"ekh21veiu1y2oedb12iuey812obes1uo2io...\",\r\n    \"description\":\"Brand for audio devices.\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/brand/Electronics media",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"brand",
+												"Electronics media"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "updateBrandByBrandID",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"description\":\"Brand for listening music devices\",\r\n    \"name\":\"Acer\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/admin/product/brand/6109762a6059e622c4289a95",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"brand",
+												"6109762a6059e622c4289a95"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "deleteBrandByBrandId",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/brand/6109762a6059e622c4289a95",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"brand",
+												"6109762a6059e622c4289a95"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "getBrandByBrandID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{host}}/admin/product/brand/6109776b5ee823335c889c49",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"admin",
+												"product",
+												"brand",
+												"6109776b5ee823335c889c49"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Sellers's Actions",
+					"item": [
+						{
+							"name": "getProductCategoryById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/product/category/61092b09e421703e70cd6d89",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"product",
+										"category",
+										"61092b09e421703e70cd6d89"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllCategoriesOrBrandsOrSubCategoriesOrStoreCategories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/product/categories",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"product",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getSubCategoriesAndBrandsOfCategoryByCategoryName",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/subCategories/brands/Electronics media",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"subCategories",
+										"brands",
+										"Electronics media"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{admin-",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Customizations",
+			"item": [
+				{
+					"name": "Admin Actions",
+					"item": [
+						{
+							"name": "updateVendorPanelColours",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"primaryColourVendorPanel\":\"#123j78\",\r\n    \"secondaryColourVendorPanel\":\"#F1213js\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/updateVendorPanelColours",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"updateVendorPanelColours"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getVendorPanelColours",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/getVendorPanelColours",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"getVendorPanelColours"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateVendorPanelLogo",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"logoVendorPanel\":\"#djkasbdiu23heo1ohdjqqbdiu12eo1l2bel3e4324r2dwedf===\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/updateVendorPanelLogo",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"updateVendorPanelLogo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getVendorPanelLogo",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"logoVendorPanel\":\"#djkasbdiu23heo1ohdjqqbdiu12eo1l2bel12uheoi12h.d..qwe.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/getVendorPanelLogo",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"getVendorPanelLogo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Seller Actions",
+					"item": [
+						{
+							"name": "getVendorPanelColours",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/getVendorPanelColours",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"getVendorPanelColours"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getVendorPanelLogo",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"logoVendorPanel\":\"#djkasbdiu23heo1ohdjqqbdiu12eo1l2bel12uheoi12h.d..qwe.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/getVendorPanelLogo",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"getVendorPanelLogo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Buyer Actions",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "Promotion",
+			"item": [
+				{
+					"name": "Vendor Actions",
+					"item": [
+						{
+							"name": "addPromotedProduct",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"productId\": \"610145128cac6915c80a6f19\",\r\n    \"promoCode\":\"digimart01\",\r\n    \"description\":\"These are originally referred to how quiet the rubber soles were on the ground, in contrast to noisy standard hard leather sole dress shoes. \",\r\n    \"productName\":\"Samsung galaxy s10\",\r\n    \"discount\":10,\r\n    \"promotionMessage\":\"Receive discounts on stylo shoes Snickers. Text “DIGI5” to  get a 2% discount on your next order! Your Daily Wear. Click Link to Shop from DigiMart: https:/Digimart/styloShoes/d/1V63X8aQ6mAY9-DcYbUNkiOIcBYdEAcpE/edit#gid=1419248907\",\r\n    \"promotedAudienceId\":\"610145128cac6915c80a6f19\",\r\n    \"promotionSource\":\"SMS\",\r\n     \"longUrl\": \"https://www.daraz.pk/products/genuine-i7s-tws-twin-wireless-mini-bluetooth-earphone-headset-airpods-with-charging-box-wireless-bluetooth-earbuds-with-5-hours-playtime-compatible-with-smartphones-tablets-etc-airpods-sweat-proof-and-waterproof-airpods-wireless-earbuds-i216824632-s1426828041.html?spm=a2a0e.home.flashSale.3.35e34937hct1E9&search=1&mp=1&c=fs\",\r\n        \"shortUrl\": \"http:localhost:8080/80qDsVXfz\",\r\n        \"urlCode\": \"80qDsVXfz\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "checkProductPromotedBefore",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote/6105b8f9b50bf8172c8aa5f3",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote",
+										"6105b8f9b50bf8172c8aa5f3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "schedulePromotion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"productId\": \"610145128cac6915c80a6f19\",\r\n    \"promoCode\":\"digimart01\",\r\n    \"promotion_date\":  \"12/3/2021\",\r\n    \"description\":\"These are originally referred to how quiet the rubber soles were on the ground, in contrast to noisy standard hard leather sole dress shoes. \",\r\n    \"productName\":\"Samsung galaxy s10\",\r\n    \"discount\":10,\r\n    \"promotionMessage\":\"Receive discounts on stylo shoes Snickers. Text “DIGI5” to  get a 2% discount on your next order! Your Daily Wear. Click Link to Shop from DigiMart: https:/Digimart/styloShoes/d/1V63X8aQ6mAY9-DcYbUNkiOIcBYdEAcpE/edit#gid=1419248907\",\r\n    \"promotedAudienceId\":\"610145128cac6915c80a6f19\",\r\n    \"promotionSource\":\"SMS\",\r\n    \"longUrl\": \"https://www.daraz.pk/products/genuine-i7s-tws-twin-wireless-mini-bluetooth-earphone-headset-airpods-with-charging-box-wireless-bluetooth-earbuds-with-5-hours-playtime-compatible-with-smartphones-tablets-etc-airpods-sweat-proof-and-waterproof-airpods-wireless-earbuds-i216824632-s1426828041.html?spm=a2a0e.home.flashSale.3.35e34937hct1E9&search=1&mp=1&c=fs\",\r\n        \"shortUrl\": \"http:localhost:8080/W_it85qYV\",\r\n        \"urlCode\": \"W_it85qYV\",\r\n    \"promotion_Time\":\"9.30pm\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote/schedule",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote",
+										"schedule"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewStoreScheduledPromotions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/products/promote/schedule",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"products",
+										"promote",
+										"schedule"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewStoreAllPromotedProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/products/promote",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"products",
+										"promote"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "generateShortURL",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"longUrl\": \"https://www.daraz.pk/products/genuine-i7s-tws-twin-wireless-mini-bluetooth-earphone-headset-airpods-with-charging-box-wireless-bluetooth-earbuds-with-5-hours-playtime-compatible-with-smartphones-tablets-etc-airpods-sweat-proof-and-waterproof-airpods-wireless-earbuds-i216824632-s1426828041.html?spm=a2a0e.home.flashSale.3.35e34937hct1E9&search=1&mp=1&c=fs\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/url/shorten",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"url",
+										"shorten"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPromotionAudience Ofcategory",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/promotion/audience/Sports",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"promotion",
+										"audience",
+										"Sports"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "editScheduledPromotionById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"promotion_Time\": \"11:30\",\r\n    \"promotion_date\":  \"12/3/2021\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote/schedule/6107107e6c38940c7cf48f35",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote",
+										"schedule",
+										"6107107e6c38940c7cf48f35"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePromotionScheduledById",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote/schedule/61047b391e89fa2b8017f519",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote",
+										"schedule",
+										"61047b391e89fa2b8017f519"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "viewScheduledPromotionById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/product/promote/schedule/610479e17a630c269c9d9cca",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promote",
+										"schedule",
+										"610479e17a630c269c9d9cca"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "sendPromotionMessage",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"message\":\"Hi Haseeb! This is promotion message for testing Digi-Mart promotion tool.\",\r\n    \"number\": \"+923455488219\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/product/promotion/message",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"product",
+										"promotion",
+										"message"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Admin Actions",
+					"item": [
+						{
+							"name": "viewAllPromotedProducts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/products/promote",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"products",
+										"promote"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addPromotionAudience",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"productCategory\":[\"Sports\",\"SportsWear\",\"Gaming\",\"ComputerAccessories\",\"Electronics\"],\r\n    \"audienceInterestCategory\":\"Sports\",\r\n    \"promotionSource\":\"sms\",\r\n    \"promotionData\":[{\r\n        \"name\":\"ameen\",\r\n        \"number\":\"+923001234567\"\r\n    },{\r\n        \"name\":\"haseeb\",\r\n        \"number\":\"+923001234678\"\r\n    },\r\n    {\r\n        \"name\":\"jamal\",\r\n        \"number\":\"+923001234098\"\r\n    }]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updatePromotionAudienceByCategory",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\r\n        \"name\":\"sheikh\",\r\n        \"number\":\"+923001234567\"\r\n    },{\r\n        \"name\":\"aslam\",\r\n        \"number\":\"+923001234678\"\r\n    },\r\n    {\r\n        \"name\":\"jimi\",\r\n        \"number\":\"+923001234098\"\r\n    }]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/Sports",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"Sports"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deletePromotionAudienceOfCategory",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/Sports",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"Sports"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPromotionAudience Ofcategory",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/Sports",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"Sports"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "updateAudienceInterestCategoryById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"audienceInterestCategory\":\"Fitness\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/interestCategory/61053e92c3c7ad1cf81b3c26",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"interestCategory",
+										"61053e92c3c7ad1cf81b3c26"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPromotionAudienceOfAllCategories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "addProductCategoriesInPromotionAudienceById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"productCategory\":[\"Cricket\",\"Football\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/productCategory/61054d7edef980127caa6f84",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"productCategory",
+										"61054d7edef980127caa6f84"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteProductCategoriesInPromotionAudienceById",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"productCategory\":[\"Cricket\",\"Football\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/promotion/audience/productCategory/61054d7edef980127caa6f84",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"promotion",
+										"audience",
+										"productCategory",
+										"61054d7edef980127caa6f84"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Buyer Actions",
+					"item": [
+						{
+							"name": "addOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\"products\":[{\r\n\"productId\":\"61084b757a47bd0374b2073d\",\r\n\"name\":\"Shirt Red\",\r\n\"buyPrice\":12000,\r\n\"discount\": 1000,\r\n\"quantity\": 3,\r\n\"size\":\"XL\",\r\n\"color\":\"Red\"\r\n},\r\n{\r\n\"productId\":\"6109b819d3eb7e20a8bea1d6\",\r\n\"name\":\"Shirt Green\",\r\n\"buyPrice\":19000,\r\n\"discount\": 100,\r\n\"quantity\": 2,\r\n\"size\":\"M\",\r\n\"color\":\"Green\"\r\n}],\r\n\"storeId\":\"610a52f7e60d0016e4f98f63\",\r\n\"buyerId\":\"610420743061871a04e937c4\",\r\n\"deliveryAddress1\":\"B1337, rawalpindi\",\r\n\"deliveryAddress2\":\"B1332, islamabad\",\r\n\"contactNumber\":\"+923359425678\",\r\n\"email\":\"ameen@gmail.com\",\r\n\"couponCode\":\"DIGI123\",\r\n\"totalDiscount\":1100,\r\n\"subTotalPrice\":29900,\r\n\"totalPrice\":30000,\r\n\"shippingFee\":100,\r\n\"deliveryInstructions\":\"Please wear mask while delivery.\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/buyer/product/order",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"buyer",
+										"product",
+										"order"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Vendor Actions",
+					"item": [
+						{
+							"name": "updateOrderById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"deliveryDate\":\"12/3/2021\",\r\n    \"deliveryTime\":\"11.30pm\",\r\n    \"status\":\"Active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/seller/store/order/610af5ab8998d42f2c045e93",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"order",
+										"610af5ab8998d42f2c045e93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteOrderById",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/order/610af780e8d05d0ba4cab8f8",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"order",
+										"610af780e8d05d0ba4cab8f8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrderById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/order/610af780e8d05d0ba4cab8f8",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"order",
+										"610af780e8d05d0ba4cab8f8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllOrdersOfMyStore",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/orders/view",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"orders",
+										"view"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrdersOfStoreByOrderStatus",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/seller/store/orders/Pending",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"seller",
+										"store",
+										"orders",
+										"Pending"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Vendor-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Admin Actions",
+					"item": [
+						{
+							"name": "updateOrderById",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"deliveryDate\":\"12/3/2021\",\r\n    \"deliveryTime\":\"11.30pm\",\r\n    \"status\":\"Active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/admin/store/order/610af5ab8998d42f2c045e93",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"order",
+										"610af5ab8998d42f2c045e93"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "deleteOrderById",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/store/order/610af8c9e8d05d0ba4cab8fb",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"order",
+										"610af8c9e8d05d0ba4cab8fb"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getOrderById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/store/order/610af8c9e8d05d0ba4cab8fb",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"store",
+										"order",
+										"610af8c9e8d05d0ba4cab8fb"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllOrdersOfStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getPendingOrdersOfStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/pending/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"pending",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getReturnedOrdersOfStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/returned/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"returned",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getActiveOrdersOfStoreById Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/active/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"active",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCancelledOrdersOfStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/cancelled/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"cancelled",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCompletedOrdersOfStoreById",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/completed/store/610a52f7e60d0016e4f98f63",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"completed",
+										"store",
+										"610a52f7e60d0016e4f98f63"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getAllOrdersOfAllStores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/admin/orders/stores",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"admin",
+										"orders",
+										"stores"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{Admin-token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
