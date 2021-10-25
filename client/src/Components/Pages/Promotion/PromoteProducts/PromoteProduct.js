@@ -268,11 +268,11 @@ export default function PromoteProduct(props) {
 	};
 
 	const getAllCategory = async () => {
-		api.get("/seller/product/categories", {
+		api.get("/seller/product/mainCategories/list", {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then((res) => {
-				const categoryList = res.data.data.categories;
+				const categoryList = res.data.data.mainCategories;
 				setAllCategories(categoryList);
 			})
 			.catch(() =>
@@ -587,7 +587,7 @@ export default function PromoteProduct(props) {
 											<MenuItem value="SMS" key="sms">
 												SMS
 											</MenuItem>
-											<MenuItem value="EMAIL" key="email">
+											<MenuItem value="Email" key="email">
 												Email
 											</MenuItem>
 										</Select>
@@ -736,13 +736,17 @@ export default function PromoteProduct(props) {
 												>
 													Choose a Product Category
 												</MenuItem>
+												{console.log(
+													"alll",
+													AllCategories
+												)}
 												{AllCategories.map(
 													(el, index) => (
 														<MenuItem
-															value={el.name}
+															value={el}
 															key={index}
 														>
-															{el.name}
+															{el}
 														</MenuItem>
 													)
 												)}

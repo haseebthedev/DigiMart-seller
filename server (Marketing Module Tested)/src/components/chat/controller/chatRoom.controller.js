@@ -32,13 +32,10 @@ const initiate = async (req, res, next) => {
         };
         // if some other use created new chat then send new chat conversations with it
         let recentConversations = await getMyConversations(req.user,'seller-to-buyer')
-        
         if(chatRoom.isNew){
             const post = await ChatMessageModel.createPostInChatRoom(chatRoom.chatRoomId, messagePayload, req.user._id);
-            recentConversations = await getMyConversations(req.user,'seller-to-buyer')
-            recentConversations.forEach((item) => console.log(item._id))
             global.io.sockets.emit('newConversation', {recentConversations,
-            chatInitiatorId: req.user._id, chatRecieverId: req.body.userIds[0]});
+                 chatInitiatorId: req.user._id, chatRecieverId: req.body.userIds[0]});
             global.io.sockets.in(chatRoom._id).emit('message', {message: post});
         }
         //get new conversation initaited and send it with response
@@ -93,7 +90,7 @@ const getMyConversations = async (currentLoggedUser, roomType, page, limit) => {
     let RECIEVER_TYPE = ""
     const options = {
         page: parseInt(page) || 0,
-        limit: parseInt(limit) || 100,
+        limit: parseInt(limit) || 10,
       };
       //get all chatRooms of (seller-to-admin)
       if(roomType == 'seller-to-admin'){
@@ -120,12 +117,11 @@ const getMyConversations = async (currentLoggedUser, roomType, page, limit) => {
       }
       
       const rooms = await ChatRoomModel.getChatRoomsByUserId(currentLoggedUser);
-      let roomIds = []
-      rooms.forEach((room) => {roomIds.push(room._id)});
+      const roomIds = rooms.map(room => room._id);
+      //console.log(roomIds, options, currentLoggedUser, RECIEVER_TYPE)
       const recentConversation = await ChatMessageModel.getRecentConversation(
         roomIds, options, currentLoggedUser, RECIEVER_TYPE
       );
-      console.log("inside func", recentConversation)
       let conversationUsers = []
       for(const conversation of recentConversation){
           let conversationUser = ""
@@ -251,8 +247,8 @@ const markConversationReadByRoomId = async (req, res, next) => {
 const deleteRoomById = async (req, res, next) => {
     try {
         const { roomId } = req.params;
-        const room = await ChatRoomModel.deleteMany({ _id: roomId });
-        const messages = await ChatMessageModel.deleteMany({ chatRoomId: roomId })
+        const room = await ChatRoomModel.remove({ _id: roomId });
+        const messages = await ChatMessageModel.remove({ chatRoomId: roomId })
         return res.status(200).json({ 
           success: true, 
           message: "Operation performed succesfully",

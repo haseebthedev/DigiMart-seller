@@ -92,7 +92,7 @@ export default function ViewProducts() {
 		{
 			title: "SalePrice",
 			field: "salePrice",
-			render: ({ salePrice }) => <div>{"$" + salePrice}</div>,
+			render: ({ salePrice }) => <div>{"Rs. " + salePrice}</div>,
 			hidden: false,
 			export: true,
 		},

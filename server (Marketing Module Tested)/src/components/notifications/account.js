@@ -8,7 +8,7 @@ const sendForgetPasswordMail = (email, name, link) => {
 		to: email,
 		from: process.env.BUSINESS_EMAIL,
 		subject: "Password Change Request",
-		//text:'Hey ! Welcome to DigiMart. Your account password has been reset successfully!',
+		// text: "Hey ! Welcome to DigiMart. Your account password has been reset successfully!",
 		html: resetPassword.emailTemplate(link, name),
 	});
 };

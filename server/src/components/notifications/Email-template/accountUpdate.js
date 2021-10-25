@@ -302,7 +302,7 @@ const emailTemplate = function(message, name){
                     <table role="presentation"  cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                             <td class="logo" style="text-align: center;">
-                                <h1><a href="#">Digi-Mart</a></h1>
+                            <h1><a href="https://ibb.co/JBSQKP8"><img style=" width: 150px;" src="https://i.ibb.co/Lks58fB/logo.png" alt="logo"></a></h1>
                             </td>
                         </tr>
                     </table>
@@ -314,7 +314,7 @@ const emailTemplate = function(message, name){
                         <tr>
                             <td style="padding: 0 2.5em; text-align: center; padding-bottom: 3em;">
                                 <div class="text">
-                                    <h2>Hi ${name},</h2>
+                                    <h2>Hi ${name?name:""},</h2>
                                 </div>
                             </td>
                         </tr>

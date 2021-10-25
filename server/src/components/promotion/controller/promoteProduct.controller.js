@@ -25,7 +25,7 @@ const addPromotedProduct = async(req, res, next) => {
         if(store.isApprovedPromotionTool == false){
             throw new Error('Sorry! You cannot promote your products. Contact admin to activate your promotoion tool!')
         }
-        const messageBody = req.body.message
+        const messageBody = req.body.promotionMessage
         const subject = 'Digi-Mart Promotion Alert !'
 
         ///////check if promote to promotion Audience

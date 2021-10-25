@@ -271,7 +271,7 @@ const VendorAnalytics = () => {
 			hidden: true,
 			export: true,
 		},
-		{ title: "Brand", field: "brand", hidden: false, export: true },
+		{ title: "Brand", field: "storeName", hidden: false, export: true },
 		{ title: "Category", field: "category", hidden: true, export: true },
 		{
 			title: "purchasePrice",
@@ -282,7 +282,7 @@ const VendorAnalytics = () => {
 		{
 			title: "Price",
 			field: "salePrice",
-			render: ({ salePrice }) => <div>{"$" + salePrice}</div>,
+			render: ({ salePrice }) => <div>{"Rs. " + salePrice}</div>,
 			hidden: false,
 			export: true,
 		},
@@ -382,7 +382,7 @@ const VendorAnalytics = () => {
 								Top Performing Products
 							</Typography>
 						}
-						data={details}
+						data={details.splice(0, 5)}
 						columns={columns}
 						options={{
 							actionsColumnIndex: -1,

@@ -105,7 +105,8 @@ chatMessageSchema.statics.createPostInChatRoom = async function (chatRoomId, mes
       // group data
       {
         $group: {
-          _id: '$_id' ,
+          _id: '$chatRoomInfo._id',
+          postId: { $last: '$_id' },
           chatRoomId: { $last: '$chatRoomInfo._id' },
           message: { $last: '$message' },
           type: { $last: '$type' },

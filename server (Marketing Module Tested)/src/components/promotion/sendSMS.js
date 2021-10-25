@@ -10,7 +10,9 @@ const message = (recieverNumber, body) => {
 			body: body,
 		})
 		//console.log('m'+ messageSent.sid)
-		.then((message) => console.log(message.sid));
+		.then((message) =>
+			console.log("Message sent successfully!", message.sid)
+		);
 };
 
 module.exports = { message };

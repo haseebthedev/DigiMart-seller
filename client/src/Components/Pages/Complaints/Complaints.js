@@ -208,10 +208,10 @@ export default function Reviews() {
 										>
 											Image Uploaded by User :
 										</Typography>
-										{ComplaintsList.screenShot !==
-										undefined ? (
+
+										{rowData.screenShot !== "" ? (
 											<img
-												src={ComplaintsList.screenShot}
+												src={rowData.screenShot}
 												alt="productImage1"
 												style={{
 													width: 120,

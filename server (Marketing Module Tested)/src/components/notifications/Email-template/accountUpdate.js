@@ -1,4 +1,5 @@
-const emailTemplate = function(link, name){ 
+
+const emailTemplate = function(message, name){ 
 
     return(`
 
@@ -313,7 +314,7 @@ const emailTemplate = function(link, name){
                         <tr>
                             <td style="padding: 0 2.5em; text-align: center; padding-bottom: 3em;">
                                 <div class="text">
-                                    <h2>Reset Account Password</h2>
+                                    <h2>Hi ${name},</h2>
                                 </div>
                             </td>
                         </tr>
@@ -321,13 +322,10 @@ const emailTemplate = function(link, name){
                             <td style="text-align: center;">
                                 <div class="text-author">
                             
-                                    <h3 class="name">Hi ${name},</h3>
-                                    <p>
-                                    Please click on the following link ${link} to reset your password. \n\n 
-                                    If you did not request this, please ignore this email and your password will remain unchanged.\n
-                                    </p>
+                                    <h3 class="name" style="color:black;">${message}</h3>
                                     
                                 </div>
+                                <span class="position"><br>Hope you have a good day.<br><strong>Regards, Digi-Mart Team</strong></span>
                             </td>
                             </tr>
                     </table>
