@@ -21,4 +21,7 @@ router.get('/seller/vendors', auth.seller , vendorController.getAllVendors)
 router.get('/seller/vendors/:category', auth.seller , vendorController.getAllVendorsByCategoryName)
 router.get('/seller/vendors/active/list', auth.seller , vendorController.getAllActiveVendors)
 
+//FOR BUYER
+router.get('/buyer/vendors', vendorController.getAllVendors)
+
 module.exports = router

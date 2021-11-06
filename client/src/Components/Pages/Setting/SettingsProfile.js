@@ -358,23 +358,6 @@ export default function VendorCenter() {
 									}
 								/>
 
-								{/* <FormControlLabel
-									margin="normal"
-									control={
-										<Switch
-											color="primary"
-											checked={
-												profileData.isDarkModeEnabled
-											}
-											onChange={handleChangeSwitch(
-												"isDarkModeEnabled"
-											)}
-										/>
-									}
-									label="Dark Mode"
-									labelPlacement="start"
-									className={classes.switch}
-								/> */}
 								<FormControlLabel
 									margin="normal"
 									control={

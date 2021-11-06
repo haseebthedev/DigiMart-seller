@@ -12,13 +12,19 @@ import {
 	Chip,
 	Divider,
 } from "@material-ui/core";
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+	MuiPickersUtilsProvider,
+	KeyboardTimePicker,
+	KeyboardDatePicker,
+} from "@material-ui/pickers";
 import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Brightness1Icon from "@material-ui/icons/Brightness1";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
-
 import addProduct from "../../../../assets/images/ProductIllustration.svg";
 import useStyles from "./styles";
 import { useUserContext } from "../../../../context/UserContext";
@@ -51,7 +57,8 @@ export default function AddProduct() {
 		subCategory: "",
 		vendorCompanyName: "Other",
 		vendorCategory: "Other",
-		manufactureDate: "11/06/2003",
+		manufactureDate: new Date("2014-08-18T21:11:54"),
+		// manufactureDate: "11/06/2003",
 		purchasePrice: "",
 		salePrice: "",
 		state: "",
@@ -87,6 +94,10 @@ export default function AddProduct() {
 
 	const handleDeleteColor = (el) => () => {
 		setColors((colors) => colors.filter((color, index) => index !== el));
+	};
+
+	const handleDateChange = (date) => {
+		setProductDetails({ ...productDetails, manufactureDate: date });
 	};
 
 	// updating BankDetails usestate
@@ -322,11 +333,15 @@ export default function AddProduct() {
 		if (productDetails.isOnSale === true) {
 			// discountFormat
 			var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
-			if (productDetails.discountPercentage.match(discountFormat)) {
-				errors.discountError = "";
+			if (
+				productDetails.discountPercentage.match(discountFormat) &&
+				productDetails.discountPercentage > 0
+			) {
+				errors.discountPercentageError = "";
 			} else {
 				hasError = true;
-				errors.discountError = "Entered Discount Amount is invalid.";
+				errors.discountPercentageError =
+					"Entered Discount Amount is invalid.";
 			}
 		}
 
@@ -584,21 +599,24 @@ export default function AddProduct() {
 									</Grid>
 
 									<Grid item xs={12}>
-										<TextField
-											variant="outlined"
-											margin="dense"
-											required
-											fullWidth
-											placeholder="dd/MM/YYYY"
-											label="Manufacture Date"
-											name="manufactureDate"
-											value={
-												productDetails.manufactureDate
-											}
-											onChange={handleProductDetails(
-												"manufactureDate"
-											)}
-										/>
+										<MuiPickersUtilsProvider
+											utils={DateFnsUtils}
+										>
+											<KeyboardDatePicker
+												required
+												fullWidth
+												inputVariant="outlined"
+												margin="dense"
+												disableToolbar
+												format="MM/dd/yyyy"
+												id="date-picker-inline"
+												label="Manufacture Date"
+												value={
+													productDetails.manufactureDate
+												}
+												onChange={handleDateChange}
+											/>
+										</MuiPickersUtilsProvider>
 									</Grid>
 
 									<Grid item xs={12}>
@@ -607,7 +625,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Colors"
 											style={{ marginTop: 8 }}
 											value={"DEFAULT"}
 											defaultValue={"DEFAULT"}
@@ -620,8 +637,26 @@ export default function AddProduct() {
 											<MenuItem value="Green">
 												Green
 											</MenuItem>
+											<MenuItem value="Orange">
+												Orange
+											</MenuItem>
 											<MenuItem value="Black">
 												Black
+											</MenuItem>
+											<MenuItem value="Blue">
+												Blue
+											</MenuItem>
+											<MenuItem value="Yellow">
+												Yellow
+											</MenuItem>
+											<MenuItem value="Grey">
+												Grey
+											</MenuItem>
+											<MenuItem value="Silver">
+												Silver
+											</MenuItem>
+											<MenuItem value="White">
+												White
 											</MenuItem>
 											<MenuItem value="Purple">
 												Purple
@@ -1084,10 +1119,11 @@ export default function AddProduct() {
 													"discountPercentage"
 												)}
 												helperText={
-													IFerrors.discountError
+													IFerrors.discountPercentageError
 												}
 												error={
-													IFerrors.discountError
+													IFerrors
+														.discountPercentageError
 														.length > 0
 														? true
 														: false

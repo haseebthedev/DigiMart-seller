@@ -82,6 +82,8 @@ function App() {
 			<BrowserRouter>
 				<div className="App">
 					<Switch>
+						<Route path="/" exact component={Login} />
+						<Route path="/seller/login" component={Login} />
 						<Route
 							path="/seller/register"
 							exact
@@ -96,7 +98,6 @@ function App() {
 							path="/seller/set-password"
 							component={NewPassword}
 						/>
-						<Route path="/seller/login" exact component={Login} />
 						<PrivateRoute path="/seller">
 							<Layout
 								darkState={darkState}

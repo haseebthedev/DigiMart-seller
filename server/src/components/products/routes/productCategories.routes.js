@@ -21,11 +21,6 @@ router.patch('/superAdmin/product/subCategory/:id', auth.superAdmin , productCat
 router.get('/superAdmin/product/subCategory/:id', auth.superAdmin , productCategoryController.getSubCategoryById)
 router.get('/superAdmin/product/subCategories/list', auth.superAdmin , productCategoryController.getAllSubCategories)
 
-// //brands
-// router.post('/superAdmin/product/brand/:category', auth.superAdmin , productCategoryController.addBrandOfCategory)
-// router.delete('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.deleteBrandById)
-// router.patch('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.updateBrandById)
-// router.get('/superAdmin/product/brand/:id', auth.superAdmin , productCategoryController.getBrandById)
 
 //ROUTES FOR SELLER
 router.get('/seller/product/category/:id', auth.seller , productCategoryController.getCategoryById)
@@ -34,5 +29,15 @@ router.get('/seller/subCategories/category/:mainCategory', auth.seller, productC
 router.get('/seller/product/mainCategories/list', auth.seller , productCategoryController.getAllMainCategories)
 router.get('/seller/mainCategories/vendor/:vendor/category/:category', auth.seller,
  productCategoryController.getAllMainCategoriesByVendorNameAndCategory)
+
+ //ROUTES FOR BUYER
+ router.get('/buyer/product/categories/all', productCategoryController.getAllCategories)
+ router.get('/buyer/product/subCategoriesNames/mainCategory/:mainCategory', productCategoryController.getNamesOfAllSubCategoriesOfMainCategory)
+ router.get('/buyer/product/subCategoriesNames/all', productCategoryController.getNamesOfAllSubCategoriesForBuyer)
+ //Vendors (Brands)
+router.get('/buyer/vendors/mainCategory/:category', productCategoryController.getAllVendorsByMainCategory)
+router.get('/buyer/vendors/subCategory/:category', productCategoryController.getAllVendorsBySubCategory)
+router.get('/buyer/vendors/all', productCategoryController.getAllVendorsForBuyer)
+ 
 
 module.exports = router

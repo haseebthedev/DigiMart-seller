@@ -140,6 +140,23 @@ const viewAllOrdersProblemsOfStoreByID = async(req, res, next) => {
     }
 }
 
+const viewBuyerReportedProblemsForBuyer = async(req, res, next) => {
+    try{
+        let myId = req.user._id
+        const orderProblems = await OrderProblemReport.find({buyerID : myId})
+        res.status(200).json({
+            message:`Buyer orders Problems fteched!`,
+            data:{
+                orderProblems
+            }
+        })
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
 const viewAllOrderProblemsOfAllStores = async(req, res, next) => {
     try{
         const orderProblems = await OrderProblemReport.find({})
@@ -279,5 +296,6 @@ module.exports = {
     deleteOrderReportSubject,
     updateOrderReportSubject,
     getOrderReportSubjectById,
-    getAllOrderReportSubjects
+    getAllOrderReportSubjects,
+    viewBuyerReportedProblemsForBuyer
 }

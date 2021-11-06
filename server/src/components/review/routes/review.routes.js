@@ -9,6 +9,7 @@ router.patch('/buyer/product/review/:id', auth.buyer, reviewController.updateRev
 router.delete('/buyer/product/review/:id', auth.buyer, reviewController.deleteReviewById)
 router.get('/buyer/product/review/:id', auth.buyer, reviewController.getReviewById)
 router.get('/buyer/reviews/view', auth.buyer, reviewController.getAllReviewsGivenByMe)
+router.get('/buyer/reviews/product/:id', reviewController.getAllReviewsOfProductById)
 
 //FOR VENDORS
 router.get('/seller/store/products/reviews', auth.seller, reviewController.getAllReviewsOfMyStore)

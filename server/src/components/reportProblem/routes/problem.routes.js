@@ -15,4 +15,7 @@ router.patch('/superAdmin/problem/:id', auth.superAdmin, problemController.chang
 //ROLES FOR SUPER ADMIN
 router.get('/superAdmin/view/system/problems', auth.superAdmin, problemController.viewReportedProblemsOfSuperAdmin)
 
+//FOR BUYER
+router.get('/buyer/view/reported/problems', auth.buyer, problemController.viewBuyerReportedProblemsForBuyer)
+
 module.exports = router

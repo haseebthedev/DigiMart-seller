@@ -43,7 +43,7 @@ import api from "../../../Axios/api";
 
 // socket io
 import io from "socket.io-client";
-const SERVER = "http://127.0.0.1:8080";
+const SERVER = "https://digi-mart-server.herokuapp.com";
 
 const Chat = () => {
 	const classes = useStyles();

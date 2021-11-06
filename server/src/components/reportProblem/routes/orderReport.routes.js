@@ -29,5 +29,6 @@ router.get('/superAdmin/order/problem/subjects', auth.superAdmin, orderReportCon
 //for buyer
 router.get('/buyer/order/problem/subject/:id', auth.buyer, orderReportController.getOrderReportSubjectById)
 router.get('/buyer/order/problem/subjects', auth.buyer, orderReportController.getAllOrderReportSubjects)
+router.get('/buyer/problems/order', auth.buyer, orderReportController.viewBuyerReportedProblemsForBuyer)
 
 module.exports = router

@@ -8,13 +8,17 @@ import {
 	Select,
 	MenuItem,
 	Divider,
+	InputLabel,
+	FormControl,
 } from "@material-ui/core";
+import axios from "axios";
 import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import AddVendorSvg from "../../../../assets/images/AddVendor.svg";
 import { useUserContext } from "../../../../context/UserContext";
 import useStyles from "./styles";
+import { Link } from "react-router-dom";
 
 export default function AddProduct() {
 	const classes = useStyles();
@@ -33,7 +37,8 @@ export default function AddProduct() {
 	const handleCloseSnackBar = () => {
 		setSnackBar({ ...snackBarstate, open: false });
 	};
-
+	const [Countries, setCountries] = useState([]);
+	const [Cities, setCities] = useState([]);
 	const [vendorCategoryList, setVendorCategoryList] = useState([]);
 
 	const [vendorDetails, setVendorDetails] = useState({
@@ -41,8 +46,8 @@ export default function AddProduct() {
 		address: "",
 		businessNumber: "",
 		email: "",
-		city: "",
-		country: "",
+		city: "DEFAULT",
+		country: "DEFAULT",
 		description: "",
 		typeOfBusiness: "",
 		category: "DEFAULT",
@@ -75,7 +80,7 @@ export default function AddProduct() {
 			businessNumber: "",
 			email: "",
 			city: "",
-			country: "",
+			country: "DEFAULT",
 			description: "",
 			typeOfBusiness: "",
 			category: "DEFAULT",
@@ -132,24 +137,19 @@ export default function AddProduct() {
 		}
 
 		// city
-		var cityFormat = /^[A-Za-z\s]+$/;
-		if (vendorDetails.city.match(cityFormat)) {
+		if (!vendorDetails.city.match("DEFAULT")) {
 			errors.cityError = "";
 		} else {
 			hasError = true;
-			errors.cityError = "Kindly Enter a Valid City Name!";
+			errors.cityError = "Kindly Select City Name!";
 		}
 
 		// Country
-		var countryFormat = /^[a-zA-Z]*$/;
-		if (
-			vendorDetails.country.match(countryFormat) &&
-			vendorDetails.country.length > 3
-		) {
+		if (!vendorDetails.country.match("DEFAULT")) {
 			errors.countryError = "";
 		} else {
 			hasError = true;
-			errors.countryError = "Kindly Enter a Valid Country Name!";
+			errors.countryError = "Kindly Select Country Name!";
 		}
 
 		// email
@@ -206,6 +206,17 @@ export default function AddProduct() {
 			hasError = true;
 			errors.contactPersonDesignationError =
 				"Invalid Input. Designation cannot contains several Special Characters!";
+		}
+
+		// email
+		// eslint-disable-next-line
+		var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		if (vendorDetails.contactPersonEmail.match(mailFormat)) {
+			errors.contactPersonEmailError = "";
+		} else {
+			hasError = true;
+			errors.contactPersonEmailError =
+				"Entered Email address is invalid!";
 		}
 
 		setIFerrors({ ...IFerrors, ...errors });
@@ -265,10 +276,37 @@ export default function AddProduct() {
 			.catch((error) => console.log("Error: " + error));
 	};
 
+	const getAllCountries = async () => {
+		await axios
+			.get("https://countriesnow.space/api/v0.1/countries/positions")
+			.then((res) => {
+				let countriesList = res.data.data;
+				setCountries(countriesList);
+			})
+			.catch((error) => console.log("Error: " + error));
+	};
+
+	const getCitiesUsingCountry = async () => {
+		await axios
+			.post("https://countriesnow.space/api/v0.1/countries/cities", {
+				country: vendorDetails.country,
+			})
+			.then((res) => {
+				let citiesList = res.data.data;
+				setCities(citiesList);
+			})
+			.catch((error) => console.log("Error: " + error));
+	};
+
 	useEffect(() => {
 		getAllVendorCategory();
+		getAllCountries();
 		// eslint-disable-next-line
 	}, []);
+
+	useEffect(() => {
+		getCitiesUsingCountry();
+	}, [vendorDetails.country]);
 
 	return (
 		<Grid container component={Paper}>
@@ -355,44 +393,93 @@ export default function AddProduct() {
 								</Grid>
 								<Grid container spacing={2}>
 									<Grid item xs={6}>
-										<TextField
-											variant="outlined"
-											margin="dense"
-											required
-											fullWidth
-											label="City"
-											name="city"
-											value={vendorDetails.city}
-											onChange={handlerVendorDetails(
-												"city"
-											)}
-											helperText={IFerrors.cityError}
-											error={
-												IFerrors.cityError.length > 0
-													? true
-													: false
-											}
-										/>
+										<FormControl fullWidth>
+											<InputLabel
+												style={{
+													marginLeft: "10px",
+													marginTop: "-10px",
+												}}
+											>
+												Country
+											</InputLabel>
+											<Select
+												variant="outlined"
+												margin="dense"
+												required
+												style={{ marginTop: 8 }}
+												value={vendorDetails.country}
+												name="country"
+												onChange={handlerVendorDetails(
+													"country"
+												)}
+												error={
+													IFerrors.countryError
+														.length > 0
+														? true
+														: false
+												}
+											>
+												<MenuItem
+													value="DEFAULT"
+													disabled
+												>
+													Select your Country
+												</MenuItem>
+												{Countries.map((el, index) => (
+													<MenuItem
+														value={el.name}
+														key={index}
+													>
+														{el.name}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
 									</Grid>
+
 									<Grid item xs={6}>
-										<TextField
-											variant="outlined"
-											margin="dense"
-											required
-											fullWidth
-											label="Country"
-											name="country"
-											value={vendorDetails.country}
-											onChange={handlerVendorDetails(
-												"country"
-											)}
-											helperText={IFerrors.countryError}
-											error={
-												IFerrors.countryError.length > 0
-													? true
-													: false
-											}
-										/>
+										<FormControl fullWidth>
+											<InputLabel
+												style={{
+													marginLeft: "10px",
+													marginTop: "-10px",
+												}}
+											>
+												City
+											</InputLabel>
+											<Select
+												variant="outlined"
+												margin="dense"
+												required
+												style={{ marginTop: 8 }}
+												name="city"
+												value={vendorDetails.city}
+												onChange={handlerVendorDetails(
+													"city"
+												)}
+												error={
+													IFerrors.cityError.length >
+													0
+														? true
+														: false
+												}
+											>
+												<MenuItem
+													value="DEFAULT"
+													disabled
+												>
+													Select City
+												</MenuItem>
+												{Cities.map((el, index) => (
+													<MenuItem
+														value={el}
+														key={index}
+													>
+														{el}
+													</MenuItem>
+												))}
+											</Select>
+										</FormControl>
 									</Grid>
 
 									<Grid item xs={12}>
@@ -442,39 +529,51 @@ export default function AddProduct() {
 										/>
 									</Grid>
 									<Grid item xs={6}>
-										<Select
-											variant="outlined"
-											margin="dense"
-											required
-											fullWidth
-											label="Vendor Category"
-											style={{ marginTop: 8 }}
-											value={vendorDetails.category}
-											name="category"
-											onChange={handlerVendorDetails(
-												"category"
-											)}
-											error={
-												IFerrors.categoryError.length >
-												0
-													? true
-													: false
-											}
-										>
-											<MenuItem value="DEFAULT" disabled>
-												Choose a Vendor Category
-											</MenuItem>
-											{vendorCategoryList.map(
-												(el, index) => (
-													<MenuItem
-														value={el.name}
-														key={index}
-													>
-														{el.name}
-													</MenuItem>
-												)
-											)}
-										</Select>
+										<FormControl fullWidth>
+											<InputLabel
+												style={{
+													marginLeft: "10px",
+													marginTop: "-10px",
+												}}
+											>
+												Category
+											</InputLabel>
+											<Select
+												variant="outlined"
+												margin="dense"
+												required
+												fullWidth
+												style={{ marginTop: 8 }}
+												value={vendorDetails.category}
+												name="category"
+												onChange={handlerVendorDetails(
+													"category"
+												)}
+												error={
+													IFerrors.categoryError
+														.length > 0
+														? true
+														: false
+												}
+											>
+												<MenuItem
+													value="DEFAULT"
+													disabled
+												>
+													Choose a Vendor Category
+												</MenuItem>
+												{vendorCategoryList.map(
+													(el, index) => (
+														<MenuItem
+															value={el.name}
+															key={index}
+														>
+															{el.name}
+														</MenuItem>
+													)
+												)}
+											</Select>
+										</FormControl>
 									</Grid>
 								</Grid>
 								<Grid container spacing={2}>
@@ -634,14 +733,19 @@ export default function AddProduct() {
 										</Button>
 									</Grid>
 									<Grid item xs={12} sm={12} md={6} lg={6}>
-										<Button
-											fullWidth
-											variant="outlined"
-											color="primary"
-											className={classes.submit}
+										<Link
+											to="/seller/vendors/view-vendors"
+											style={{ textDecoration: "none" }}
 										>
-											View All Vendor
-										</Button>
+											<Button
+												fullWidth
+												variant="outlined"
+												color="primary"
+												className={classes.submit}
+											>
+												View All Vendor
+											</Button>
+										</Link>
 									</Grid>
 								</Grid>
 							</form>

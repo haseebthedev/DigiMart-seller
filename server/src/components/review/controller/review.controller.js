@@ -3,6 +3,7 @@ const Review = require('../model/review.model')
 //FOR AUTHENTICATED BUYER
 const addReview = async(req, res, next) => {
     try{
+        // console.log('review', req.body)
         req.body.buyerId = req.user._id
         req.body.buyerName = req.user.name
         req.body.buyerEmail = req.user.email
@@ -154,8 +155,10 @@ const getAllReviewsOfBuyerById = async(req, res, next) => {
 
 const getAllReviewsOfProductById = async(req, res, next) => {
     try{
+        const page = parseInt(req.query.page) || 0;
+        const limit = parseInt(req.query.limit) || 10;
         const _id = req.params.id
-        const reviews = await Review.find({productId: _id})
+        const reviews = await Review.find({productId: _id}).limit(limit).skip(page * limit)
         res.status(201).json({
             message:`Reviews of product has been fetched!`,
             data:{

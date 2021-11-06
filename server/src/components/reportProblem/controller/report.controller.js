@@ -132,6 +132,34 @@ const viewReportedProblemsOfSeller = async(req, res, next) => {
     }
 }
 
+const viewBuyerReportedProblemsForBuyer = async(req, res, next) => {
+    try{
+        const myId = req.user._id
+        const problems = await ReportProblem.find({ "buyerID": myId})
+        if(problems.length == 0){
+            res.status(200).json({
+                message:`No problems found !`,
+                data:{
+                }
+            })
+        }
+        else{
+            res.status(200).json({
+                message:`Problems fetched !`,
+                data:{
+                    problems
+                }
+            })
+        }
+        
+    }
+    catch (err){
+        err.status = 404
+        next(err)
+    }
+}
+
+
 const viewReportedProblemsOfSuperAdmin = async(req, res, next) => {
     try{
         const problems = await ReportProblem.find({ "adminID": { "$ne": null }, "isProblemResolved": false  })
@@ -228,5 +256,7 @@ module.exports = {
     viewReportedProblemsOfBuyer,
     changeProblemStatusById,
     //FOR SUPER ADMIN
-    viewReportedProblemsOfSuperAdmin
+    viewReportedProblemsOfSuperAdmin,
+    //fir buyer
+    viewBuyerReportedProblemsForBuyer,
 }

@@ -4,14 +4,16 @@ const productController = require('../controller/product.controller')
 const auth = require('../../users/auth')
 
 //ROUTES FOR BUYER
-router.get('/buyer/products' , productController.viewAllProductsInAllStores)
+router.get('/buyer/products' , productController.viewAllProductsInAllStoresForBuyer)
 router.get('/buyer/products/category/:category' , productController.viewProductsOfSpecificCategory)
 router.get('/buyer/products/subCategory/:subCategory' , productController.viewProductsOfSpecificSubCategory)
-router.get('/buyer/products/brand/:brand' , productController.viewProductsOfSpecificBrand)
 router.get('/buyer/products/onSale' , productController.viewProductsOnSale)
 router.get('/buyer/products/topReviewed' , productController.viewTopReviewedProducts)
 router.get('/buyer/products/store/:id' , productController.viewProductsOfStoreById)
-router.post('/buyer/products/search' , productController.searchProducts)
+router.get('/buyer/products/search' , productController.searchProducts)
+router.post('/buyer/products/filter' , productController.filterProducts)
+router.post('/buyer/products/sort/topSelling', productController.getTopSellingProducts)
+router.get('/buyer/product/:id', productController.getProductDetailsForBuyer)
 
 //ROUTES FOR AUTHENTICATED SELLER
 router.post('/seller/store/product', auth.seller, productController.addProductToMyStore)

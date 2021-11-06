@@ -36,7 +36,7 @@ const initiate = async (req, res, next) => {
         if(chatRoom.isNew){
             const post = await ChatMessageModel.createPostInChatRoom(chatRoom.chatRoomId, messagePayload, req.user._id);
             recentConversations = await getMyConversations(req.user,'seller-to-buyer')
-            recentConversations.forEach((item) => console.log(item._id))
+            // recentConversations.forEach((item) => console.log(item._id))
             global.io.sockets.emit('newConversation', {recentConversations,
             chatInitiatorId: req.user._id, chatRecieverId: req.body.userIds[0]});
             global.io.sockets.in(chatRoom._id).emit('message', {message: post});
@@ -125,7 +125,7 @@ const getMyConversations = async (currentLoggedUser, roomType, page, limit) => {
       const recentConversation = await ChatMessageModel.getRecentConversation(
         roomIds, options, currentLoggedUser, RECIEVER_TYPE
       );
-      console.log("inside func", recentConversation)
+    //   console.log("inside func", recentConversation)
       let conversationUsers = []
       for(const conversation of recentConversation){
           let conversationUser = ""
