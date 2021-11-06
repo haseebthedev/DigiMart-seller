@@ -141,13 +141,24 @@ export default function AddProduct() {
 		});
 	};
 
-	const toBase64 = (file) =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result);
-			reader.onerror = (error) => reject(error);
-		});
+	async function uploadImage(file) {
+		const NAME_OF_UPLOAD_PRESET = "ddyaz57o";
+		const YOUR_CLOUDINARY_ID = "dbsd56hgh";
+
+		const data = new FormData();
+		data.append("file", file);
+		data.append("upload_preset", NAME_OF_UPLOAD_PRESET);
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${YOUR_CLOUDINARY_ID}/image/upload`,
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+		const img = await res.json();
+		console.log(img);
+		return img.secure_url;
+	}
 
 	const fileHandler = async (event) => {
 		let prevImages = productDetails.images;
@@ -155,8 +166,8 @@ export default function AddProduct() {
 		let temp = [];
 
 		for (let i = 0; i < files.length; i++) {
-			var file64 = await toBase64(files[i]);
-			temp.push(file64);
+			var fileURL = await uploadImage(files[i]);
+			temp.push(fileURL);
 		}
 
 		if (prevImages.length > 0) {
@@ -535,7 +546,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Category"
 											style={{ marginTop: 8 }}
 											defaultValue={"DEFAULT"}
 											onChange={handleProductDetails(
@@ -569,7 +579,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Sub Category"
 											style={{ marginTop: 8 }}
 											defaultValue={"DEFAULT"}
 											onChange={handleProductDetails(
@@ -737,7 +746,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="WarrantySpan"
 											name="WarrantySpan"
 											style={{ marginTop: 8 }}
 											value={warrantySpan}
@@ -807,9 +815,9 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Weight"
 											id="weight"
 											name="weight"
+											label="Weight"
 											value={weight}
 											onChange={handleWeight}
 											helperText={IFerrors.weightError}
@@ -850,7 +858,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Product State"
 											name="state"
 											style={{ marginTop: 8 }}
 											defaultValue={"DEFAULT"}
@@ -971,7 +978,6 @@ export default function AddProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Weight Unit"
 											name="weightUnits"
 											style={{ marginTop: 8 }}
 											value={dimensions.unit}

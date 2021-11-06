@@ -238,6 +238,16 @@ export default function BuyVendorProduct() {
 		// eslint-disable-next-line
 	}, [vendorId]);
 
+	function trimProdName(name) {
+		let res = "";
+		if (name.length > 14) {
+			res = name.toString().substring(0, 13) + "...";
+		} else {
+			res = name;
+		}
+		return res;
+	}
+
 	return (
 		<Grid container component={Paper}>
 			<Grid item xs={12} sm={12} md={12}>
@@ -257,7 +267,6 @@ export default function BuyVendorProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Vendor Category"
 											style={{ marginTop: 8 }}
 											value={
 												VendorCategory
@@ -290,7 +299,6 @@ export default function BuyVendorProduct() {
 											margin="dense"
 											required
 											fullWidth
-											label="Vendor"
 											style={{ marginTop: 8 }}
 											defaultValue={"DEFAULT"}
 											onChange={handleVendorId}
@@ -852,7 +860,7 @@ export default function BuyVendorProduct() {
 									<Grid item xs={12} sm={12} md={12}>
 										<form>
 											<Typography variant="h5">
-												Select a Product to Promote
+												Select a Product to Buy
 											</Typography>
 											<Grid
 												container
@@ -912,9 +920,9 @@ export default function BuyVendorProduct() {
 																		}}
 																		gutterBottom
 																	>
-																		{
+																		{trimProdName(
 																			prod.name
-																		}
+																		)}
 																	</Typography>
 																	<Typography
 																		variant="caption"

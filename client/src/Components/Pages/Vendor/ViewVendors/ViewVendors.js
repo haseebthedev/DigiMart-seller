@@ -96,6 +96,16 @@ export default function ViewVendors() {
 		// eslint-disable-next-line
 	}, [vendorId]);
 
+	function trimProdName(name) {
+		let res = "";
+		if (name.length > 14) {
+			res = name.toString().substring(0, 13) + "...";
+		} else {
+			res = name;
+		}
+		return res;
+	}
+
 	const columns = [
 		{
 			title: "ID",
@@ -289,7 +299,9 @@ export default function ViewVendors() {
 																}}
 																gutterBottom
 															>
-																{prod.name}
+																{trimProdName(
+																	prod.name
+																)}
 															</Typography>
 															<Typography
 																variant="caption"
