@@ -40,8 +40,6 @@ export default function Reviews() {
 				: el
 		);
 
-		console.log(newComplaintsList);
-
 		await api
 			.patch(
 				`/seller/order/problem/${id}`,

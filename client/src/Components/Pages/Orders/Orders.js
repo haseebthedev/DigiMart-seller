@@ -85,8 +85,28 @@ export default function Orders() {
 		totalPurchasePrice: "",
 		shippingFee: "",
 		deliveryInstructions: "",
-		totalQuantity: "",
+		// totalQuantity: 0,
 	});
+
+	const [IFerrors, setIFerrors] = useState({
+		quantityError: "",
+	});
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// price
+		if (totalQuantity > 0) {
+			errors.quantityError = "";
+		} else {
+			hasError = true;
+			errors.quantityError = "Entered Quantity is invalid.";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
 
 	const handlerOrderChange = (input) => (e) => {
 		setEditOrderDetails({ ...editOrderDetails, [input]: e.target.value });
@@ -132,34 +152,38 @@ export default function Orders() {
 	};
 
 	const handleUpdateOrder = async () => {
-		await api
-			.patch(
-				`/seller/store/order/${editOrderDetails._id}`,
-				{
-					...editOrderDetails,
-					subTotalPrice: subTotal,
-					totalDiscount: discount,
-					totalPrice: totalPrice,
-					totalQuantity: totalQuantity,
-					products: ProductsDetails,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then(() => {
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "SUCCESS: Order has been added successfully!",
-					open: true,
-				});
-				setTimeout(() => {
-					window.location.reload();
-				}, 1500);
-				handleClose();
-			})
-			.catch((error) => console.log(error));
+		var hasError = InputValidation();
+
+		if (hasError === false) {
+			await api
+				.patch(
+					`/seller/store/order/${editOrderDetails._id}`,
+					{
+						...editOrderDetails,
+						subTotalPrice: subTotal,
+						totalDiscount: discount,
+						totalPrice: totalPrice,
+						totalQuantity: totalQuantity,
+						products: ProductsDetails,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "SUCCESS: Order has been added successfully!",
+						open: true,
+					});
+					setTimeout(() => {
+						window.location.reload();
+					}, 1500);
+					handleClose();
+				})
+				.catch((error) => console.log(error));
+		}
 	};
 
 	const handerChangeStatus = (id) => async (e) => {
@@ -670,6 +694,17 @@ export default function Orders() {
 																		"quantity",
 																		prod._id
 																	)}
+																	helperText={
+																		IFerrors.quantityError
+																	}
+																	error={
+																		IFerrors
+																			.quantityError
+																			.length >
+																		0
+																			? true
+																			: false
+																	}
 																/>
 															</Grid>
 															<Grid
