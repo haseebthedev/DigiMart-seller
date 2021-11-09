@@ -192,9 +192,6 @@ const VendorAnalytics = () => {
 			})
 			.then((res) => {
 				let result = res.data.data;
-
-				console.log("res", res);
-
 				let stock = result.productsAnalytics[0].totalStock;
 				let investment = result.productsAnalytics[0].totalPurchasePrice;
 				let revenue = result.ordersAnalytics[0].totalRevenue;

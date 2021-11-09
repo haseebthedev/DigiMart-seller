@@ -305,7 +305,10 @@ export default function AddProduct() {
 	}, []);
 
 	useEffect(() => {
-		getCitiesUsingCountry();
+		if (vendorDetails.country !== "DEFAULT") {
+			getCitiesUsingCountry();
+		}
+		// eslint-disable-next-line
 	}, [vendorDetails.country]);
 
 	return (
@@ -388,6 +391,7 @@ export default function AddProduct() {
 													? true
 													: false
 											}
+											style={{ marginBottom: 20 }}
 										/>
 									</Grid>
 								</Grid>
@@ -500,6 +504,7 @@ export default function AddProduct() {
 													? true
 													: false
 											}
+											style={{ marginBottom: 20 }}
 										/>
 									</Grid>
 								</Grid>

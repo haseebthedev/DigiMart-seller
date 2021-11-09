@@ -80,7 +80,6 @@ export default function ViewVendors() {
 			})
 			.then((res) => {
 				let vendorList = res.data.data.vendors;
-				console.log(vendorList);
 				setVendorsList(vendorList);
 			})
 			.catch((error) => console.log("Error: " + error));
