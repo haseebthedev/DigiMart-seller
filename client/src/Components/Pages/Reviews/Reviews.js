@@ -42,8 +42,6 @@ export default function Reviews() {
 
 	// OrdersList
 	const [ReviewsDetails, setReviewsDetails] = useState([]);
-	// const [tablePaging, settablePaging] = useState(false);
-
 	const [vendorResponse, setVendorResponse] = useState({
 		rid: "",
 		response: "",
@@ -73,7 +71,7 @@ export default function Reviews() {
 		var hasError = false;
 
 		// Message Response
-		var responseFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		var responseFormat = /^\w(\w(\.{1}|\s{1})?)+\w$/;
 		if (
 			vendorResponse.response.match(responseFormat) &&
 			vendorResponse.response.length > 1
@@ -81,8 +79,7 @@ export default function Reviews() {
 			errors.responseError = "";
 		} else {
 			hasError = true;
-			errors.responseError =
-				"Response Message contains several characters that aren't allowed!";
+			errors.responseError = "Invalid Response Message!";
 		}
 
 		setIFerrors({ ...IFerrors, ...errors });

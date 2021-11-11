@@ -93,9 +93,9 @@ export default function Subscribers() {
 		{
 			title: "Image",
 			field: "images",
-			render: () => (
+			render: ({ profilePic }) => (
 				<img
-					src={ImgNotAvailable}
+					src={profilePic ? profilePic : ImgNotAvailable}
 					alt="ProductImage"
 					style={{ width: 40, height: 40, borderRadius: "50%" }}
 				/>
