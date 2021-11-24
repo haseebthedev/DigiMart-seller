@@ -70,6 +70,12 @@ import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 import LocalLibraryIcon from "@material-ui/icons/LocalLibrary";
 import HelpIcon from "@material-ui/icons/Help";
 
+import LocalAtmIcon from "@material-ui/icons/LocalAtm";
+import CameraFrontIcon from "@material-ui/icons/CameraFront";
+import BubbleChartIcon from "@material-ui/icons/BubbleChart";
+import LineWeightIcon from "@material-ui/icons/LineWeight";
+import MoneyIcon from "@material-ui/icons/Money";
+
 // Page Components
 import VendorAnalytics from "../VendorAnalytics/VendorAnalytics";
 import AddVendor from "../Pages/Vendor/AddVendor/AddVendor";
@@ -79,8 +85,7 @@ import AddProduct from "../Pages/Product/AddProduct/AddProduct";
 import ViewProducts from "../Pages/Product/ViewProducts/ViewProducts";
 import Orders from "../Pages/Orders/Orders";
 import Reviews from "../Pages/Reviews/Reviews";
-import PaymentMethod from "../Pages/Payment/PaymentMethod";
-import Transactions from "../Pages/Payment/Transactions";
+import PaymentMethod from "../Pages/Payment/PaymentMethod/PaymentMethod";
 import SettingsProfile from "../Pages/Setting/SettingsProfile";
 import SettingsStore from "../Pages/Setting/SettingsStore";
 import PromoteProduct from "../Pages/Promotion/PromoteProducts/PromoteProduct";
@@ -94,6 +99,10 @@ import PrivacyPolicy from "../Pages/PrivacyPolicy/PrivacyPolicy";
 import FAQs from "../Pages/FAQs/FAQs";
 import MyBuyers from "../Pages/MyBuyers/MyBuyers";
 import Messages from "../Pages/Messages/Chat";
+import RequestWithdraw from "../Pages/Payment/RequestWithdraw/RequestWithdraw";
+import ViewWithdrawalsRequests from "../Pages/Payment/ViewWithdrawalsRequests/ViewWithdrawalsRequests";
+import ViewWithdrawalsRequestsHistory from "../Pages/Payment/ViewWithdrawalsRequestsHistory/ViewWithdrawalsRequestsHistory";
+import ViewAllPayments from "../Pages/Payment/ViewAllPayments/ViewAllPayments";
 
 import logo from "../../assets/images/logo.png";
 import useStyles from "./styles";
@@ -589,34 +598,86 @@ const Layout = (props) => {
 								className={classes.dropdown}
 								button
 								selected={
-									pathname ===
-									"/seller/payments/PaymentMethod"
+									pathname === "/seller/payments/withdraw"
 								}
 								component={Link}
-								to="/seller/payments/PaymentMethod"
+								to="/seller/payments/withdraw"
 							>
 								<ListItemIcon>
-									<PaymentIcon
+									<LocalAtmIcon
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="10.1. Payment Methods" />
+								<ListItemText primary="10.1. Request Withdraw" />
 							</ListItem>
+
 							<ListItem
 								className={classes.dropdown}
 								button
 								selected={
-									pathname === "/seller/payments/Transactions"
+									pathname ===
+									"/seller/payments/withdraw-requests"
 								}
 								component={Link}
-								to="/seller/payments/Transactions"
+								to="/seller/payments/withdraw-requests"
 							>
 								<ListItemIcon>
-									<StorageIcon
+									<CameraFrontIcon
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="10.2. Transactions" />
+								<ListItemText primary="10.2. View Withdraw Requests" />
+							</ListItem>
+
+							<ListItem
+								className={classes.dropdown}
+								button
+								selected={
+									pathname ===
+									"/seller/payments/withdraw-history"
+								}
+								component={Link}
+								to="/seller/payments/withdraw-history"
+							>
+								<ListItemIcon>
+									<BubbleChartIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="10.3. Withdrawal History" />
+							</ListItem>
+
+							<ListItem
+								className={classes.dropdown}
+								button
+								selected={
+									pathname === "/seller/payments/transactions"
+								}
+								component={Link}
+								to="/seller/payments/transactions"
+							>
+								<ListItemIcon>
+									<LineWeightIcon
+										className={classes.iconColor}
+									/>
+								</ListItemIcon>
+								<ListItemText primary="10.4. Payment Transactions" />
+							</ListItem>
+
+							<ListItem
+								className={classes.dropdown}
+								button
+								selected={
+									pathname ===
+									"/seller/payments/paymentmethod"
+								}
+								component={Link}
+								to="/seller/payments/paymentmethod"
+							>
+								<ListItemIcon>
+									<MoneyIcon className={classes.iconColor} />
+								</ListItemIcon>
+								<ListItemText primary="10.5. Payment Methods" />
 							</ListItem>
 						</List>
 					</Collapse>
@@ -721,24 +782,6 @@ const Layout = (props) => {
 								<ListItemText primary="13.1. Promote Product" />
 							</ListItem>
 
-							{/* <ListItem
-								button
-								className={classes.dropdown}
-								selected={
-									pathname ===
-									"/seller/Promotion/import-contacts"
-								}
-								component={Link}
-								to="/seller/Promotion/import-contacts"
-							>
-								<ListItemIcon>
-									<DeveloperBoardIcon
-										className={classes.iconColor}
-									/>
-								</ListItemIcon>
-								<ListItemText primary="13.2. Import Contacts" />
-							</ListItem> */}
-
 							<ListItem
 								button
 								className={classes.dropdown}
@@ -817,12 +860,24 @@ const Layout = (props) => {
 					<Route path="/seller/view-buyers" component={MyBuyers} />
 					<Route path="/seller/messages" component={Messages} />
 					<Route
-						path="/seller/payments/PaymentMethod"
+						path="/seller/payments/withdraw"
+						component={RequestWithdraw}
+					/>
+					<Route
+						path="/seller/payments/withdraw-requests"
+						component={ViewWithdrawalsRequests}
+					/>
+					<Route
+						path="/seller/payments/withdraw-history"
+						component={ViewWithdrawalsRequestsHistory}
+					/>
+					<Route
+						path="/seller/payments/paymentmethod"
 						component={PaymentMethod}
 					/>
 					<Route
-						path="/seller/payments/Transactions"
-						component={Transactions}
+						path="/seller/payments/transactions"
+						component={ViewAllPayments}
 					/>
 					<Route
 						path="/seller/business-analytics"

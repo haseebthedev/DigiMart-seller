@@ -57,7 +57,6 @@ export default function AddProduct() {
 		vendorCompanyName: "Other",
 		vendorCategory: "Other",
 		manufactureDate: new Date("2014-08-18T21:11:54"),
-		// manufactureDate: "11/06/2003",
 		purchasePrice: "",
 		salePrice: "",
 		state: "",
@@ -65,7 +64,7 @@ export default function AddProduct() {
 		images: [],
 		isOnSale: false,
 		discountPercentage: "",
-		discountPrice: "0",
+		discountPrice: "",
 		stockAvailable: "",
 		dimensions: "",
 	});
@@ -129,7 +128,7 @@ export default function AddProduct() {
 	const handlerDiscount = (input) => (e) => {
 		const discount = e.target.value;
 
-		var discountPrice =
+		let discountPrice =
 			productDetails.salePrice -
 			productDetails.salePrice * (discount / 100);
 
@@ -155,7 +154,6 @@ export default function AddProduct() {
 			}
 		);
 		const img = await res.json();
-		console.log(img);
 		return img.secure_url;
 	}
 

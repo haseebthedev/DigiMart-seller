@@ -354,6 +354,8 @@ const Chat = () => {
 
 	return (
 		<Grid container className={classes.root}>
+			
+			{/* Users List */}
 			<Grid
 				item
 				xs={12}
@@ -490,6 +492,7 @@ const Chat = () => {
 				</Grid>
 			</Grid>
 
+			{/* Users Chat Area */}
 			{selectedChat.conversationUser != null ? (
 				<Grid
 					item
@@ -1039,6 +1042,8 @@ const Chat = () => {
 								</Grid>
 							</Grid>
 						</Grid>
+
+
 						{/* Searched users will display here */}
 
 						<TableContainer
