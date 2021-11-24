@@ -121,6 +121,7 @@ const ViewWithdrawalsRequests = () => {
 	useEffect(() => {
 		// fetching List of Buyers from API
 		getAllDetails();
+		// eslint-disable-next-line
 	}, []);
 
 	return (
