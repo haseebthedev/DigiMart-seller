@@ -504,7 +504,7 @@ const Layout = (props) => {
 										className={classes.iconColor}
 									/>
 								</ListItemIcon>
-								<ListItemText primary="3.3. Buy from Vendor" />
+								<ListItemText primary="3.3. Buy Products" />
 							</ListItem>
 						</List>
 					</Collapse>

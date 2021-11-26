@@ -53,8 +53,8 @@ export default function PaymentMethod() {
 
 	// new Payment methods (MODAL)
 	const [newPayMethod, setNewPayMethod] = useState({
-		paymentMethod: "",
 		isPrimaryAccount: false,
+		paymentMethod: "",
 		AccountHolderName: "",
 		accountNumber: "",
 	});

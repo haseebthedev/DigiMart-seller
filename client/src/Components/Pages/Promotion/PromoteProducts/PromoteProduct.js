@@ -83,7 +83,8 @@ export default function PromoteProduct(props) {
 		discount: "",
 		promoCode: "-",
 		longUrl: "",
-		shortUrl: "",
+		shortUrl:
+			"https://digimart-buyer.netlify.app/product?productId=61a0d1f379dbd30004a320b3",
 		urlCode: "",
 		isUrlAlreadyCreated: false,
 		isScheduled: false,
@@ -207,12 +208,13 @@ export default function PromoteProduct(props) {
 	const getProductURL = () => {
 		setPPdetails({
 			...PPdetails,
-			longUrl: `https://digi-mart.com/products/${pid}`,
+			longUrl: `https://digimart-buyer.netlify.app/product?productId=${pid}`,
 		});
 		setModelSP(false);
 	};
 
 	const generateShortURL = async () => {
+		console.log("PPdetails.longUrl", PPdetails.longUrl);
 		if (PPdetails.longUrl !== "") {
 			await api
 				.post(
@@ -255,15 +257,18 @@ export default function PromoteProduct(props) {
 						});
 					}
 				})
-				.catch(() =>
+				.catch((error) => {
+					console.log("result url error...");
+
 					setSnackBar({
 						...snackBarstate,
-						type: "error",
 						message:
-							"ERROR: System is busy or Server is not responding!",
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+						type: "error",
 						open: true,
-					})
-				);
+					});
+				});
 		}
 	};
 
@@ -435,9 +440,16 @@ export default function PromoteProduct(props) {
 			dataToSend["buyerPromotionSource"] = "Both";
 		}
 
-		// Scrapped Audience
+		// Scrapped Audience already saved in DB
 		if (promotionType === "TA") {
 			dataToSend["isPromoteToSavedPromotionAudience"] = true;
+		}
+
+		// Realtime Promotion
+		if (promotionType === "RA") {
+			dataToSend["isPromoteToRealTimeScrappedAudience"] = true;
+			dataToSend["numOfScrappedAudience"] = 10;
+			dataToSend["audienceInterestCategory"] = category;
 		}
 
 		let dateAndTime = new Date(selectedDate).toLocaleString();
@@ -469,54 +481,46 @@ export default function PromoteProduct(props) {
 			dataToSend["isPromotionScheduled"] = isScheduled;
 		}
 
-		var error = shortUrl === "" ? true : false;
 		var URL = isScheduled === true ? "promote/schedule" : "promote";
 
 		var hasError = InputValidation();
 
 		if (hasError === false) {
-			if (error === false) {
-				console.log(dataToSend);
+			console.log("dataToSend ::", dataToSend);
 
-				await api
-					.post(
-						`/seller/store/product/${URL}`,
-						{
-							...dataToSend,
-						},
-						{
-							headers: { Authorization: `Bearer ${token}` },
-						}
-					)
-					.then((res) => {
-						setSnackBar({
-							...snackBarstate,
-							type: "success",
-							message:
-								"CONGRATULATIONS: Your Product has been Added into Promotion List!",
-							open: true,
-						});
-						setTimeout(() => {
-							window.location.reload();
-						}, 1000);
+			await api
+				.post(
+					`/seller/store/product/${URL}`,
+					{
+						...dataToSend,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then((res) => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message:
+							"CONGRATULATIONS: Your Product has been Added into Promotion List!",
+						open: true,
+					});
+					console.log("SUCCESS: ", res);
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
+				})
+				.catch((error) =>
+					setSnackBar({
+						...snackBarstate,
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+						type: "error",
+						open: true,
 					})
-					.catch(() =>
-						setSnackBar({
-							...snackBarstate,
-							type: "error",
-							message:
-								"ERROR: Kindly enter Valid Product Details to Promote!",
-							open: true,
-						})
-					);
-			} else {
-				setSnackBar({
-					...snackBarstate,
-					type: "error",
-					message: "ERROR: Kindly generate Short URL first!",
-					open: true,
-				});
-			}
+				);
 		}
 	};
 
@@ -530,6 +534,8 @@ export default function PromoteProduct(props) {
 								Add Promotion Details
 							</Typography>
 							<Divider />
+
+							{/* Dropdown Promotion Type */}
 							<div className={classes.form}>
 								<Grid container spacing={2}>
 									<Grid item xs={12}>
@@ -559,11 +565,16 @@ export default function PromoteProduct(props) {
 											<MenuItem value="PB">
 												Using Previous Buyers
 											</MenuItem>
+											<MenuItem value="RA">
+												Using Realtime Audience
+												(PREMIUM)
+											</MenuItem>
 										</Select>
 									</Grid>
 								</Grid>
 							</div>
 
+							{/* Import Contact */}
 							{promotionType === "IC" ? (
 								<div>
 									<form className={classes.form}>
@@ -677,6 +688,7 @@ export default function PromoteProduct(props) {
 								<div></div>
 							)}
 
+							{/* Product Details */}
 							{promotionType !== "" ? (
 								<form className={classes.form}>
 									<Typography
@@ -736,10 +748,7 @@ export default function PromoteProduct(props) {
 												>
 													Choose a Product Category
 												</MenuItem>
-												{console.log(
-													"alll",
-													AllCategories
-												)}
+
 												{AllCategories.map(
 													(el, index) => (
 														<MenuItem
@@ -1033,9 +1042,10 @@ export default function PromoteProduct(props) {
 									</Grid>
 								</form>
 							) : (
-								""
+								<div></div>
 							)}
 						</Grid>
+
 						<Grid item xs={false} sm={false} md={false} lg={4}>
 							<div
 								style={{

@@ -641,6 +641,7 @@ export default function ViewProducts() {
 			})
 			.then((res) => {
 				setDetails(res.data.data.products);
+				console.log("res.data.data.products", res.data.data.products);
 			})
 			.catch((error) =>
 				console.log(
@@ -667,13 +668,15 @@ export default function ViewProducts() {
 		if (productDetails.category !== "") {
 			await api
 				.get(
-					`/seller/subCategories/category/${productDetails.category}`,
+					// `/seller/subCategories/category/${productDetails.category}`,
+					`/seller/subCategories/category/Electronics`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
 				.then((res) => {
 					let subCategories = res.data.data.subCategories;
+					console.log("subCategories", subCategories);
 					setProductSubCategories(subCategories);
 				})
 				.catch((error) => console.log("Error: " + error));
@@ -1430,9 +1433,13 @@ export default function ViewProducts() {
 										fullWidth
 										label="Sub Category"
 										style={{ marginTop: 8 }}
-										defaultValue={"DEFAULT"}
 										value={productDetails.subCategory}
+										defaultValue={"DEFAULT"}
 									>
+										{console.log(
+											"productDetails.subCategory",
+											productDetails.subCategory
+										)}
 										<MenuItem value="DEFAULT" disabled>
 											Choose sub-category
 										</MenuItem>

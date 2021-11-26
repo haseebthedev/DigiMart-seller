@@ -40,6 +40,7 @@ export default function RequestWithdraw() {
 	const [paymentData, setPaymentData] = useState([]);
 
 	const [withdrawAmount, setWithdrawAmount] = useState(0);
+	const [accountNumber, setAccountNumber] = useState("");
 
 	const handleWithdrawAmount = (amount) => {
 		setWithdrawAmount(amount);
@@ -48,7 +49,7 @@ export default function RequestWithdraw() {
 	const requestPaymentWithdraw = () => {
 		if (withdrawAmount <= pendingPayment && withdrawAmount > 0) {
 			api.get(
-				`/seller/store/pending/payment/withdraw/${withdrawAmount}`,
+				`/seller/store/pending/payment/withdraw/${withdrawAmount}/stripeAccount/${accountNumber}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
@@ -68,9 +69,10 @@ export default function RequestWithdraw() {
 				.catch((error) => {
 					setSnackBar({
 						...snackBarstate,
-						type: "error",
 						message:
-							"Error: Something went wrong or system is down!",
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+						type: "error",
 						open: true,
 					});
 				});
@@ -102,9 +104,10 @@ export default function RequestWithdraw() {
 			.catch(() => {
 				setSnackBar({
 					...snackBarstate,
-					type: "error",
 					message:
-						"ERROR: Server is busy or not responding at the moment.",
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
 					open: true,
 				});
 			});
@@ -187,9 +190,6 @@ export default function RequestWithdraw() {
 									variant="outlined"
 									style={{ width: 300 }}
 								>
-									{/* <InputLabel htmlFor="outlined-adornment-amount">
-										Amount
-									</InputLabel> */}
 									<OutlinedInput
 										id="outlined-adornment-amount"
 										startAdornment={
@@ -232,21 +232,22 @@ export default function RequestWithdraw() {
 										label="Payment Processor"
 										variant="outlined"
 										defaultValue={"DEFAULT"}
-										inputProps={{
-											name: "Payment Processor",
-											id: "outlined-age-native-simple",
-										}}
+										onChange={(e) =>
+											setAccountNumber(e.target.value)
+										}
 									>
 										<MenuItem value="DEFAULT" disabled>
-											Choose Payment Processor...
+											Choose Payment Account...
 										</MenuItem>
 										{paymentData.map((el, index) => {
 											return (
 												<MenuItem
-													value="STRIPE"
+													value={el.accountNumber}
 													key={index}
 												>
-													{el.paymentMethod}
+													{el.paymentMethod +
+														" : " +
+														el.accountNumber}
 												</MenuItem>
 											);
 										})}

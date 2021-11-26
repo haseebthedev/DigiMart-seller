@@ -15,6 +15,7 @@ import { withRouter, Redirect } from "react-router-dom";
 import { useStyles } from "./styles";
 import { useUserContext, registerUser } from "../../../context/UserContext";
 import Logo from "../../../assets/images/logo.png";
+import { Link } from "react-router-dom";
 
 const Register = () => {
 	const classes = useStyles();
@@ -58,12 +59,11 @@ const Register = () => {
 
 		// name
 		var noNumber = /^([^0-9]*)$/;
-		if (name.match(noNumber)) {
+		if (name.match(noNumber) && !name.match(/\s{2}/)) {
 			errors.nameError = "";
 		} else {
 			hasError = true;
-			errors.nameError =
-				"Name cannot contains Numbers or Special Characters!";
+			errors.nameError = "Entered Name is Invalid!";
 		}
 
 		// cnic
@@ -160,11 +160,12 @@ const Register = () => {
 					);
 				})
 				.catch((error) => {
-					// message: JSON.stringify(error.response.data.error),
 					setSnackBar({
 						...snackBarstate,
 						type: "error",
-						message: "ERROR: This User already exists!",
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
 						open: true,
 					});
 				});
@@ -310,13 +311,25 @@ const Register = () => {
 						<Grid item xs={12} className={classes.buttons}>
 							<Grid container spacing={2}>
 								<Grid item xs={6}>
-									<Button
+									{/* <Button
 										variant="outlined"
 										color="primary"
 										fullWidth
 									>
 										Login
-									</Button>
+									</Button> */}
+									<Link
+										to="/seller/login"
+										style={{ textDecoration: "none" }}
+									>
+										<Button
+											variant="outlined"
+											color="primary"
+											fullWidth
+										>
+											Login Page
+										</Button>
+									</Link>
 								</Grid>
 								<Grid item xs={6}>
 									<Button

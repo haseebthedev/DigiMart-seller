@@ -46,18 +46,28 @@ export default function VendorCenter() {
 		setProbDetails({ ...ProbDetails, [input]: e.target.value });
 	};
 
-	const toBase64 = (file) =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => resolve(reader.result);
-			reader.onerror = (error) => reject(error);
-		});
+	async function uploadImage(file) {
+		const NAME_OF_UPLOAD_PRESET = "ddyaz57o";
+		const YOUR_CLOUDINARY_ID = "dbsd56hgh";
+
+		const data = new FormData();
+		data.append("file", file);
+		data.append("upload_preset", NAME_OF_UPLOAD_PRESET);
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${YOUR_CLOUDINARY_ID}/image/upload`,
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+		const img = await res.json();
+		return img.secure_url;
+	}
 
 	const fileHandler = async (event) => {
 		let files = event.target.files;
-		let file64 = await toBase64(files[0]);
-		setProbDetails({ ...ProbDetails, screenShot: file64 });
+		let temp = await uploadImage(files[0]);
+		setProbDetails({ ...ProbDetails, screenShot: temp });
 	};
 
 	const [IFerrors, setIFerrors] = useState({
@@ -120,10 +130,10 @@ export default function VendorCenter() {
 				.catch((error) => {
 					setSnackBar({
 						...snackBarstate,
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
 						type: "error",
-						// message:
-						// 	"ERROR: System is busy or not responding at the moment!",
-						message: JSON.stringify(error),
 						open: true,
 					});
 				});

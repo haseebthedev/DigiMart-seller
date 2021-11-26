@@ -128,11 +128,6 @@ export default function Store(props) {
 						onChange={handleChange("type")}
 					>
 						<FormControlLabel
-							value="individual"
-							control={<Radio color="primary" />}
-							label="I'm an Individual"
-						/>
-						<FormControlLabel
 							value="shop"
 							control={<Radio color="primary" />}
 							label="I'm a Shopkepper"

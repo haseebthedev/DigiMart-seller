@@ -82,7 +82,7 @@ export default function BuyVendorProduct() {
 		description: "",
 		category: "",
 		subCategory: "",
-		brand: "",
+		vendorCompanyName: "Other",
 		colors: [],
 		manufactureDate: "",
 		purchasePrice: "",
@@ -162,7 +162,8 @@ export default function BuyVendorProduct() {
 	};
 
 	const handlerAddProductToStore = async () => {
-		const { discountPercentage, salePrice } = productDetails;
+		const { discountPercentage, salePrice, stockAvailable } =
+			productDetails;
 		let newProduct = productDetails;
 
 		let discountPrice =
@@ -173,7 +174,6 @@ export default function BuyVendorProduct() {
 			"createdAt",
 			"discountPrice",
 			"purchasePrice",
-			"stockAvailable",
 			"updatedAt",
 			"__v",
 			"_id",
@@ -189,38 +189,47 @@ export default function BuyVendorProduct() {
 		newProduct = {
 			...newProduct,
 			purchasePrice: salePrice,
-			salePrice: SellerProductPrice,
+			salePrice:
+				SellerProductPrice !== "" ? SellerProductPrice : salePrice,
 			stockAvailable: BuyingStock,
 			storeId: "611a3788a097252998d7ab46",
 			discountPrice: discountPrice,
 		};
 
-		await api
-			.post(
-				"/seller/store/product",
-				{ ...newProduct },
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			)
-			.then(() => {
-				setSnackBar({
-					...snackBarstate,
-					type: "success",
-					message: "Product has been added successfully!",
-					open: true,
-				});
-			})
-			.catch(() =>
-				setSnackBar({
-					...snackBarstate,
-					message: "ERROR: Something Went Wrong!",
-					type: "error",
-					open: true,
+		if (BuyingStock <= stockAvailable) {
+			await api
+				.post(
+					"/seller/store/product",
+					{ ...newProduct },
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "Product has been added successfully!",
+						open: true,
+					});
 				})
-			);
-
-		console.log("newProduct ", newProduct);
+				.catch(() =>
+					setSnackBar({
+						...snackBarstate,
+						message: "ERROR: Something Went Wrong!",
+						type: "error",
+						open: true,
+					})
+				);
+		} else {
+			setSnackBar({
+				...snackBarstate,
+				message:
+					"ERROR: Entered stock is greater than available stock!",
+				type: "error",
+				open: true,
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -464,20 +473,24 @@ export default function BuyVendorProduct() {
 													margin="dense"
 													required
 													fullWidth
-													label="Brand"
-													name="brand"
+													label="Company Name"
+													name="Company Name"
 													style={{
 														marginTop: 8,
 													}}
-													value={productDetails.brand}
+													value={
+														productDetails.vendorCompanyName
+													}
 												>
 													<MenuItem
 														value={
-															productDetails.brand
+															productDetails.vendorCompanyName
 														}
 														disabled
 													>
-														{productDetails.brand}
+														{
+															productDetails.vendorCompanyName
+														}
 													</MenuItem>
 												</Select>
 											</Grid>
@@ -560,9 +573,7 @@ export default function BuyVendorProduct() {
 													disabled
 													variant="outlined"
 													margin="dense"
-													required
 													fullWidth
-													name="stock"
 													label="Stock Available"
 													value={
 														productDetails.stockAvailable
@@ -945,14 +956,9 @@ export default function BuyVendorProduct() {
 																			fontSize: 12,
 																		}}
 																	>
-																		Stock :{" "}
+																		Stock:{" "}
 																		{
-																			prod.salePrice
-																		}{" "}
-																		{" - "}{" "}
-																		Brand :{" "}
-																		{
-																			prod.brand
+																			prod.stockAvailable
 																		}
 																	</Typography>
 																</CardContent>

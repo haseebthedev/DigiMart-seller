@@ -232,9 +232,6 @@ export default function AddProduct() {
 		stockError: "",
 		warrantyError: "",
 		weightError: "",
-		dimensionsErrorL: "",
-		dimensionsErrorW: "",
-		dimensionsErrorH: "",
 		discountPercentageError: "",
 	});
 
@@ -321,12 +318,17 @@ export default function AddProduct() {
 		}
 
 		// warranty
-		var warrantyFormat = /^\d+(.\d{1,2})?$/;
-		if (warranty.match(warrantyFormat)) {
-			errors.warrantyError = "";
+
+		if (warrantySpan !== "none") {
+			var warrantyFormat = /^\d+(.\d{1,2})?$/;
+			if (warranty.match(warrantyFormat)) {
+				errors.warrantyError = "";
+			} else {
+				hasError = true;
+				errors.warrantyError = "Entered Warranty is invalid.";
+			}
 		} else {
-			hasError = true;
-			errors.warrantyError = "Entered Warranty is invalid.";
+			errors.warrantyError = "";
 		}
 
 		// weight
@@ -351,27 +353,6 @@ export default function AddProduct() {
 				errors.discountPercentageError =
 					"Entered Discount Amount is invalid.";
 			}
-		}
-
-		// dimension
-		var dimensionFormat = /^\d+(.\d{1,2})?$/;
-		if (dimensions.length.match(dimensionFormat)) {
-			errors.dimensionsErrorL = "";
-		} else {
-			hasError = true;
-			errors.dimensionsErrorL = "Entered Length is invalid.";
-		}
-		if (dimensions.width.match(dimensionFormat)) {
-			errors.dimensionsErrorW = "";
-		} else {
-			hasError = true;
-			errors.dimensionsErrorW = "Entered Width is invalid.";
-		}
-		if (dimensions.height.match(dimensionFormat)) {
-			errors.dimensionsErrorH = "";
-		} else {
-			hasError = true;
-			errors.dimensionsErrorH = "Entered Height is invalid.";
 		}
 
 		setIFerrors({ ...IFerrors, ...errors });
@@ -451,18 +432,16 @@ export default function AddProduct() {
 						open: true,
 					});
 				})
-				.catch((error) =>
+				.catch((error) => {
 					setSnackBar({
 						...snackBarstate,
 						message:
 							"ERROR: " +
-							JSON.stringify(
-								error.response.data.error.message
-							).replace(/"/g, ""),
+							JSON.stringify(error.response.data.error.message),
 						type: "error",
 						open: true,
-					})
-				);
+					});
+				});
 		}
 	};
 
@@ -758,6 +737,9 @@ export default function AddProduct() {
 												Week
 											</MenuItem>
 											<MenuItem value="day">Day</MenuItem>
+											<MenuItem value="none">
+												None
+											</MenuItem>
 										</Select>
 									</Grid>
 								</Grid>
@@ -914,15 +896,6 @@ export default function AddProduct() {
 											onChange={handlerDimension(
 												"length"
 											)}
-											helperText={
-												IFerrors.dimensionsErrorL
-											}
-											error={
-												IFerrors.dimensionsErrorL
-													.length > 0
-													? true
-													: false
-											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -935,15 +908,6 @@ export default function AddProduct() {
 											name="dimensions"
 											value={dimensions.width}
 											onChange={handlerDimension("width")}
-											helperText={
-												IFerrors.dimensionsErrorW
-											}
-											error={
-												IFerrors.dimensionsErrorW
-													.length > 0
-													? true
-													: false
-											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -958,15 +922,6 @@ export default function AddProduct() {
 											onChange={handlerDimension(
 												"height"
 											)}
-											helperText={
-												IFerrors.dimensionsErrorH
-											}
-											error={
-												IFerrors.dimensionsErrorH
-													.length > 0
-													? true
-													: false
-											}
 										/>
 									</Grid>
 									<Grid item xs={3}>
@@ -986,6 +941,9 @@ export default function AddProduct() {
 											</MenuItem>
 											<MenuItem value="cm">
 												Centimetres
+											</MenuItem>
+											<MenuItem value="none">
+												None
 											</MenuItem>
 										</Select>
 									</Grid>

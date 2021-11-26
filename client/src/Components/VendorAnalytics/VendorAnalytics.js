@@ -192,18 +192,34 @@ const VendorAnalytics = () => {
 			})
 			.then((res) => {
 				let result = res.data.data;
-				let stock = result.productsAnalytics[0].totalStock;
-				let investment = result.productsAnalytics[0].totalPurchasePrice;
-				let revenue = result.ordersAnalytics[0].totalRevenue;
-				let profit = result.ordersAnalytics[0].totalProfit;
+				
+				let stock = 0;
+				let investment = 0;
+				let revenue = 0;
+				let profit = 0;
 
-				setStatsCount({
-					...StatsCount,
-					stock,
-					investment,
-					revenue,
-					profit,
-				});
+				if (result.productsAnalytics.length > 0) {
+					stock = result.productsAnalytics[0].totalStock;
+					investment = result.productsAnalytics[0].totalPurchasePrice;
+					revenue = result.ordersAnalytics[0].totalRevenue;
+					profit = result.ordersAnalytics[0].totalProfit;
+
+					setStatsCount({
+						...StatsCount,
+						stock,
+						investment,
+						revenue,
+						profit,
+					});
+				} else {
+					setStatsCount({
+						...StatsCount,
+						stock,
+						investment,
+						revenue,
+						profit,
+					});
+				}
 
 				// PieChart
 				var AllCounts = res.data.data.allCounts;

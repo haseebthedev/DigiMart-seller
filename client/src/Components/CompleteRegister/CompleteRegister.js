@@ -6,6 +6,8 @@ import {
 	Button,
 	Typography,
 } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import PersonIcon from "@material-ui/icons/Person";
 import StorefrontIcon from "@material-ui/icons/Storefront";
 import PaymentIcon from "@material-ui/icons/Payment";
@@ -35,6 +37,19 @@ export default function CompleteRegister(props) {
 	const { store, dispatch } = useUserContext();
 	const token = store.data.token;
 
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
+
 	// states
 	const [state, setState] = useState({
 		name: "",
@@ -45,9 +60,8 @@ export default function CompleteRegister(props) {
 		city: "Islamabad",
 		country: "Pakistan",
 		type: "individual",
-		bankHolderName: "",
-		bankName: "",
-		branchCode: "",
+		paymentMethod: "STRIPE",
+		AccountHolderName: "",
 		accountNumber: "",
 		checkAgreement: false,
 	});
@@ -61,9 +75,7 @@ export default function CompleteRegister(props) {
 		warehouseAddressError: "",
 		physicalAddressError: "",
 
-		BankHolderNameError: "",
-		bankNameError: "",
-		branchCodeError: "",
+		AccountHolderNameError: "",
 		accountNumberError: "",
 	});
 
@@ -154,41 +166,26 @@ export default function CompleteRegister(props) {
 
 		// Account Holder name
 		var noSpecAndNum = /^[^0-9*|?^#!"-:<>[\]{}`\\'();@&$]+$/;
-		if (state.bankHolderName.match(noSpecAndNum)) {
-			errors.BankHolderNameError = "";
+		if (
+			state.AccountHolderName.match(noSpecAndNum) &&
+			!state.AccountHolderName.match(/\s{2}/) &&
+			state.AccountHolderName.length > 2
+		) {
+			errors.AccountHolderNameError = "";
 		} else {
 			hasError = true;
-			errors.BankHolderNameError =
-				"Please enter your Valid Account Holder Name.";
-		}
-
-		// Bank name
-		var bankNameFormat = /^[A-Za-z\s]+$/;
-		if (state.bankName.match(bankNameFormat)) {
-			errors.bankNameError = "";
-		} else {
-			hasError = true;
-			errors.bankNameError = "Please enter your Valid Bank Name.";
+			errors.AccountHolderNameError = "Please enter your Valid Name";
 		}
 
 		// Account No.
-		var accountFormat = /^\w{1,16}$/;
-		if (state.accountNumber.match(accountFormat)) {
+		if (
+			!state.accountNumber.match(/\s{1}/) &&
+			state.accountNumber.length > 5
+		) {
 			errors.accountNumberError = "";
 		} else {
 			hasError = true;
-			errors.accountNumberError =
-				"Please enter your Valid Bank Account Number (IBAN)";
-		}
-
-		// Account No.
-		var branchCodeFormat = /^[A-Za-z]{4}[a-zA-Z0-9]*/;
-		if (state.branchCode.match(branchCodeFormat)) {
-			errors.branchCodeError = "";
-		} else {
-			hasError = true;
-			errors.branchCodeError =
-				"Please enter your Valid Branch Code or Contact your Bank!";
+			errors.accountNumberError = "Please enter your Valid Stripe ID";
 		}
 
 		setIFerrors({ ...IFerrors, ...errors });
@@ -196,9 +193,9 @@ export default function CompleteRegister(props) {
 	};
 
 	const handleNext = async () => {
+		// Store Registration
 		if (activeStep === 1) {
 			var StoreErrorExists = StoreInputValidation();
-			console.log("Store page", activeStep);
 
 			if (StoreErrorExists === false) {
 				// SAVING STORE DETAILS INTO DATABASE
@@ -230,48 +227,81 @@ export default function CompleteRegister(props) {
 							headers: { Authorization: `Bearer ${token}` },
 						}
 					)
-					.then((res) => console.log("res", res))
-					.catch((error) => console.log("Error: " + error));
+					.then((res) => {
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message: "SUCCESS: Your Store has been created!",
+							open: true,
+						});
+					})
+					.catch((error) => {
+						setSnackBar({
+							...snackBarstate,
+							type: "error",
+							message:
+								"ERROR: " +
+								JSON.stringify(
+									error.response.data.error.message
+								),
+							open: true,
+						});
+					});
 
 				setActiveStep(activeStep + 1);
 			}
 		}
 
+		// Adding Payment Method
 		if (activeStep === 2) {
 			var PayErrorExists = PaymentInputValidation();
-			console.log("Payments page", activeStep);
-
-			console.log("error status ", IFerrors);
 
 			if (PayErrorExists === false) {
-				const { bankHolderName, bankName, accountNumber } = state;
+				const { paymentMethod, AccountHolderName, accountNumber } =
+					state;
 
 				await api
 					.patch(
 						"/seller/addPaymentAccount",
 						{
 							// change this name
-							AccountHolderName: bankHolderName,
-							bankName,
-							accountNumber,
-							paymentMethod: "BANK",
 							isPrimaryAccount: true,
+							paymentMethod,
+							AccountHolderName,
+							accountNumber,
 						},
 						{
 							headers: { Authorization: `Bearer ${token}` },
 						}
 					)
-					.then((res) => console.log("Payment Saved", res))
-					.catch((error) => console.log("Error: " + error));
-				console.log("Registration has been completed...");
+					.then((res) => {
+						setSnackBar({
+							...snackBarstate,
+							type: "success",
+							message: "Your Payment Method has been saved!",
+							open: true,
+						});
+					})
+					.catch((error) => {
+						setSnackBar({
+							...snackBarstate,
+							type: "error",
+							message:
+								"ERROR: " +
+								JSON.stringify(
+									error.response.data.error.message
+								),
+							open: true,
+						});
+					});
 
 				setActiveStep(activeStep + 1);
 			}
 		}
 
+		// Finalizing the Registration
 		if (activeStep === 3) {
 			setActiveStep(activeStep + 1);
-			console.log("Finalize page");
 
 			let isStoreRegistered = true;
 			let vendorData = {
@@ -348,14 +378,6 @@ export default function CompleteRegister(props) {
 					<React.Fragment>
 						{getStepContent(activeStep)}
 						<div className={classes.buttons}>
-							{/* {activeStep !== 1 && (
-								<Button
-									onClick={handleBack}
-									className={classes.button}
-								>
-									Back
-								</Button>
-							)} */}
 							<Button
 								disabled={
 									activeStep === steps.length - 1 &&
@@ -376,6 +398,24 @@ export default function CompleteRegister(props) {
 					</React.Fragment>
 				)}
 			</React.Fragment>
+
+			{/*  Snackbar Alert */}
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical, horizontal }}
+				autoHideDuration={3000}
+				onClose={handleCloseSnackBar}
+				key={vertical + horizontal}
+			>
+				<MuiAlert
+					elevation={6}
+					variant="filled"
+					onClose={handleCloseSnackBar}
+					severity={snackBarstate.type}
+				>
+					{snackBarstate.message}
+				</MuiAlert>
+			</Snackbar>
 		</React.Fragment>
 	);
 }
