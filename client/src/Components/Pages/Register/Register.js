@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import api from "../../../Axios/api";
 import {
 	AppBar,
@@ -8,6 +9,10 @@ import {
 	Grid,
 	TextField,
 	Button,
+	FormControl,
+	Select,
+	MenuItem,
+	InputLabel,
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -32,16 +37,18 @@ const Register = () => {
 		setSnackBar({ ...snackBarstate, open: false });
 	};
 
+	const [Countries, setCountries] = useState([]);
+	const [Cities, setCities] = useState([]);
+
 	const [isRegistered, setIsRegistered] = useState(false);
-	const [name, setName] = useState("Haseeb Ahmed");
-	const [cnic, setCnic] = useState("34601-0385037-7");
-	const [email, setEmail] = useState("haseeb@gmail.com");
-	const [phoneNumber, setPhoneNumber] = useState("+923455488213");
-	const [password, setPassword] = useState("haseeb@123");
-	const [city, setCity] = useState("Islamabad");
-	const [address, setAddress] = useState(
-		"H# 123, Satellite Town, Rawalpindi"
-	);
+	const [name, setName] = useState("");
+	const [cnic, setCnic] = useState("");
+	const [email, setEmail] = useState("");
+	const [phoneNumber, setPhoneNumber] = useState("");
+	const [password, setPassword] = useState("");
+	const [country, setCountry] = useState("DEFAULT");
+	const [city, setCity] = useState("DEFAULT");
+	const [address, setAddress] = useState("");
 
 	const [IFerrors, setIFerrors] = useState({
 		nameError: "",
@@ -105,28 +112,39 @@ const Register = () => {
 				"Enter atleast 8 length of Capital, Small, and Special characters !";
 		}
 
-		// city
-		var cityFormat = /^([^0-9]*)$/;
-		if (city.match(cityFormat)) {
-			errors.cityError = "";
-		} else {
-			hasError = true;
-			errors.cityError =
-				"City cannot contains Numbers or Special Characters!";
-		}
-
-		// address
-		var addressFormat = /^[a-zA-Z0-9-@#{1},\s]*$/;
-		if (address.match(addressFormat) && address.length > 10) {
-			errors.addressError = "";
-		} else {
-			hasError = true;
-			errors.addressError =
-				"Entered Address is invalid. Special Characters not allowed i.e. /!$%^&*()";
-		}
-
 		setIFerrors({ ...IFerrors, ...errors });
 		return hasError;
+	};
+
+	const HandlerCountryCity = (input) => (e) => {
+		if (input === "country") {
+			setCountry(e.target.value);
+		}
+		if (input === "city") {
+			setCity(e.target.value);
+		}
+	};
+
+	const getAllCountries = async () => {
+		await axios
+			.get("https://countriesnow.space/api/v0.1/countries/positions")
+			.then((res) => {
+				let countriesList = res.data.data;
+				setCountries(countriesList);
+			})
+			.catch((error) => console.log("Error: " + error));
+	};
+
+	const getCitiesUsingCountry = async () => {
+		await axios
+			.post("https://countriesnow.space/api/v0.1/countries/cities", {
+				country: country,
+			})
+			.then((res) => {
+				let citiesList = res.data.data;
+				setCities(citiesList);
+			})
+			.catch((error) => console.log("Error: " + error));
 	};
 
 	const handleRegisterVendor = async (e) => {
@@ -143,6 +161,7 @@ const Register = () => {
 					phoneNumber,
 					password,
 					city,
+					country,
 					address,
 				})
 				.then(function (res) {
@@ -152,12 +171,14 @@ const Register = () => {
 						message: "SUCCESS: Loggin In Now.",
 						open: true,
 					});
-					setTimeout(() => setIsRegistered(true), [2000]);
-					return registerUser(
+
+					registerUser(
 						dispatch,
-						res.data.data.vendor,
+						res.data.data.seller,
 						res.data.data.token
 					);
+
+					setTimeout(() => setIsRegistered(true), [2000]);
 				})
 				.catch((error) => {
 					setSnackBar({
@@ -172,9 +193,21 @@ const Register = () => {
 		}
 	};
 
+	useEffect(() => {
+		getAllCountries();
+		// eslint-disable-next-line
+	}, []);
+
+	useEffect(() => {
+		if (country !== "DEFAULT") {
+			getCitiesUsingCountry();
+		}
+		// eslint-disable-next-line
+	}, [country]);
+
 	return (
 		<React.Fragment>
-			{isRegistered ? <Redirect to="/vendor/dashboard" /> : ""}
+			{isRegistered ? <Redirect to="/seller/dashboard" /> : ""}
 			<AppBar position="absolute" className={classes.appBar}>
 				<Toolbar>
 					<img src={Logo} alt="Logo" className={classes.logo} />
@@ -213,7 +246,7 @@ const Register = () => {
 							<TextField
 								variant="outlined"
 								margin="normal"
-								label="Cnic"
+								label="CNIC"
 								placeholder="XXXXX-XXXXXXX-X"
 								fullWidth
 								value={cnic}
@@ -266,6 +299,7 @@ const Register = () => {
 								variant="outlined"
 								margin="normal"
 								label="Password"
+								type="password"
 								fullWidth
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
@@ -278,18 +312,62 @@ const Register = () => {
 							/>
 						</Grid>
 						<Grid item xs={12}>
-							<TextField
-								variant="outlined"
-								margin="normal"
-								label="City"
-								fullWidth
-								value={city}
-								onChange={(e) => setCity(e.target.value)}
-								helperText={IFerrors.cityError}
-								error={
-									IFerrors.cityError.length > 0 ? true : false
-								}
-							/>
+							<FormControl fullWidth>
+								<InputLabel
+									style={{
+										marginLeft: "10px",
+									}}
+								>
+									Country
+								</InputLabel>
+								<Select
+									variant="outlined"
+									margin="dense"
+									required
+									style={{ marginTop: 18, marginBottom: 10 }}
+									name="country"
+									value={country}
+									onChange={HandlerCountryCity("country")}
+								>
+									<MenuItem value="DEFAULT" disabled>
+										Select your Country
+									</MenuItem>
+									{Countries.map((el, index) => (
+										<MenuItem value={el.name} key={index}>
+											{el.name}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
+						</Grid>
+						<Grid item xs={12}>
+							<FormControl fullWidth>
+								<InputLabel
+									style={{
+										marginLeft: "10px",
+									}}
+								>
+									City
+								</InputLabel>
+								<Select
+									variant="outlined"
+									margin="dense"
+									required
+									style={{ marginTop: 18, marginBottom: 10 }}
+									name="city"
+									onChange={HandlerCountryCity("city")}
+									value={city}
+								>
+									<MenuItem value="DEFAULT" disabled>
+										Select City
+									</MenuItem>
+									{Cities.map((el, index) => (
+										<MenuItem value={el} key={index}>
+											{el}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
 						</Grid>
 						<Grid item xs={12}>
 							<TextField

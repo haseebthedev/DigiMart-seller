@@ -82,9 +82,9 @@ export default function PromoteProduct(props) {
 		description: "",
 		discount: "",
 		promoCode: "-",
-		longUrl: "",
-		shortUrl:
+		longUrl:
 			"https://digimart-buyer.netlify.app/product?productId=61a0d1f379dbd30004a320b3",
+		shortUrl: "",
 		urlCode: "",
 		isUrlAlreadyCreated: false,
 		isScheduled: false,
@@ -511,16 +511,7 @@ export default function PromoteProduct(props) {
 						window.location.reload();
 					}, 1000);
 				})
-				.catch((error) =>
-					setSnackBar({
-						...snackBarstate,
-						message:
-							"ERROR: " +
-							JSON.stringify(error.response.data.error.message),
-						type: "error",
-						open: true,
-					})
-				);
+				.catch((error) => console.log("Error ", error));
 		}
 	};
 

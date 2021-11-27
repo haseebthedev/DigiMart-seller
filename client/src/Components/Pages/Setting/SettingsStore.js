@@ -55,8 +55,27 @@ export default function VendorCenter() {
 		warehouseAddressError: "",
 	});
 
-	const onSelectlogo = (image) => {
-		setStoreData({ ...storeData, logo: image });
+	async function uploadImage(file) {
+		const NAME_OF_UPLOAD_PRESET = "ddyaz57o";
+		const YOUR_CLOUDINARY_ID = "dbsd56hgh";
+
+		const data = new FormData();
+		data.append("file", file);
+		data.append("upload_preset", NAME_OF_UPLOAD_PRESET);
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${YOUR_CLOUDINARY_ID}/image/upload`,
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+		const img = await res.json();
+		return img.secure_url;
+	}
+
+	const onSelectlogo = async (image) => {
+		let uploadedImage = await uploadImage(image);
+		setStoreData({ ...storeData, logo: uploadedImage });
 	};
 	const handleChange = (input) => (e) => {
 		setStoreData({ ...storeData, [input]: e.target.value });
@@ -194,7 +213,7 @@ export default function VendorCenter() {
 
 	return (
 		<Grid container className={classes.root}>
-			{isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
+			{isLoggedOut ? <Redirect to="/seller/login" /> : ""}
 			<Grid item xs={12} sm={12} md={12} component={Paper}>
 				<Container component="div" maxWidth="sm">
 					<div className={classes.paper}>

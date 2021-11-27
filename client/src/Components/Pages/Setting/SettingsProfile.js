@@ -129,8 +129,27 @@ export default function VendorCenter() {
 		setIsProfilePicRemove(false);
 	};
 
-	const onProfileChange = (image) => {
-		setProfileData({ ...profileData, profilePic: image });
+	async function uploadImage(file) {
+		const NAME_OF_UPLOAD_PRESET = "ddyaz57o";
+		const YOUR_CLOUDINARY_ID = "dbsd56hgh";
+
+		const data = new FormData();
+		data.append("file", file);
+		data.append("upload_preset", NAME_OF_UPLOAD_PRESET);
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${YOUR_CLOUDINARY_ID}/image/upload`,
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+		const img = await res.json();
+		return img.secure_url;
+	}
+
+	const onProfileChange = async (image) => {
+		let uploadedImage = await uploadImage(image);
+		setProfileData({ ...profileData, profilePic: uploadedImage });
 	};
 	const handleChange = (input) => (e) => {
 		setProfileData({ ...profileData, [input]: e.target.value });
@@ -252,15 +271,16 @@ export default function VendorCenter() {
 					isNotificationsEnabled,
 				});
 			})
-			.catch((error) =>
+			.catch((error) => {
 				setSnackBar({
 					...snackBarstate,
-					type: "error",
 					message:
-						"ERROR: System is busy or not responding at the moment!",
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
 					open: true,
-				})
-			);
+				});
+			});
 	};
 
 	useEffect(() => {
@@ -270,7 +290,7 @@ export default function VendorCenter() {
 
 	return (
 		<Grid container className={classes.root}>
-			{isLoggedOut ? <Redirect to="/vendor/login" /> : ""}
+			{isLoggedOut ? <Redirect to="/seller/login" /> : ""}
 			<Grid item xs={12} sm={12} md={12} component={Paper}>
 				<Container component="div" maxWidth="sm">
 					<div className={classes.paper}>

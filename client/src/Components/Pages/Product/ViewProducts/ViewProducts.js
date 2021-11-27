@@ -9,6 +9,13 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
 import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+	MuiPickersUtilsProvider,
+	KeyboardDatePicker,
+} from "@material-ui/pickers";
+
 import {
 	Grid,
 	Paper,
@@ -61,6 +68,7 @@ export default function ViewProducts() {
 			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
 			hidden: false,
 			export: false,
+			width: 150,
 		},
 		{
 			title: "Image",
@@ -242,8 +250,10 @@ export default function ViewProducts() {
 			[input]: e.target.value,
 			discountPrice,
 		});
+	};
 
-		console.log(productDetails);
+	const handleDateChange = (date) => {
+		setProductDetails({ ...productDetails, manufactureDate: date });
 	};
 
 	async function uploadImage(file) {
@@ -261,7 +271,6 @@ export default function ViewProducts() {
 			}
 		);
 		const img = await res.json();
-		console.log(img);
 		return img.secure_url;
 	}
 
@@ -593,13 +602,16 @@ export default function ViewProducts() {
 					.post("/seller/store/product", IPdata[i], {
 						headers: { Authorization: `Bearer ${token}` },
 					})
-					// eslint-disable-next-line
-					.catch(() => {
+					.catch((error) => {
 						hasError = true;
 						setSnackBar({
 							...snackBarstate,
+							message:
+								"ERROR: " +
+								JSON.stringify(
+									error.response.data.error.message
+								),
 							type: "error",
-							message: "Datafile contains wrong format!",
 							open: true,
 						});
 					});
@@ -618,8 +630,10 @@ export default function ViewProducts() {
 		} catch (error) {
 			setSnackBar({
 				...snackBarstate,
+				message:
+					"ERROR: " +
+					JSON.stringify(error.response.data.error.message),
 				type: "error",
-				message: "ERROR: System is not responsind at the moment!",
 				open: true,
 			});
 		}
@@ -641,13 +655,17 @@ export default function ViewProducts() {
 			})
 			.then((res) => {
 				setDetails(res.data.data.products);
-				console.log("res.data.data.products", res.data.data.products);
 			})
-			.catch((error) =>
-				console.log(
-					"ERROR: " + JSON.stringify(error.response.data.error)
-				)
-			);
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	// Get Categories and Sub Categories from API
@@ -661,25 +679,41 @@ export default function ViewProducts() {
 				const categoryList = res.data.data.mainCategories;
 				setProductCategories(categoryList);
 			})
-			.catch((error) => console.log("Error: " + error));
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	const getSubCategory = async () => {
 		if (productDetails.category !== "") {
 			await api
 				.get(
-					// `/seller/subCategories/category/${productDetails.category}`,
-					`/seller/subCategories/category/Electronics`,
+					`/seller/subCategories/category/${productDetails.category}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
 				.then((res) => {
 					let subCategories = res.data.data.subCategories;
-					console.log("subCategories", subCategories);
 					setProductSubCategories(subCategories);
 				})
-				.catch((error) => console.log("Error: " + error));
+				.catch((error) => {
+					setSnackBar({
+						...snackBarstate,
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+						type: "error",
+						open: true,
+					});
+				});
 		}
 	};
 
@@ -713,6 +747,7 @@ export default function ViewProducts() {
 					align="right"
 					onClick={handlerAllProductsDelete}
 					style={{ marginRight: 20 }}
+					disabled={details.length > 0 ? false : true}
 				>
 					DELETE ALL PRODUCTS
 				</Button>
@@ -924,19 +959,24 @@ export default function ViewProducts() {
 								</Grid>
 
 								<Grid item xs={12}>
-									<TextField
-										variant="outlined"
-										margin="dense"
-										required
-										fullWidth
-										placeholder="dd/MM/YYYY"
-										label="Manufacture Date"
-										name="manufactureDate"
-										value={productDetails.manufactureDate}
-										onChange={handleProductDetails(
-											"manufactureDate"
-										)}
-									/>
+									<MuiPickersUtilsProvider
+										utils={DateFnsUtils}
+									>
+										<KeyboardDatePicker
+											required
+											fullWidth
+											inputVariant="outlined"
+											margin="dense"
+											disableToolbar
+											format="MM/dd/yyyy"
+											id="date-picker-inline"
+											label="Manufacture Date"
+											value={
+												productDetails.manufactureDate
+											}
+											onChange={handleDateChange}
+										/>
+									</MuiPickersUtilsProvider>
 								</Grid>
 
 								<Grid item xs={12}>
@@ -1436,10 +1476,6 @@ export default function ViewProducts() {
 										value={productDetails.subCategory}
 										defaultValue={"DEFAULT"}
 									>
-										{console.log(
-											"productDetails.subCategory",
-											productDetails.subCategory
-										)}
 										<MenuItem value="DEFAULT" disabled>
 											Choose sub-category
 										</MenuItem>
@@ -1457,15 +1493,24 @@ export default function ViewProducts() {
 								</Grid>
 
 								<Grid item xs={12}>
-									<TextField
-										variant="outlined"
-										margin="dense"
-										fullWidth
-										placeholder="dd/MM/YYYY"
-										label="Manufacture Date"
-										name="manufactureDate"
-										value={productDetails.manufactureDate}
-									/>
+									<MuiPickersUtilsProvider
+										utils={DateFnsUtils}
+									>
+										<KeyboardDatePicker
+											required
+											fullWidth
+											inputVariant="outlined"
+											margin="dense"
+											disableToolbar
+											format="MM/dd/yyyy"
+											id="date-picker-inline"
+											label="Manufacture Date"
+											value={
+												productDetails.manufactureDate
+											}
+											onChange={handleDateChange}
+										/>
+									</MuiPickersUtilsProvider>
 								</Grid>
 
 								<Grid item xs={12}>

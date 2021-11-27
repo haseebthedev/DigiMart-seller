@@ -15,6 +15,8 @@ import axios from "axios";
 import api from "../../../../Axios/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import AddPhotoAlternateIcon from "@material-ui/icons/AddPhotoAlternate";
+import HighlightOffRoundedIcon from "@material-ui/icons/HighlightOffRounded";
 import AddVendorSvg from "../../../../assets/images/AddVendor.svg";
 import { useUserContext } from "../../../../context/UserContext";
 import useStyles from "./styles";
@@ -55,6 +57,7 @@ export default function AddProduct() {
 		contactPersonDesignation: "",
 		contactPersonNumber: "",
 		contactPersonEmail: "",
+		logo: "",
 	});
 
 	const [IFerrors, setIFerrors] = useState({
@@ -88,6 +91,7 @@ export default function AddProduct() {
 			contactPersonDesignation: "",
 			contactPersonNumber: "",
 			contactPersonEmail: "",
+			logo: "",
 		});
 	};
 
@@ -262,6 +266,33 @@ export default function AddProduct() {
 					})
 				);
 		}
+	};
+
+	async function uploadImage(file) {
+		const NAME_OF_UPLOAD_PRESET = "ddyaz57o";
+		const YOUR_CLOUDINARY_ID = "dbsd56hgh";
+
+		const data = new FormData();
+		data.append("file", file);
+		data.append("upload_preset", NAME_OF_UPLOAD_PRESET);
+		const res = await fetch(
+			`https://api.cloudinary.com/v1_1/${YOUR_CLOUDINARY_ID}/image/upload`,
+			{
+				method: "POST",
+				body: data,
+			}
+		);
+		const img = await res.json();
+		return img.secure_url;
+	}
+
+	const fileHandler = async (event) => {
+		let files = event.target.files;
+		let temp = await uploadImage(files[0]);
+		setVendorDetails({
+			...vendorDetails,
+			logo: temp,
+		});
 	};
 
 	const getAllVendorCategory = async () => {
@@ -725,6 +756,83 @@ export default function AddProduct() {
 										/>
 									</Grid>
 								</Grid>
+
+								<div
+									style={{
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+										marginTop: 20,
+										marginBottom: 5,
+										padding: 20,
+										height: 120,
+										border: "1px solid #c4c4c4",
+										borderRadius: 6,
+									}}
+								>
+									<Grid
+										container
+										justify="center"
+										spacing={2}
+									>
+										{vendorDetails.logo != "" ? (
+											<Grid item align="center">
+												<img
+													src={vendorDetails.logo}
+													alt="product-images"
+													width="60px"
+													height="60px"
+													style={{
+														border: "3px solid #e1e1e1",
+														padding: "2px",
+													}}
+												/>
+												<div>
+													<HighlightOffRoundedIcon
+														onClick={() => {
+															setVendorDetails({
+																...vendorDetails,
+																logo: "",
+															});
+														}}
+														style={{
+															color: "grey",
+														}}
+													/>
+												</div>
+											</Grid>
+										) : (
+											<Typography>
+												Upload Vendor Image
+											</Typography>
+										)}
+									</Grid>
+								</div>
+								<Grid item style={{ marginBottom: 20 }}>
+									<div>
+										<label htmlFor="contained-button-file">
+											<Button
+												size="small"
+												startIcon={
+													<AddPhotoAlternateIcon />
+												}
+												variant="outlined"
+												color="primary"
+												component="span"
+											>
+												Upload Images
+											</Button>
+										</label>
+										<input
+											id="contained-button-file"
+											type="file"
+											accept="image/png, image/jpeg"
+											onChange={fileHandler}
+											hidden
+										/>
+									</div>
+								</Grid>
+
 								<Grid container spacing={2}>
 									<Grid item xs={12} sm={12} md={6} lg={6}>
 										<Button

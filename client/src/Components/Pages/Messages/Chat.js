@@ -33,6 +33,7 @@ import Highlighter from "react-highlight-words";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import SearchIcon from "@material-ui/icons/Search";
 import ChatIcon from "@material-ui/icons/Chat";
+import noChatConversation from "../../../assets/images/noChatIllustration.gif";
 
 import useStyles from "./styles";
 import myImage from "../../../assets/images/myImage.jpg";
@@ -354,7 +355,6 @@ const Chat = () => {
 
 	return (
 		<Grid container className={classes.root}>
-			
 			{/* Users List */}
 			<Grid
 				item
@@ -493,7 +493,8 @@ const Chat = () => {
 			</Grid>
 
 			{/* Users Chat Area */}
-			{selectedChat.conversationUser != null ? (
+			{conversations.length > 0 &&
+			selectedChat.conversationUser != null ? (
 				<Grid
 					item
 					xs={false}
@@ -815,115 +816,142 @@ const Chat = () => {
 					sm={false}
 					md={8}
 					lg={6}
+					align="center"
 					className={classes.MainChatArea}
-				></Grid>
+				>
+					<div
+						style={{
+							height: "82vh",
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<img
+							src={noChatConversation}
+							style={{ height: 320, borderRadius: 200 }}
+						/>
+						<Typography variant="h1" style={{ marginTop: 40 }}>
+							No Messages Yet
+						</Typography>
+						<Typography variant="h4" style={{ marginTop: 10 }}>
+							Looks like you haven't initiated any conversation
+							with anyone!
+						</Typography>
+					</div>
+				</Grid>
 			)}
 
 			{/* User Details Card */}
-			<Grid
-				item
-				xs={12}
-				sm={12}
-				md={12}
-				lg={2}
-				component={Paper}
-				style={{ height: "82vh", zIndex: 1 }}
-			>
-				<div
-					style={{
-						paddingBottom: 15,
-						borderBottom: "1px solid #e1e1e1",
-						padding: 20,
-					}}
+			{conversations.length > 0 ? (
+				<Grid
+					item
+					xs={12}
+					sm={12}
+					md={12}
+					lg={2}
+					component={Paper}
+					style={{ height: "82vh", zIndex: 1 }}
 				>
-					<Typography variant="h4" color="primary" align="center">
-						User Details
-					</Typography>
-				</div>
-
-				{selectedChat.conversationUser != null ? (
-					<div align="center">
-						<Avatar
-							src={selectedChat.conversationUser.profilePic}
-							alt={myImage}
-							style={{
-								width: 120,
-								height: 120,
-								marginTop: 25,
-								marginBottom: 15,
-								boxShadow:
-									"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
-							}}
-						/>
-						<div style={{ margin: "20px 0px" }}>
-							<Typography style={{ fontWeight: "bold" }}>
-								Name:
-							</Typography>
-							<Typography style={{ fontSize: 14 }}>
-								{selectedChat.conversationUser.name}
-							</Typography>
-						</div>
-						<Tooltip
-							title={
-								selectedChat.conversationUser.email
-									? selectedChat.conversationUser.email
-									: "Email"
-							}
-						>
-							<div style={{ margin: "20px 0px" }}>
-								<Typography style={{ fontWeight: "bold" }}>
-									Email
-								</Typography>
-								<Typography style={{ fontSize: 14 }}>
-									{selectedChat.conversationUser.email
-										? selectedChat.conversationUser.email
-												.toString()
-												.substring(0, 18) + "..."
-										: "Empty"}
-								</Typography>
-							</div>
-						</Tooltip>
-						<div style={{ margin: "20px 0px" }}>
-							<Typography style={{ fontWeight: "bold" }}>
-								Phone
-							</Typography>
-							<Typography style={{ fontSize: 14 }}>
-								{selectedChat.conversationUser.phoneNumber}
-							</Typography>
-						</div>
-						<Tooltip
-							title={
-								selectedChat.conversationUser.address
-									? selectedChat.conversationUser.address
-									: "Address"
-							}
-						>
-							<div style={{ margin: "20px 0px" }}>
-								<Typography style={{ fontWeight: "bold" }}>
-									Address
-								</Typography>
-								<Typography style={{ fontSize: 14 }}>
-									{selectedChat.conversationUser.address
-										? selectedChat.conversationUser.address
-												.toString()
-												.substring(0, 18) + "..."
-										: "Empty"}
-								</Typography>
-							</div>
-						</Tooltip>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={handleClickOpenDialogBox}
-						>
-							<DeleteOutlineIcon style={{ marginRight: 5 }} />
-							Clear Chat
-						</Button>
+					<div
+						style={{
+							paddingBottom: 15,
+							borderBottom: "1px solid #e1e1e1",
+							padding: 20,
+						}}
+					>
+						<Typography variant="h4" color="primary" align="center">
+							User Details
+						</Typography>
 					</div>
-				) : (
-					<div></div>
-				)}
-			</Grid>
+
+					{selectedChat.conversationUser != null ? (
+						<div align="center">
+							<Avatar
+								src={selectedChat.conversationUser.profilePic}
+								alt={myImage}
+								style={{
+									width: 120,
+									height: 120,
+									marginTop: 25,
+									marginBottom: 15,
+									boxShadow:
+										"rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+								}}
+							/>
+							<div style={{ margin: "20px 0px" }}>
+								<Typography style={{ fontWeight: "bold" }}>
+									Name:
+								</Typography>
+								<Typography style={{ fontSize: 14 }}>
+									{selectedChat.conversationUser.name}
+								</Typography>
+							</div>
+							<Tooltip
+								title={
+									selectedChat.conversationUser.email
+										? selectedChat.conversationUser.email
+										: "Email"
+								}
+							>
+								<div style={{ margin: "20px 0px" }}>
+									<Typography style={{ fontWeight: "bold" }}>
+										Email
+									</Typography>
+									<Typography style={{ fontSize: 14 }}>
+										{selectedChat.conversationUser.email
+											? selectedChat.conversationUser.email
+													.toString()
+													.substring(0, 18) + "..."
+											: "Empty"}
+									</Typography>
+								</div>
+							</Tooltip>
+							<div style={{ margin: "20px 0px" }}>
+								<Typography style={{ fontWeight: "bold" }}>
+									Phone
+								</Typography>
+								<Typography style={{ fontSize: 14 }}>
+									{selectedChat.conversationUser.phoneNumber}
+								</Typography>
+							</div>
+							<Tooltip
+								title={
+									selectedChat.conversationUser.address
+										? selectedChat.conversationUser.address
+										: "Address"
+								}
+							>
+								<div style={{ margin: "20px 0px" }}>
+									<Typography style={{ fontWeight: "bold" }}>
+										Address
+									</Typography>
+									<Typography style={{ fontSize: 14 }}>
+										{selectedChat.conversationUser.address
+											? selectedChat.conversationUser.address
+													.toString()
+													.substring(0, 18) + "..."
+											: "Empty"}
+									</Typography>
+								</div>
+							</Tooltip>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={handleClickOpenDialogBox}
+							>
+								<DeleteOutlineIcon style={{ marginRight: 5 }} />
+								Clear Chat
+							</Button>
+						</div>
+					) : (
+						<div></div>
+					)}
+				</Grid>
+			) : (
+				<div></div>
+			)}
 
 			{/* //Deletion dialog box */}
 			<div>
@@ -1042,7 +1070,6 @@ const Chat = () => {
 								</Grid>
 							</Grid>
 						</Grid>
-
 
 						{/* Searched users will display here */}
 

@@ -36,6 +36,13 @@ const typo = {
 		MuiCssBaseline: {
 			"@global": {
 				"@font-face": [poppins],
+				"*": {
+					"scrollbar-width": "thin",
+				},
+				"*::-webkit-scrollbar": {
+					width: "4px",
+					height: "4px",
+				},
 			},
 		},
 		MuiListItem: {

@@ -205,7 +205,7 @@ export default function BuyVendorProduct() {
 						headers: { Authorization: `Bearer ${token}` },
 					}
 				)
-				.then(() => {
+				.then((res) => {
 					setSnackBar({
 						...snackBarstate,
 						type: "success",
@@ -213,14 +213,16 @@ export default function BuyVendorProduct() {
 						open: true,
 					});
 				})
-				.catch(() =>
+				.catch((error) => {
 					setSnackBar({
 						...snackBarstate,
-						message: "ERROR: Something Went Wrong!",
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
 						type: "error",
 						open: true,
-					})
-				);
+					});
+				});
 		} else {
 			setSnackBar({
 				...snackBarstate,

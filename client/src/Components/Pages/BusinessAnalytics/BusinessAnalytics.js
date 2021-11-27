@@ -2,32 +2,37 @@ import React, { useState, useEffect } from "react";
 import api from "../../../Axios/api";
 import Pal from "../../../themes/palette";
 import MaterialTable from "material-table";
-import { Box, Grid, Paper, Typography } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@material-ui/core";
 
 // icons
 import FeaturedVideoIcon from "@material-ui/icons/FeaturedVideo";
 import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
-
-import { useUserContext } from "../../../context/UserContext";
 import ImgNotAvailable from "../../../assets/images/imgNotAvailable.jpg";
 import Chart from "react-apexcharts";
+import CompleteRegister from "../../CompleteRegister/CompleteRegister";
+import { useUserContext } from "../../../context/UserContext";
+import useStyles from "./styles";
 
-// Widgets
+// widget
 import CountCard from "../../AnalyticsWidget/CountCard";
 
 const BusinessAnalytics = () => {
-	// context
+	const classes = useStyles();
 	const { store } = useUserContext();
 	const token = store.data.token;
 	const { isDarkModeEnabled } = store.data.data;
 
+	const [showCompleteRegis, setCompleteRegis] = useState(
+		store.data.data.isStoreRegistered
+	);
+
 	const [StatsCount, setStatsCount] = useState({
-		stock: "0",
-		investment: "0",
-		revenue: "0",
-		profit: "0",
+		stock: 0,
+		investment: 0,
+		revenue: 0,
+		profit: 0,
 	});
 	const [salesData, setSalesData] = useState([]);
 	const [categoryData, setCategoryData] = useState([]);
@@ -188,31 +193,27 @@ const BusinessAnalytics = () => {
 			.then((res) => {
 				let result = res.data.data;
 
-				let stock = 0;
-				let investment = 0;
-				let revenue = 0;
-				let profit = 0;
+				const { totalStock, totalPurchasePrice, totalSalePrice } =
+					result.productsAnalytics[0];
 
-				if (result.productsAnalytics.length > 0) {
-					stock = result.productsAnalytics[0].totalStock;
-					investment = result.productsAnalytics[0].totalPurchasePrice;
-					revenue = result.ordersAnalytics[0].totalRevenue;
-					profit = result.ordersAnalytics[0].totalProfit;
+				if (result.ordersAnalytics.length > 0) {
+					var revenue = result.ordersAnalytics[0].totalRevenue;
+					var profit = result.ordersAnalytics[0].totalProfit;
 
 					setStatsCount({
 						...StatsCount,
-						stock,
-						investment,
-						revenue,
-						profit,
+						stock: totalStock,
+						investment: totalPurchasePrice,
+						revenue: revenue,
+						profit: profit,
 					});
 				} else {
 					setStatsCount({
 						...StatsCount,
-						stock,
-						investment,
-						revenue,
-						profit,
+						stock: totalStock,
+						investment: totalPurchasePrice,
+						revenue: 0,
+						profit: 0,
 					});
 				}
 
@@ -279,7 +280,7 @@ const BusinessAnalytics = () => {
 			hidden: true,
 			export: true,
 		},
-		{ title: "Brand", field: "brand", hidden: false, export: true },
+		{ title: "Brand", field: "storeName", hidden: false, export: true },
 		{ title: "Category", field: "category", hidden: true, export: true },
 		{
 			title: "purchasePrice",
@@ -290,7 +291,7 @@ const BusinessAnalytics = () => {
 		{
 			title: "Price",
 			field: "salePrice",
-			render: ({ salePrice }) => <div>{"$" + salePrice}</div>,
+			render: ({ salePrice }) => <div>{"Rs. " + salePrice}</div>,
 			hidden: false,
 			export: true,
 		},
@@ -302,8 +303,12 @@ const BusinessAnalytics = () => {
 		},
 	];
 
-	return (
-		<Box>
+	let result = !showCompleteRegis ? (
+		<Paper className={classes.Paper}>
+			<CompleteRegister setCompleteRegis={setCompleteRegis} />
+		</Paper>
+	) : (
+		<div>
 			<Grid
 				container
 				spacing={4}
@@ -313,49 +318,28 @@ const BusinessAnalytics = () => {
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="PRODUCT STOCK"
-						count={StatsCount.stock
-							.toString()
-							.split(/(?=(?:\d{3})+(?:\.|$))/g)
-							.join(",")}
+						count={"# " + StatsCount.stock}
 						icon={<FeaturedVideoIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL INVESTMENT"
-						count={
-							"Rs. " +
-							StatsCount.investment
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.investment}
 						icon={<LocalAtmIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL REVENUE"
-						count={
-							"Rs. " +
-							StatsCount.revenue
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.revenue}
 						icon={<WhatshotIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL PROFIT"
-						count={
-							"Rs. " +
-							StatsCount.profit
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.profit}
 						icon={
 							<AccountBalanceWalletIcon
 								style={{ fontSize: 38 }}
@@ -383,7 +367,7 @@ const BusinessAnalytics = () => {
 								Top Performing Products
 							</Typography>
 						}
-						data={details}
+						data={details.splice(0, 5)}
 						columns={columns}
 						options={{
 							actionsColumnIndex: -1,
@@ -415,8 +399,10 @@ const BusinessAnalytics = () => {
 					</Paper>
 				</Grid>
 			</Grid>
-		</Box>
+		</div>
 	);
+
+	return result;
 };
 
 export default BusinessAnalytics;

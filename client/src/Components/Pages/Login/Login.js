@@ -11,6 +11,8 @@ import {
 	Typography,
 	InputLabel,
 } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import { LockOutlined } from "@material-ui/icons/";
 import { withRouter, Redirect } from "react-router-dom";
 
@@ -23,9 +25,22 @@ const Login = () => {
 	const { dispatch } = useUserContext();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
+
 	const [loginData, setLoginData] = useState({
 		email: "",
-		password: "haseeb123",
+		password: "",
 		errorMessage: "",
 	});
 
@@ -35,7 +50,7 @@ const Login = () => {
 		const res = regEx.test(email);
 
 		if (!res === true) {
-			return "Wrong Email";
+			return "Entered Email is Invalid!";
 		}
 		return "";
 	};
@@ -59,21 +74,33 @@ const Login = () => {
 			...loginData,
 		})
 			.then(function (res) {
-				setTimeout(() => setIsLoggedIn(true), [1000]);
+				setSnackBar({
+					...snackBarstate,
+					type: "success",
+					message: "SUCCESS: Logging into Dashboard!",
+					open: true,
+				});
+
+				setTimeout(() => {
+					setIsLoggedIn(true);
+				}, [1000]);
+
 				return loginUser(
 					dispatch,
 					res.data.data.seller,
 					res.data.data.token
 				);
 			})
-			.catch((error) =>
-				setLoginData({
-					...loginData,
-					errorMessage:
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
 						"ERROR: " +
 						JSON.stringify(error.response.data.error.message),
-				})
-			);
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	return (
@@ -107,7 +134,6 @@ const Login = () => {
 							required
 							fullWidth
 							label="Email Address"
-							name="email"
 							color="primary"
 							autoFocus
 							defaultValue={loginData.email}
@@ -118,7 +144,6 @@ const Login = () => {
 							margin="normal"
 							required
 							fullWidth
-							name="password"
 							label="Password"
 							type="password"
 							color="primary"
@@ -168,6 +193,23 @@ const Login = () => {
 					</form>
 				</div>
 			</Grid>
+
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical, horizontal }}
+				autoHideDuration={3000}
+				onClose={handleCloseSnackBar}
+				key={vertical + horizontal}
+			>
+				<MuiAlert
+					elevation={6}
+					variant="filled"
+					onClose={handleCloseSnackBar}
+					severity={snackBarstate.type}
+				>
+					{snackBarstate.message}
+				</MuiAlert>
+			</Snackbar>
 		</Grid>
 	);
 };

@@ -29,10 +29,10 @@ const VendorAnalytics = () => {
 	);
 
 	const [StatsCount, setStatsCount] = useState({
-		stock: "0",
-		investment: "0",
-		revenue: "0",
-		profit: "0",
+		stock: 0,
+		investment: 0,
+		revenue: 0,
+		profit: 0,
 	});
 	const [salesData, setSalesData] = useState([]);
 	const [categoryData, setCategoryData] = useState([]);
@@ -192,32 +192,28 @@ const VendorAnalytics = () => {
 			})
 			.then((res) => {
 				let result = res.data.data;
-				
-				let stock = 0;
-				let investment = 0;
-				let revenue = 0;
-				let profit = 0;
 
-				if (result.productsAnalytics.length > 0) {
-					stock = result.productsAnalytics[0].totalStock;
-					investment = result.productsAnalytics[0].totalPurchasePrice;
-					revenue = result.ordersAnalytics[0].totalRevenue;
-					profit = result.ordersAnalytics[0].totalProfit;
+				const { totalStock, totalPurchasePrice, totalSalePrice } =
+					result.productsAnalytics[0];
+
+				if (result.ordersAnalytics.length > 0) {
+					var revenue = result.ordersAnalytics[0].totalRevenue;
+					var profit = result.ordersAnalytics[0].totalProfit;
 
 					setStatsCount({
 						...StatsCount,
-						stock,
-						investment,
-						revenue,
-						profit,
+						stock: totalStock,
+						investment: totalPurchasePrice,
+						revenue: revenue,
+						profit: profit,
 					});
 				} else {
 					setStatsCount({
 						...StatsCount,
-						stock,
-						investment,
-						revenue,
-						profit,
+						stock: totalStock,
+						investment: totalPurchasePrice,
+						revenue: 0,
+						profit: 0,
 					});
 				}
 
@@ -322,52 +318,28 @@ const VendorAnalytics = () => {
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="PRODUCT STOCK"
-						count={
-							"# " +
-							StatsCount.stock
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"# " + StatsCount.stock}
 						icon={<FeaturedVideoIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL INVESTMENT"
-						count={
-							"Rs. " +
-							StatsCount.investment
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.investment}
 						icon={<LocalAtmIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL REVENUE"
-						count={
-							"Rs. " +
-							StatsCount.revenue
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.revenue}
 						icon={<WhatshotIcon style={{ fontSize: 38 }} />}
 					/>
 				</Grid>
 				<Grid item xs={12} md={3}>
 					<CountCard
 						title="TOTAL PROFIT"
-						count={
-							"Rs. " +
-							StatsCount.profit
-								.toString()
-								.split(/(?=(?:\d{3})+(?:\.|$))/g)
-								.join(",")
-						}
+						count={"Rs. " + StatsCount.profit}
 						icon={
 							<AccountBalanceWalletIcon
 								style={{ fontSize: 38 }}

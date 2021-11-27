@@ -359,35 +359,6 @@ export default function AddProduct() {
 		return hasError;
 	};
 
-	const resetInputFiels = () => {
-		setWeight("");
-		setWarranty("");
-		setProductDetails({
-			name: "",
-			description: "",
-			category: "",
-			subCategory: "",
-			manufactureDate: "11/06/2003",
-			purchasePrice: "",
-			salePrice: "",
-			state: "",
-			shippingCost: "",
-			images: [],
-			isOnSale: false,
-			discountPercentage: "",
-			discountPrice: "",
-			stockAvailable: "",
-			dimensions: "",
-		});
-		setDimensions({
-			length: "",
-			width: "",
-			height: "",
-			unit: "in",
-		});
-		setColors([]);
-	};
-
 	const addProductHandler = (e) => {
 		e.preventDefault();
 
@@ -424,13 +395,16 @@ export default function AddProduct() {
 				}
 			)
 				.then(() => {
-					resetInputFiels();
 					setSnackBar({
 						...snackBarstate,
 						type: "success",
 						message: "Product has been added successfully!",
 						open: true,
 					});
+
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
 				})
 				.catch((error) => {
 					setSnackBar({
@@ -751,7 +725,7 @@ export default function AddProduct() {
 											required
 											fullWidth
 											label="Purchase Price"
-											value={productDetails.price}
+											value={productDetails.purchasePrice}
 											onChange={handleProductDetails(
 												"purchasePrice"
 											)}
@@ -774,7 +748,7 @@ export default function AddProduct() {
 											fullWidth
 											label="Sale Price (Rs)"
 											name="salePrice"
-											value={productDetails.price}
+											value={productDetails.salePrice}
 											onChange={handleProductDetails(
 												"salePrice"
 											)}

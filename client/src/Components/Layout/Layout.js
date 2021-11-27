@@ -155,7 +155,6 @@ const Layout = (props) => {
 			}
 		)
 			.then(function (res) {
-				console.log("logging off");
 				setIsLoggedOut(true);
 				return logoutUser(dispatch);
 			})
