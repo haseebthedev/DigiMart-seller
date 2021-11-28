@@ -15,14 +15,13 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { LockOutlined } from "@material-ui/icons/";
 import { withRouter, Redirect } from "react-router-dom";
-
 import { useUserContext, loginUser } from "../../../context/UserContext";
 import useStyles from "./styles";
 
 const Login = () => {
 	const classes = useStyles();
-	// context
 	const { dispatch } = useUserContext();
+	const [isLoading, setIsLoading] = useState(false);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	// Snackbar
@@ -67,12 +66,14 @@ const Login = () => {
 		});
 	};
 
-	const handleLoginVendor = (e) => {
+	const handleLoginVendor = async (e) => {
 		e.preventDefault();
+		setIsLoading(true);
 
-		api.post("/seller/login", {
-			...loginData,
-		})
+		await api
+			.post("/seller/login", {
+				...loginData,
+			})
 			.then(function (res) {
 				setSnackBar({
 					...snackBarstate,
@@ -100,6 +101,7 @@ const Login = () => {
 					type: "error",
 					open: true,
 				});
+				setIsLoading(false);
 			});
 	};
 
@@ -167,6 +169,7 @@ const Login = () => {
 							color="primary"
 							className={classes.submit}
 							onClick={handleLoginVendor}
+							disabled={isLoading}
 						>
 							Sign In
 						</Button>

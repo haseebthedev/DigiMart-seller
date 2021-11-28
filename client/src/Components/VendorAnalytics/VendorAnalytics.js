@@ -36,7 +36,7 @@ const VendorAnalytics = () => {
 	});
 	const [salesData, setSalesData] = useState([]);
 	const [categoryData, setCategoryData] = useState([]);
-	const [details, setDetails] = useState([]);
+	const [topReviewedProducts, settopReviewedProducts] = useState([]);
 
 	var SalesStats = {
 		series: [
@@ -152,8 +152,10 @@ const VendorAnalytics = () => {
 			},
 			chart: {
 				type: "bar",
-				height: 350,
 				foreColor: isDarkModeEnabled === true ? "#f6f7f8" : "#373d3f",
+				toolbar: {
+					show: false,
+				},
 			},
 			plotOptions: {
 				bar: {
@@ -168,21 +170,6 @@ const VendorAnalytics = () => {
 				type: "datetime",
 			},
 		},
-	};
-
-	const retrivingTop5Products = async () => {
-		await api
-			.get("/seller/store/products", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			.then((res) => {
-				setDetails(res.data.data.products);
-			})
-			.catch((error) =>
-				console.log(
-					"ERROR: " + JSON.stringify(error.response.data.error)
-				)
-			);
 	};
 
 	const getStats = async () => {
@@ -217,6 +204,9 @@ const VendorAnalytics = () => {
 					});
 				}
 
+				// Top reviewed products
+				settopReviewedProducts(result.topReviewedProductsAndAvgRating);
+
 				// PieChart
 				var AllCounts = res.data.data.allCounts;
 				delete AllCounts.todayDeliveredOrdersCount;
@@ -244,28 +234,33 @@ const VendorAnalytics = () => {
 	};
 
 	useEffect(() => {
-		// Retriving List of Products from API
-		retrivingTop5Products();
-		// eslint-disable-next-line
-	}, []);
-
-	useEffect(() => {
 		getStats();
 		// eslint-disable-next-line
 	}, []);
+
+	// Trim large string names
+	function trimProdName(name) {
+		let res = "";
+		if (name.length > 14) {
+			res = name.toString().substring(0, 13) + "...";
+		} else {
+			res = name;
+		}
+		return <div>{res}</div>;
+	}
 
 	const columns = [
 		{
 			title: "#",
 			field: "tableData.id",
-			render: ({ tableData }) => <div>{tableData.id + 1}</div>,
+			render: (row) => <div>{row.tableData.id + 1}</div>,
 		},
 		{
 			title: "Image",
 			field: "images",
-			render: ({ images }) => (
+			render: ({ product }) => (
 				<img
-					src={images.length > 0 ? images[0] : ImgNotAvailable}
+					src={product.images ? product.images : ImgNotAvailable}
 					alt="ProductImage"
 					style={{ width: 40, height: 40, borderRadius: "50%" }}
 				/>
@@ -273,15 +268,27 @@ const VendorAnalytics = () => {
 			hidden: false,
 			export: false,
 		},
-		{ title: "Name", field: "name", hidden: false, export: true },
+		{
+			title: "Name",
+			field: "name",
+			hidden: false,
+			export: true,
+			render: ({ product }) => <div>{trimProdName(product.name)}</div>,
+		},
 		{
 			title: "description",
 			field: "description",
 			hidden: true,
 			export: true,
 		},
-		{ title: "Brand", field: "storeName", hidden: false, export: true },
-		{ title: "Category", field: "category", hidden: true, export: true },
+		{ title: "Brand", field: "storeName", hidden: true, export: true },
+		{
+			title: "Category",
+			field: "category",
+			hidden: false,
+			export: true,
+			render: ({ product }) => <div>{product.category}</div>,
+		},
 		{
 			title: "purchasePrice",
 			field: "purchasePrice",
@@ -291,7 +298,7 @@ const VendorAnalytics = () => {
 		{
 			title: "Price",
 			field: "salePrice",
-			render: ({ salePrice }) => <div>{"Rs. " + salePrice}</div>,
+			render: ({ product }) => <div>{"Rs. " + product.salePrice}</div>,
 			hidden: false,
 			export: true,
 		},
@@ -300,6 +307,7 @@ const VendorAnalytics = () => {
 			field: "stockAvailable",
 			hidden: false,
 			export: true,
+			render: ({ product }) => <div>{product.stockAvailable}</div>,
 		},
 	];
 
@@ -367,7 +375,7 @@ const VendorAnalytics = () => {
 								Top Performing Products
 							</Typography>
 						}
-						data={details.splice(0, 5)}
+						data={topReviewedProducts}
 						columns={columns}
 						options={{
 							actionsColumnIndex: -1,
@@ -388,6 +396,8 @@ const VendorAnalytics = () => {
 							options={CategoryWiseStats.options}
 							series={CategoryWiseStats.series}
 							type="polarArea"
+							height="100%"
+							style={{ height: 395 }}
 						/>
 					</Paper>
 					<Paper style={{ padding: 16, marginTop: 30 }}>
@@ -395,6 +405,8 @@ const VendorAnalytics = () => {
 							options={barChart.options}
 							series={barChart.series}
 							type="bar"
+							height="100%"
+							style={{ height: 345 }}
 						/>
 					</Paper>
 				</Grid>

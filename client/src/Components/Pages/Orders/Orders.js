@@ -189,6 +189,8 @@ export default function Orders() {
 	const handerChangeStatus = (id) => async (e) => {
 		let newStatus = e.target.value;
 
+		console.log("newStatus", newStatus);
+
 		const newOrderDetails = OrderDetails.map((order) =>
 			order._id === id ? { ...order, status: newStatus } : order
 		);
@@ -251,7 +253,6 @@ export default function Orders() {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then((res) => {
-				// setProductsDetails(productArray);
 				setOrderdetails(res.data.data.orders);
 			})
 			.catch((error) => console.log(error));
@@ -291,7 +292,6 @@ export default function Orders() {
 				}
 			)
 			.then((res) => {
-				console.log("res", res.data.data.orders);
 				setOrderdetails(res.data.data.orders);
 				handleSortClose();
 			})
@@ -302,6 +302,21 @@ export default function Orders() {
 		getAllOrders();
 		// eslint-disable-next-line
 	}, []);
+
+	const getOrderStatusOptions = (status) => {
+		switch (status) {
+			case "Pending":
+				return <MenuItem value="Active">Active</MenuItem>;
+			case "Active":
+				return <MenuItem value="Delivered">Delivered</MenuItem>;
+			case "Delivered":
+				return <MenuItem value="Returned">Returned</MenuItem>;
+			// case "Cancelled":
+			// 	break;
+			// case "Returned":
+			// 	break;
+		}
+	};
 
 	const columns = [
 		{
@@ -378,17 +393,14 @@ export default function Orders() {
 					<Select
 						id="status"
 						style={{ marginTop: 8 }}
-						defaultValue={"DEFAULT"}
+						value={"DEFAULT"}
 						onChange={handerChangeStatus(rowData._id)}
+						disabled={rowData.status === "Returned" ? true : false}
 					>
 						<MenuItem value="DEFAULT" disabled>
 							Status
 						</MenuItem>
-						<MenuItem value="Delivered">Delivered</MenuItem>
-						<MenuItem value="Active">Active</MenuItem>
-						<MenuItem value="Pending">Pending</MenuItem>
-						<MenuItem value="Cancelled">Cancelled</MenuItem>
-						<MenuItem value="Returned">Returned</MenuItem>
+						{getOrderStatusOptions(rowData.status)}
 					</Select>
 				</div>
 			),
