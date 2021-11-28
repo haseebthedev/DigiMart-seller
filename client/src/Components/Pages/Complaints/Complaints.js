@@ -3,9 +3,21 @@ import api from "../../../Axios/api";
 import MaterialTable from "material-table";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import ReplyIcon from "@material-ui/icons/Reply";
+import SendIcon from "@material-ui/icons/Send";
 import ImgNotAvailable from "../../../assets/images/imgNotAvailable.jpg";
 
-import { Grid, Paper, Typography, Select, MenuItem } from "@material-ui/core";
+import {
+	Grid,
+	Paper,
+	Typography,
+	Select,
+	MenuItem,
+	Modal,
+	Container,
+	TextField,
+	Button,
+} from "@material-ui/core";
 
 import { useUserContext } from "../../../context/UserContext";
 import Pal from "../../../themes/palette";
@@ -31,6 +43,85 @@ export default function Reviews() {
 
 	// OrdersList
 	const [ComplaintsList, setComplaintsList] = useState([]);
+	const [complaintResponse, setComplaintResponse] = useState({
+		_id: "",
+		response: "",
+	});
+
+	const [responseModalOpen, setResponseModalOpen] = useState(false);
+	const openResponseModal = (id) => {
+		setComplaintResponse({ ...complaintResponse, _id: id });
+		setResponseModalOpen(true);
+	};
+	const closeResponseModal = () => {
+		setResponseModalOpen(false);
+	};
+
+	const handlerComplaintResponse = (input) => async (e) => {
+		setComplaintResponse({ ...complaintResponse, [input]: e.target.value });
+	};
+
+	const [IFerrors, setIFerrors] = useState({
+		responseError: "",
+	});
+
+	const InputValidation = () => {
+		const errors = {};
+		var hasError = false;
+
+		// Message Response
+		var responseFormat = /^\w(\w(\.{1}|\s{1})?)+\w$/;
+		if (
+			complaintResponse.response.match(responseFormat) &&
+			complaintResponse.response.length > 1
+		) {
+			errors.responseError = "";
+		} else {
+			hasError = true;
+			errors.responseError = "Invalid Response Message!";
+		}
+
+		setIFerrors({ ...IFerrors, ...errors });
+		return hasError;
+	};
+
+	const submitComplaintResponse = async () => {
+		const hasErrors = InputValidation();
+
+		if (hasErrors === false) {
+			await api
+				.patch(
+					`---API__HERE___${complaintResponse.rid}`,
+					{
+						response: complaintResponse.response,
+					},
+					{
+						headers: { Authorization: `Bearer ${token}` },
+					}
+				)
+				.then(() => {
+					closeResponseModal();
+					setSnackBar({
+						...snackBarstate,
+						type: "success",
+						message: "SUCCESS: Your response has been sent!",
+						open: true,
+					});
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
+				})
+				.catch((error) => {
+					closeResponseModal();
+					setSnackBar({
+						...snackBarstate,
+						message: "ERROR: " + JSON.stringify(error.response),
+						type: "error",
+						open: true,
+					});
+				});
+		}
+	};
 
 	const handerChangeStatus = (id) => async (e) => {
 		let newStatus = e.target.value;
@@ -76,6 +167,13 @@ export default function Reviews() {
 				setComplaintsList(res.data.data.orderProblems);
 			})
 			.catch((error) => console.log(error));
+	};
+
+	const getComplaintStatusOptions = (status) => {
+		switch (status) {
+			case false:
+				return <MenuItem value="true">Resolved</MenuItem>;
+		}
 	};
 
 	useEffect(() => {
@@ -156,14 +254,18 @@ export default function Reviews() {
 					<Select
 						id="status"
 						style={{ marginTop: 8 }}
-						defaultValue={"DEFAULT"}
+						value={"DEFAULT"}
 						onChange={handerChangeStatus(rowData._id)}
+						disabled={
+							rowData.isProblemResolved === false ? false : true
+						}
 					>
 						<MenuItem value="DEFAULT" disabled>
 							Status
 						</MenuItem>
-						<MenuItem value="true">Resolved</MenuItem>
-						<MenuItem value="false">Pending</MenuItem>
+						{getComplaintStatusOptions(rowData.isProblemResolved)}
+						{/* <MenuItem value="true">Resolved</MenuItem>
+						<MenuItem value="false">Pending</MenuItem> */}
 					</Select>
 				</div>
 			),
@@ -178,6 +280,14 @@ export default function Reviews() {
 					title="All Complaints"
 					data={ComplaintsList}
 					columns={columns}
+					actions={[
+						(rowData) => ({
+							icon: () => <ReplyIcon />,
+							tooltip: "Send a Response",
+							onClick: (event, rowData) =>
+								openResponseModal(rowData._id),
+						}),
+					]}
 					options={{
 						actionsColumnIndex: -1,
 						headerStyle: {
@@ -249,6 +359,69 @@ export default function Reviews() {
 					}}
 				/>
 			</Grid>
+
+			{/* Seller Response Modal */}
+			<Modal
+				open={responseModalOpen}
+				onClose={closeResponseModal}
+				onBackdropClick={closeResponseModal}
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Container
+					component={Paper}
+					maxWidth="sm"
+					style={{ padding: 20 }}
+				>
+					<Grid container spacing={4}>
+						<Grid item xs={12} sm={12} md={12} align="center">
+							<Typography variant="h5">
+								Enter Message Below:
+							</Typography>
+						</Grid>
+						<Grid item xs={12} sm={12} md={12}>
+							<TextField
+								variant="outlined"
+								margin="dense"
+								required
+								fullWidth
+								multiline
+								rows={3}
+								label="Response"
+								value={complaintResponse.response}
+								onChange={handlerComplaintResponse("response")}
+								helperText={IFerrors.responseError}
+								error={
+									IFerrors.responseError.length > 0
+										? true
+										: false
+								}
+							/>
+						</Grid>
+						<Grid item xs={12} sm={12} md={12} align="right">
+							<Button
+								style={{ marginRight: 5 }}
+								variant="outlined"
+								color="primary"
+								onClick={closeResponseModal}
+							>
+								CANCEL
+							</Button>
+							<Button
+								variant="contained"
+								color="primary"
+								endIcon={<SendIcon />}
+								onClick={submitComplaintResponse}
+							>
+								SEND
+							</Button>
+						</Grid>
+					</Grid>
+				</Container>
+			</Modal>
 
 			{/* Alert Snackbar */}
 			<Snackbar

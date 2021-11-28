@@ -116,6 +116,7 @@ const Layout = (props) => {
 	const token = store.data.token;
 	const name = store.data.data.name;
 	const profilePic = store.data.data.profilePic;
+	const storeId = store.data.data.storeId;
 
 	// Current Path - URL Location
 	const {
@@ -295,7 +296,12 @@ const Layout = (props) => {
 									</Typography>
 								</div>
 
-								<MenuItem onClick={handleClose}>
+								<MenuItem
+									onClick={handleClose}
+									component={"a"}
+									target="_blank"
+									href={"https://digimart-buyer.netlify.app/store?storeId="+storeId}
+								>
 									<ListItemIcon
 										className={classes.listItemIcon}
 									>

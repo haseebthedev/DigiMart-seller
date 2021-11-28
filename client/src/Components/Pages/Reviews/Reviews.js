@@ -47,9 +47,7 @@ export default function Reviews() {
 		response: "",
 	});
 
-	// Import Products Modal
 	const [responseModalOpen, setResponseModalOpen] = useState(false);
-
 	const openResponseModal = (id) => {
 		setVendorResponse({ ...vendorResponse, rid: id });
 		setResponseModalOpen(true);
@@ -147,7 +145,6 @@ export default function Reviews() {
 			hidden: false,
 			export: true,
 		},
-		// { title: "Review ID", field: "_id", hidden: false, export: true },
 		{ title: "PID", field: "productId", hidden: true, export: true },
 		{ title: "P. Name", field: "productName" },
 		{ title: "User Name", field: "buyerName" },

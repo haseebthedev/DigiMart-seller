@@ -82,19 +82,21 @@ export default function PromoteProduct(props) {
 		description: "",
 		discount: "",
 		promoCode: "-",
-		longUrl:
-			"https://digimart-buyer.netlify.app/product?productId=61a0d1f379dbd30004a320b3",
+		longUrl: "",
 		shortUrl: "",
 		urlCode: "",
 		isUrlAlreadyCreated: false,
 		isScheduled: false,
 	});
+	const [ProvideDiscount, setProvideDiscount] = useState(false);
 
 	const [IFerrors, setIFerrors] = useState({
 		nameError: "",
 		categoryError: "",
 		descriptionError: "",
 		discountError: "",
+		longUrlError: "",
+		shortUrlError: "",
 	});
 
 	const InputValidation = () => {
@@ -130,12 +132,23 @@ export default function PromoteProduct(props) {
 		}
 
 		// discountFormat
-		var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
-		if (PPdetails.discount.match(discountFormat)) {
-			errors.discountError = "";
-		} else {
+		if (ProvideDiscount === true) {
+			var discountFormat = /\b(0*([1-9][0-9]?|100))\b/;
+			if (PPdetails.discount.match(discountFormat)) {
+				errors.discountError = "";
+			} else {
+				hasError = true;
+				errors.discountError =
+					"Entered Discount Percentage is invalid.";
+			}
+		}
+
+		// shortUrl
+		if (PPdetails.shortUrl == "") {
 			hasError = true;
-			errors.discountError = "Entered Discount Percentage is invalid.";
+			errors.shortUrlError = "Please generate a short URL!";
+		} else {
+			errors.shortUrlError = "";
 		}
 
 		setIFerrors({ ...IFerrors, ...errors });
@@ -178,11 +191,22 @@ export default function PromoteProduct(props) {
 			const words = [
 				PPdetails.discount,
 				"Best",
+				"Wow",
+				"Silver",
+				"Insane",
+				"Shopping",
 				"Buy",
 				"Sale",
+				"Golden",
+				"Buddy",
+				"Cool",
+				"Amazing",
 				"Shop",
+				"Order",
+				"Crazy",
+				"Buying",
 				"Xtreme",
-				"2021",
+				"2022",
 			];
 			coupon =
 				words[Math.floor(Math.random() * words.length)] +
@@ -214,7 +238,6 @@ export default function PromoteProduct(props) {
 	};
 
 	const generateShortURL = async () => {
-		console.log("PPdetails.longUrl", PPdetails.longUrl);
 		if (PPdetails.longUrl !== "") {
 			await api
 				.post(
@@ -269,6 +292,13 @@ export default function PromoteProduct(props) {
 						open: true,
 					});
 				});
+		} else {
+			setSnackBar({
+				...snackBarstate,
+				type: "error",
+				open: true,
+				message: `ERROR: Please Select a Product first!`,
+			});
 		}
 	};
 
@@ -309,8 +339,6 @@ export default function PromoteProduct(props) {
 	};
 
 	const [promotionType, setPromotionType] = useState("");
-
-	// ========IC=============================================
 	const [contactsType, setContactsType] = useState("");
 	const [fileName, setfileName] = useState("");
 	const [contactsList, setContactsList] = useState([]);
@@ -324,8 +352,6 @@ export default function PromoteProduct(props) {
 
 	// Contacts OnFileLoaded
 	const handlerOnFileLoaded = (data, fileInfo) => {
-		setfileName(fileInfo.name);
-
 		if (contactsType === "SMS") {
 			let validFields = ["name", "number"];
 			let isValid = data.map((el) =>
@@ -333,9 +359,16 @@ export default function PromoteProduct(props) {
 			);
 
 			if (isValid.includes(false)) {
-				console.log("Error exists!");
+				// Invalid file format
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					open: true,
+					message: `ERROR: The file contains invalid data format!`,
+				});
 			} else {
 				console.log("Success!");
+				setfileName(fileInfo.name);
 				const newData = data.map((el) => {
 					return { name: el.name, number: "+" + el.number };
 				});
@@ -348,10 +381,17 @@ export default function PromoteProduct(props) {
 			);
 
 			if (isValid.includes(false)) {
-				console.log("Error exists!");
+				// Invalid file format
+				setSnackBar({
+					...snackBarstate,
+					type: "error",
+					open: true,
+					message: `ERROR: The file contains invalid data format!`,
+				});
 			} else {
 				console.log("Success!");
 				setContactsList(data);
+				setfileName(fileInfo.name);
 			}
 		}
 	};
@@ -399,8 +439,6 @@ export default function PromoteProduct(props) {
 		transformHeader: (header) => header.toLowerCase().replace(/\W/g, "_"),
 	};
 
-	// =======================================================
-
 	useEffect(() => {
 		getAllCategory();
 		getAllProducts();
@@ -421,7 +459,13 @@ export default function PromoteProduct(props) {
 			isScheduled,
 		} = PPdetails;
 
-		let promotionMessage = `Buy exciting '${category}' from ${city}. Enter our Promo Code '${promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+		var promotionMessage = "";
+
+		if (ProvideDiscount === false) {
+			promotionMessage = `Buy exciting '${category}' from ${city}. Get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+		} else {
+			promotionMessage = `Buy exciting '${category}' from ${city}. Enter our Promo Code '${promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+		}
 
 		var dataToSend = {
 			productId: pid,
@@ -438,6 +482,8 @@ export default function PromoteProduct(props) {
 		if (promotionType === "PB") {
 			dataToSend["isPromoteToAllBuyers"] = true;
 			dataToSend["buyerPromotionSource"] = "Both";
+			dataToSend["selectedBuyersData"] = [];
+			dataToSend["message"] = "testing message";
 		}
 
 		// Scrapped Audience already saved in DB
@@ -452,17 +498,24 @@ export default function PromoteProduct(props) {
 			dataToSend["audienceInterestCategory"] = category;
 		}
 
+		// Formatting Date/Time
 		let dateAndTime = new Date(selectedDate).toLocaleString();
-
 		let promotion_date = dateAndTime.split(", ")[0];
 		let promotion_Time = dateAndTime.split(", ")[1];
+
+		// Adding/Nullifying Discount
+		if (ProvideDiscount === false) {
+			dataToSend["discount"] = null;
+			dataToSend["promoCode"] = null;
+		} else {
+			dataToSend["discount"] = discount;
+			dataToSend["promoCode"] = promoCode;
+		}
 
 		if (isUrlAlreadyCreated === false) {
 			dataToSend["productName"] = productName;
 			dataToSend["productCategory"] = category;
 			dataToSend["description"] = description;
-			dataToSend["discount"] = discount;
-			dataToSend["promoCode"] = promoCode;
 			dataToSend["longUrl"] = longUrl;
 			dataToSend["shortUrl"] = shortUrl;
 			dataToSend["urlCode"] = urlCode;
@@ -470,8 +523,6 @@ export default function PromoteProduct(props) {
 			dataToSend["productName"] = productName;
 			dataToSend["productCategory"] = category;
 			dataToSend["description"] = description;
-			dataToSend["discount"] = discount;
-			dataToSend["promoCode"] = promoCode;
 			dataToSend["shortUrl"] = shortUrl;
 		}
 
@@ -486,7 +537,7 @@ export default function PromoteProduct(props) {
 		var hasError = InputValidation();
 
 		if (hasError === false) {
-			console.log("dataToSend ::", dataToSend);
+			console.log("Data Sending:: ", dataToSend);
 
 			await api
 				.post(
@@ -506,12 +557,21 @@ export default function PromoteProduct(props) {
 							"CONGRATULATIONS: Your Product has been Added into Promotion List!",
 						open: true,
 					});
-					console.log("SUCCESS: ", res);
+
 					setTimeout(() => {
 						window.location.reload();
 					}, 1000);
 				})
-				.catch((error) => console.log("Error ", error));
+				.catch((error) => {
+					setSnackBar({
+						...snackBarstate,
+						type: "error",
+						open: true,
+						message:
+							"ERROR: " +
+							JSON.stringify(error.response.data.error.message),
+					});
+				});
 		}
 	};
 
@@ -613,6 +673,11 @@ export default function PromoteProduct(props) {
 														variant="outlined"
 														color="primary"
 														component="span"
+														disabled={
+															contactsType == ""
+																? true
+																: false
+														}
 													>
 														Upload CSV
 													</Button>
@@ -635,6 +700,7 @@ export default function PromoteProduct(props) {
 													inputStyle={{
 														display: "none",
 													}}
+													accept=".csv"
 												/>
 											</div>
 											<Typography
@@ -785,60 +851,105 @@ export default function PromoteProduct(props) {
 										spacing={2}
 										style={{ marginBottom: 10 }}
 									>
-										<Grid item xs={12} sm={6} md={6} lg={6}>
-											<TextField
-												margin="dense"
-												variant="outlined"
-												fullWidth
-												label="Discount (%)"
-												name="discount"
-												value={PPdetails.discount}
-												onChange={handlePPdetails(
-													"discount"
-												)}
-												helperText={
-													IFerrors.discountError
-												}
-												error={
-													IFerrors.discountError
-														.length > 0
-														? true
-														: false
-												}
-											/>
-										</Grid>
-										<Grid
-											item
-											xs={12}
-											sm={6}
-											md={3}
-											lg={3}
-											align="center"
-										>
-											<div
-												style={{
-													marginTop: 10,
-													border: "1px solid rgb(224 224 224)",
-													padding: 5,
-												}}
-											>
-												<Typography color="primary">
-													{PPdetails.promoCode}
-												</Typography>
-											</div>
-										</Grid>
-										<Grid item xs={12} sm={6} md={3} lg={3}>
-											<Button
-												fullWidth
-												variant="outlined"
-												style={{ marginTop: 9 }}
-												onClick={getCoupon}
-											>
-												Get Coupon
-											</Button>
+										<Grid item xs={12}>
+											<FormGroup row>
+												<FormControlLabel
+													control={
+														<Checkbox
+															color="primary"
+															checked={
+																ProvideDiscount
+															}
+															onClick={() =>
+																setProvideDiscount(
+																	!ProvideDiscount
+																)
+															}
+														/>
+													}
+													label="Do you want to provide Discount?"
+													style={{ marginTop: 10 }}
+												/>
+											</FormGroup>
 										</Grid>
 									</Grid>
-									<Divider />
+									{ProvideDiscount && (
+										<Grid container spacing={2}>
+											<Grid
+												item
+												xs={12}
+												sm={6}
+												md={6}
+												lg={6}
+											>
+												<TextField
+													margin="dense"
+													variant="outlined"
+													fullWidth
+													label="Discount (%)"
+													name="discount"
+													value={PPdetails.discount}
+													onChange={handlePPdetails(
+														"discount"
+													)}
+													helperText={
+														IFerrors.discountError
+													}
+													error={
+														IFerrors.discountError
+															.length > 0
+															? true
+															: false
+													}
+												/>
+											</Grid>
+											<Grid
+												item
+												xs={12}
+												sm={6}
+												md={3}
+												lg={3}
+												align="center"
+											>
+												<div
+													style={{
+														marginTop: 10,
+														border: "1px solid rgb(224 224 224)",
+														padding: 5,
+													}}
+												>
+													<Typography color="primary">
+														{PPdetails.promoCode}
+													</Typography>
+												</div>
+											</Grid>
+											<Grid
+												item
+												xs={12}
+												sm={6}
+												md={3}
+												lg={3}
+											>
+												<Button
+													fullWidth
+													variant="outlined"
+													style={{ marginTop: 9 }}
+													onClick={getCoupon}
+													disabled={
+														PPdetails.promoCode ===
+														"-"
+															? false
+															: true
+													}
+												>
+													Get Coupon
+												</Button>
+											</Grid>
+										</Grid>
+									)}
+
+									<Divider style={{ marginTop: 15 }} />
+
 									<div
 										style={{
 											display: "flex",
@@ -886,6 +997,15 @@ export default function PromoteProduct(props) {
 												name="productURL"
 												value={PPdetails.longUrl}
 												disabled
+												helperText={
+													IFerrors.shortUrlError
+												}
+												error={
+													IFerrors.shortUrlError
+														.length > 0
+														? true
+														: false
+												}
 											/>
 										</Grid>
 										<Grid item xs={6} sm={6} md={4} lg={4}>
@@ -1037,6 +1157,7 @@ export default function PromoteProduct(props) {
 							)}
 						</Grid>
 
+						{/* Illustration */}
 						<Grid item xs={false} sm={false} md={false} lg={4}>
 							<div
 								style={{

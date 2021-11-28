@@ -23,7 +23,16 @@ export default function MyBuyers() {
 			.then((res) => {
 				setBuyersList(res.data.data.buyers);
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	useEffect(() => {
@@ -63,8 +72,16 @@ export default function MyBuyers() {
 		},
 		{ title: "Email", field: "email" },
 		{ title: "Phone", field: "phoneNumber" },
-		{ title: "D.O.B", field: "birthday" },
-		{ title: "Gender", field: "gender" },
+		{
+			title: "D.O.B",
+			field: "birthday",
+			render: ({ birthday }) => <div>{birthday ? birthday : "-"}</div>,
+		},
+		{
+			title: "Gender",
+			field: "gender",
+			render: ({ gender }) => <div>{gender ? gender : "N/A"}</div>,
+		},
 		{
 			title: "Date",
 			field: "createdAt",

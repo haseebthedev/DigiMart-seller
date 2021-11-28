@@ -14,6 +14,7 @@ import {
 	Button,
 	Divider,
 } from "@material-ui/core";
+import moment from "moment";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import {
@@ -50,11 +51,29 @@ export default function ScheduledPromotions() {
 
 	const columns = [
 		{ title: "PID", field: "_id" },
-		{ title: "PNAME", field: "productName" },
+		{ title: "Product Name", field: "productName" },
+		{
+			title: "Discount",
+			field: "discount",
+			render: ({ discount }) => {
+				let res = discount === null ? "NIL" : discount;
+				return <div>{res}</div>;
+			},
+		},
 		{ title: "Product URL", field: "shortUrl" },
-		{ title: "Discount", field: "discount" },
-		{ title: "Promotion Time", field: "promotion_Time" },
-		{ title: "Promotion Date", field: "promotion_date" },
+		{
+			title: "Promotion Date",
+			field: "promotion_date",
+			render: ({ promotion_date }) => {
+				let date = new Date(promotion_date);
+				return <div>{date.toLocaleDateString()}</div>;
+			},
+		},
+		{
+			title: "Promotion Time",
+			field: "promotion_Time",
+			render: ({ promotion_Time }) => <div>{promotion_Time}</div>,
+		},
 	];
 
 	const [PPdetails, setPPdetails] = useState([]);
@@ -111,8 +130,6 @@ export default function ScheduledPromotions() {
 		setSelectedTime(time);
 	};
 
-	const [setSPdetails] = useState({});
-
 	const handlerUpdatePP = async () => {
 		let date = selectedDate.toLocaleString().split(", ")[0];
 		let time = selectedTime.toLocaleTimeString();
@@ -128,8 +145,29 @@ export default function ScheduledPromotions() {
 					headers: { Authorization: `Bearer ${token}` },
 				}
 			)
-			.then((res) => console.log(res))
-			.catch((error) => console.log("ERROR: " + error));
+			.then((res) => {
+				handleEditModalClose();
+				setSnackBar({
+					...snackBarstate,
+					open: true,
+					type: "success",
+					message: "SUCCESS: Date/Time has been updated!",
+				});
+
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
+			})
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	const getAllSchedulePromotions = async () => {
@@ -159,7 +197,7 @@ export default function ScheduledPromotions() {
 							tooltip: "Edit",
 							onClick: (event, rowData) => {
 								setPid(rowData._id);
-								setSPdetails(rowData);
+								console.log(rowData);
 								handleEditModalOpen();
 							},
 						}),

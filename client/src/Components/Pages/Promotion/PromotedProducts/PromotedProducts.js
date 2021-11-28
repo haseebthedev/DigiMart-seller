@@ -4,6 +4,7 @@ import MaterialTable from "material-table";
 // import Snackbar from "@material-ui/core/Snackbar";
 // import MuiAlert from "@material-ui/lab/Alert";
 import { Grid, Paper } from "@material-ui/core";
+import moment from "moment";
 import { useUserContext } from "../../../../context/UserContext";
 
 import Pal from "../../../../themes/palette";
@@ -18,11 +19,34 @@ export default function PromotedProducts() {
 	const columns = [
 		{ title: "PID", field: "productId" },
 		{ title: "Product Name", field: "productName" },
-		{ title: "Discount", field: "discount" },
-		{ title: "Promo Code", field: "promoCode" },
+		{
+			title: "Discount",
+			field: "discount",
+			render: ({ discount }) => {
+				let res = discount === null ? "NIL" : discount;
+				return <div>{res}</div>;
+			},
+		},
+		{
+			title: "Promo Code",
+			field: "promoCode",
+			render: ({ promoCode }) => {
+				let res = promoCode === null ? "-" : promoCode;
+				return <div>{res}</div>;
+			},
+		},
 		{
 			title: "Medium",
 			field: "promotionSource",
+			render: (row) => {
+				let res;
+				if (row.importedAudiencePromotionSource !== undefined) {
+					res = row.importedAudiencePromotionSource;
+				} else {
+					res = row.buyerPromotionSource;
+				}
+				return <div>{res}</div>;
+			},
 		},
 		{ title: "Product URL", field: "shortUrl" },
 		{
@@ -37,9 +61,14 @@ export default function PromotedProducts() {
 			title: "Time",
 			field: "promotion_date",
 			align: "center",
-			render: ({ promotion_date }) => {
-				let date = new Date(promotion_date);
-				return <div>{date.toLocaleTimeString()}</div>;
+			render: (row) => {
+				let time = "";
+				if (row.isPromotionScheduled === false) {
+					time = moment(row.createdAt).format("hh:mm A");
+				} else {
+					time = moment(row.promotion_date).format("hh:mm A");
+				}
+				return <div>{time}</div>;
 			},
 			export: false,
 		},
