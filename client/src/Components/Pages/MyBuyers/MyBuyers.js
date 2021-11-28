@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../Axios/api";
 import MaterialTable from "material-table";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 import { Grid, Paper } from "@material-ui/core";
 import { useUserContext } from "../../../context/UserContext";
 import ImgNotAvailable from "../../../assets/images/imgNotAvailable.jpg";
@@ -11,6 +13,19 @@ export default function MyBuyers() {
 	const classes = useStyles();
 	const { store } = useUserContext();
 	const token = store.data.token;
+
+	// Snackbar
+	const [snackBarstate, setSnackBar] = useState({
+		open: false,
+		vertical: "top",
+		horizontal: "right",
+		type: "success",
+		message: "",
+	});
+	const { vertical, horizontal, open } = snackBarstate;
+	const handleCloseSnackBar = () => {
+		setSnackBar({ ...snackBarstate, open: false });
+	};
 
 	// OrdersList
 	const [BuyersList, setBuyersList] = useState([]);
@@ -120,6 +135,24 @@ export default function MyBuyers() {
 					}}
 				/>
 			</Grid>
+
+			{/* Alert Snackbar */}
+			<Snackbar
+				open={open}
+				anchorOrigin={{ vertical, horizontal }}
+				autoHideDuration={3000}
+				onClose={handleCloseSnackBar}
+				key={vertical + horizontal}
+			>
+				<MuiAlert
+					elevation={6}
+					variant="filled"
+					onClose={handleCloseSnackBar}
+					severity={snackBarstate.type}
+				>
+					{snackBarstate.message}
+				</MuiAlert>
+			</Snackbar>
 		</Grid>
 	);
 }

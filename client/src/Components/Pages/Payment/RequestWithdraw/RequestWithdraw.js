@@ -101,7 +101,7 @@ export default function RequestWithdraw() {
 			.then((res) => {
 				setPaymentData(res.data.data.PaymentAccounts);
 			})
-			.catch(() => {
+			.catch((error) => {
 				setSnackBar({
 					...snackBarstate,
 					message:
@@ -120,7 +120,16 @@ export default function RequestWithdraw() {
 			.then((res) => {
 				setPendingPayment(res.data.data.pendingPayment);
 			})
-			.catch((error) => console.log("Error: ", error));
+			.catch((error) => {
+				setSnackBar({
+					...snackBarstate,
+					message:
+						"ERROR: " +
+						JSON.stringify(error.response.data.error.message),
+					type: "error",
+					open: true,
+				});
+			});
 	};
 
 	useEffect(() => {
