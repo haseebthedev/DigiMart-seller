@@ -280,14 +280,14 @@ export default function Reviews() {
 					title="All Complaints"
 					data={ComplaintsList}
 					columns={columns}
-					actions={[
-						(rowData) => ({
-							icon: () => <ReplyIcon />,
-							tooltip: "Send a Response",
-							onClick: (event, rowData) =>
-								openResponseModal(rowData._id),
-						}),
-					]}
+					// actions={[
+					// 	(rowData) => ({
+					// 		icon: () => <ReplyIcon />,
+					// 		tooltip: "Send a Response",
+					// 		onClick: (event, rowData) =>
+					// 			openResponseModal(rowData._id),
+					// 	}),
+					// ]}
 					options={{
 						actionsColumnIndex: -1,
 						headerStyle: {

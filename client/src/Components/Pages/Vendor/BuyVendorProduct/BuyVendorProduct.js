@@ -170,13 +170,15 @@ export default function BuyVendorProduct() {
 			SellerProductPrice -
 			SellerProductPrice * (discountPercentage / 100);
 
+		const vendorProductId = newProduct["_id"];
+
 		const PropToDelete = [
 			"createdAt",
 			"discountPrice",
 			"purchasePrice",
 			"updatedAt",
 			"__v",
-			"_id",
+			// "_id",
 			"vendorId",
 			"vendorCategory",
 			"vendorTypeOfBusiness",
@@ -188,6 +190,7 @@ export default function BuyVendorProduct() {
 
 		newProduct = {
 			...newProduct,
+			vendorProductId,
 			purchasePrice: salePrice,
 			salePrice:
 				SellerProductPrice !== "" ? SellerProductPrice : salePrice,

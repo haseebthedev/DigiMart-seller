@@ -189,8 +189,6 @@ export default function Orders() {
 	const handerChangeStatus = (id) => async (e) => {
 		let newStatus = e.target.value;
 
-		console.log("newStatus", newStatus);
-
 		const newOrderDetails = OrderDetails.map((order) =>
 			order._id === id ? { ...order, status: newStatus } : order
 		);
@@ -254,6 +252,7 @@ export default function Orders() {
 			})
 			.then((res) => {
 				setOrderdetails(res.data.data.orders);
+				console.log(res.data.data.orders);
 			})
 			.catch((error) => console.log(error));
 	};
@@ -306,7 +305,12 @@ export default function Orders() {
 	const getOrderStatusOptions = (status) => {
 		switch (status) {
 			case "Pending":
-				return <MenuItem value="Active">Active</MenuItem>;
+				return (
+					<>
+						<MenuItem value="Active">Active</MenuItem>
+						<MenuItem value="Cancelled">Cancelled</MenuItem>
+					</>
+				);
 			case "Active":
 				return <MenuItem value="Delivered">Delivered</MenuItem>;
 			case "Delivered":
@@ -315,6 +319,8 @@ export default function Orders() {
 			// 	break;
 			// case "Returned":
 			// 	break;
+			default:
+				return <MenuItem value="Cancelled">Cancelled</MenuItem>;
 		}
 	};
 
@@ -395,12 +401,73 @@ export default function Orders() {
 						style={{ marginTop: 8 }}
 						value={"DEFAULT"}
 						onChange={handerChangeStatus(rowData._id)}
-						disabled={rowData.status === "Returned" ? true : false}
+						disabled={
+							rowData.status === "Returned" ||
+							rowData.status === "Cancelled"
+								? true
+								: false
+						}
 					>
 						<MenuItem value="DEFAULT" disabled>
 							Status
 						</MenuItem>
-						{getOrderStatusOptions(rowData.status)}
+						{
+							rowData.status === "Pending"
+								? [
+										["Active", "Cancelled"].map(
+											(el, index) => (
+												<MenuItem
+													value={el}
+													key={index}
+												>
+													{el}
+												</MenuItem>
+											)
+										),
+								  ]
+								: rowData.status === "Active"
+								? [
+										["Delivered", "Cancelled"].map(
+											(el, index) => (
+												<MenuItem
+													value={el}
+													key={index}
+												>
+													{el}
+												</MenuItem>
+											)
+										),
+								  ]
+								: rowData.status === "Delivered"
+								? [
+										["Returned"].map((el, index) => (
+											<MenuItem value={el} key={index}>
+												{el}
+											</MenuItem>
+										)),
+								  ]
+								: []
+
+							// switch (status) {
+							// 	case "Pending":
+							// 		return (
+							// 			<>
+							// 				<MenuItem value="Active">Active</MenuItem>
+							// 				<MenuItem value="Cancelled">Cancelled</MenuItem>
+							// 			</>
+							// 		);
+							// 	case "Active":
+							// 		return <MenuItem value="Delivered">Delivered</MenuItem>;
+							// 	case "Delivered":
+							// 		return <MenuItem value="Returned">Returned</MenuItem>;
+							// 	// case "Cancelled":
+							// 	// 	break;
+							// 	// case "Returned":
+							// 	// 	break;
+							// 	default:
+							// 		return <MenuItem value="Cancelled">Cancelled</MenuItem>;
+							// }
+						}
 					</Select>
 				</div>
 			),
@@ -522,11 +589,13 @@ export default function Orders() {
 													<div>
 														<Typography>
 															Price:{" "}
-															{prod.buyPrice}
+															{prod.salePrice}
 														</Typography>
 														<Typography>
 															Discount:{" "}
-															{prod.discount}
+															{
+																prod.discountedPrice
+															}
 														</Typography>
 													</div>
 												</Grid>
@@ -565,7 +634,9 @@ export default function Orders() {
 										</Typography>
 										<Typography>
 											Total Discount:{" "}
-											{rowData.totalDiscount}
+											{rowData.totalDiscount
+												? rowData.totalDiscount
+												: 0}
 										</Typography>
 										<Typography>
 											Shipping Cost: {rowData.shippingFee}
