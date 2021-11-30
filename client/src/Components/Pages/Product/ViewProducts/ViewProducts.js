@@ -92,6 +92,12 @@ export default function ViewProducts() {
 		},
 		{ title: "Category", field: "category", hidden: false, export: true },
 		{
+			title: "SubCategory",
+			field: "subCategory",
+			hidden: false,
+			export: true,
+		},
+		{
 			title: "purchasePrice",
 			field: "purchasePrice",
 			hidden: true,

@@ -209,11 +209,17 @@ export default function BuyVendorProduct() {
 					}
 				)
 				.then((res) => {
+					// setSnackBar({
+					// 	...snackBarstate,
+					// 	type: "success",
+					// 	message: "Product has been added successfully!",
+					// 	open: true,
+					// });
 					setSnackBar({
 						...snackBarstate,
 						type: "success",
-						message: "Product has been added successfully!",
 						open: true,
+						message: "SUCCESS: " + JSON.stringify(res.data.message),
 					});
 				})
 				.catch((error) => {

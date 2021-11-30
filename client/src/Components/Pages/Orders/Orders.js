@@ -302,28 +302,6 @@ export default function Orders() {
 		// eslint-disable-next-line
 	}, []);
 
-	const getOrderStatusOptions = (status) => {
-		switch (status) {
-			case "Pending":
-				return (
-					<>
-						<MenuItem value="Active">Active</MenuItem>
-						<MenuItem value="Cancelled">Cancelled</MenuItem>
-					</>
-				);
-			case "Active":
-				return <MenuItem value="Delivered">Delivered</MenuItem>;
-			case "Delivered":
-				return <MenuItem value="Returned">Returned</MenuItem>;
-			// case "Cancelled":
-			// 	break;
-			// case "Returned":
-			// 	break;
-			default:
-				return <MenuItem value="Cancelled">Cancelled</MenuItem>;
-		}
-	};
-
 	const columns = [
 		{
 			title: "#",

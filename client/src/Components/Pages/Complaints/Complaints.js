@@ -317,7 +317,7 @@ export default function Reviews() {
 											Image Uploaded by User :
 										</Typography>
 
-										{rowData.screenShot !== "" ? (
+										{rowData.screenShot ? (
 											<img
 												src={rowData.screenShot}
 												alt="productImage1"
