@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "date-fns";
+import axios from "axios";
 import clsx from "clsx";
 import {
 	Button,
@@ -20,7 +21,7 @@ import {
 	CardActions,
 	Checkbox,
 } from "@material-ui/core";
-import api from "../../../../Axios/api";
+// import api from "../../../../Axios/api";
 import DateFnsUtils from "@date-io/date-fns";
 import {
 	MuiPickersUtilsProvider,
@@ -43,6 +44,8 @@ export default function PromoteProduct(props) {
 	const { store } = useUserContext();
 	const token = store.data.token;
 	const city = store.data.data.city;
+
+	const api = "http://localhost:8080";
 
 	// Snackbar
 	const [snackBarstate, setSnackBar] = useState({
