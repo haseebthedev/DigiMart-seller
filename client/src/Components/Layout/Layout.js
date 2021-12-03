@@ -162,11 +162,11 @@ const Layout = (props) => {
 	const handleShowNotificationsMenuClose = () => {
 		setIsShowNotificationsMenu(null);
 	};
-	const goToRouteOfNotification = (type) => {
-		if (type === "order") {
-			history.push(`/orders`);
-		}
-	};
+	// const goToRouteOfNotification = (type) => {
+	// 	if (type === "order") {
+	// 		history.push(`/orders`);
+	// 	}
+	// };
 
 	// Logout
 	const logoutHandler = (e) => {
@@ -250,7 +250,7 @@ const Layout = (props) => {
 
 	useEffect(() => {
 		getNotifications();
-	});
+	}, []);
 
 	return (
 		<div className={classes.root}>
