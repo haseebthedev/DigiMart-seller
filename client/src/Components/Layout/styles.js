@@ -115,6 +115,24 @@ const useStyles = makeStyles((theme) => {
 				width: "60px",
 			},
 		},
+		notificationMenu: {
+			marginTop: "60px",
+			height: 500,
+			width: 500,
+			paddingBottom: 20,
+			[theme.breakpoints.down(theme.breakpoints.values.xmd)]: {
+				marginTop: "90px",
+			},
+			[theme.breakpoints.down(theme.breakpoints.values.sm)]: {
+				marginTop: "50px",
+			},
+		},
+		HeaderLinksHeadingText: {
+			padding: 5,
+			marginLeft: 10,
+			whiteSpace: "initial",
+			maxWidth: "301px",
+		},
 	};
 });
 

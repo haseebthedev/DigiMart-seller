@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import api from "../../Axios/api";
 import { Redirect } from "react-router-dom";
@@ -31,6 +31,7 @@ import {
 } from "react-router-dom";
 
 // MUI Icons
+import AddAlertIcon from "@material-ui/icons/AddAlert";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -144,6 +145,29 @@ const Layout = (props) => {
 		setOpen(false);
 	};
 
+	// Notifications
+	const [isShowNotificationsMenu, setIsShowNotificationsMenu] =
+		useState(false);
+	const [notifications, setNotifications] = useState([]);
+	const notificationsAlreadyReceived = [];
+	let notificationIds = [];
+	const [unReadNotificationsLength, setUnReadNotificationsLength] = useState(
+		notificationsAlreadyReceived.length
+	);
+	//for drop down of notifications
+	const handleShowNotificationsMenuOpen = (event) => {
+		setIsShowNotificationsMenu(event.currentTarget);
+		setUnReadNotificationsLength(0);
+	};
+	const handleShowNotificationsMenuClose = () => {
+		setIsShowNotificationsMenu(null);
+	};
+	const goToRouteOfNotification = (type) => {
+		if (type === "order") {
+			history.push(`/orders`);
+		}
+	};
+
 	// Logout
 	const logoutHandler = (e) => {
 		e.preventDefault();
@@ -207,6 +231,27 @@ const Layout = (props) => {
 		setOpenDDVendors(!openDDVendors);
 	};
 
+	const getNotifications = async () => {
+		await api
+			.get("/seller/myNotifications", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then(function (res) {
+				console.log("my notifications", res.data.data.myNotifications);
+				setNotifications((prevState) => [
+					...prevState,
+					...res.data.data.myNotifications,
+				]);
+			})
+			.catch((error) => {
+				console.log("error in getting data of notifications", error);
+			});
+	};
+
+	useEffect(() => {
+		getNotifications();
+	});
+
 	return (
 		<div className={classes.root}>
 			{isLoggedOut ? <Redirect to="/seller/login" /> : ""}
@@ -255,14 +300,29 @@ const Layout = (props) => {
 									/>
 								</Badge>
 							</IconButton>
-							<IconButton>
-								<Badge badgeContent={9} color="primary">
+
+							<IconButton
+								onClick={handleShowNotificationsMenuOpen}
+							>
+								<Badge
+									badgeContent={unReadNotificationsLength}
+									color="primary"
+								>
 									<NotificationsIcon
 										fontSize="small"
 										className="badgeIcons"
 									/>
 								</Badge>
 							</IconButton>
+
+							{/* <IconButton>
+								<Badge badgeContent={9} color="primary">
+									<NotificationsIcon
+										fontSize="small"
+										className="badgeIcons"
+									/>
+								</Badge>
+							</IconButton> */}
 							<IconButton
 								edge="end"
 								aria-haspopup="true"
@@ -300,7 +360,10 @@ const Layout = (props) => {
 									onClick={handleClose}
 									component={"a"}
 									target="_blank"
-									href={"https://digimart-buyer.netlify.app/store?storeId="+storeId}
+									href={
+										"https://digimart-buyer.netlify.app/store?storeId=" +
+										storeId
+									}
 								>
 									<ListItemIcon
 										className={classes.listItemIcon}
@@ -822,6 +885,82 @@ const Layout = (props) => {
 					</Collapse>
 				</List>
 			</Drawer>
+
+			{/* NOTIFICATIONS BOX */}
+			<Menu
+				id="notifications-box"
+				anchorEl={isShowNotificationsMenu}
+				className={classes.notificationMenu}
+				open={Boolean(isShowNotificationsMenu)}
+				onClose={handleShowNotificationsMenuClose}
+			>
+				<Typography
+					variant="h6"
+					style={{
+						textAlign: "center",
+						fontWeight: "bold",
+						padding: 10,
+					}}
+				>
+					Notifications
+				</Typography>
+				<Typography
+					style={{
+						color: "grey",
+						padding: 4,
+						borderBottom: "0.1px solid #e5e5e5",
+					}}
+				>
+					{notifications.length < 1
+						? "Notifications are empty."
+						: null}
+				</Typography>
+				{notifications.map((item) => (
+					<div
+						style={{
+							width: 380,
+						}}
+						// onClick={() => goToRouteOfNotification(item.type)}
+						key={item.mainCategory}
+					>
+						<MenuItem
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								borderBottom: "0.2px solid #e5e5e5",
+							}}
+						>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+								}}
+							>
+								<AddAlertIcon color="primary" />
+								<Typography
+									className={classes.HeaderLinksHeadingText}
+									variant="h6"
+									style={{ color: "#666" }}
+								>
+									{item.message}
+								</Typography>
+							</div>
+							<Typography
+								style={{
+									marginTop: 3,
+									fontSize: 13,
+									color: "black",
+									fontStyle: "italic",
+								}}
+							>
+								{item.createdAt.split("T")[0]},{" "}
+								{item.createdAt.split("T")[1].split(":")[0]}:
+								{item.createdAt.split("T")[1].split(":")[1]}
+							</Typography>
+						</MenuItem>
+					</div>
+				))}
+			</Menu>
 
 			<main
 				className={clsx(classes.content, {
