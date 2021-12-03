@@ -162,11 +162,6 @@ const Layout = (props) => {
 	const handleShowNotificationsMenuClose = () => {
 		setIsShowNotificationsMenu(null);
 	};
-	// const goToRouteOfNotification = (type) => {
-	// 	if (type === "order") {
-	// 		history.push(`/orders`);
-	// 	}
-	// };
 
 	// Logout
 	const logoutHandler = (e) => {
@@ -237,7 +232,6 @@ const Layout = (props) => {
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			.then(function (res) {
-				console.log("my notifications", res.data.data.myNotifications);
 				setNotifications((prevState) => [
 					...prevState,
 					...res.data.data.myNotifications,
@@ -915,13 +909,13 @@ const Layout = (props) => {
 						? "Notifications are empty."
 						: null}
 				</Typography>
-				{notifications.map((item) => (
+				{notifications.map((item, index) => (
 					<div
 						style={{
 							width: 380,
 						}}
 						// onClick={() => goToRouteOfNotification(item.type)}
-						key={item.mainCategory}
+						key={index}
 					>
 						<MenuItem
 							style={{

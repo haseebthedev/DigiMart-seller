@@ -1231,6 +1231,7 @@ export default function PromoteProduct(props) {
 												<Card
 													style={{
 														position: "relative",
+														height: 220,
 													}}
 												>
 													<CardMedia
