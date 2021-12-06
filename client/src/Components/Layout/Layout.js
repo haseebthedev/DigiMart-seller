@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import api from "../../Axios/api";
 import { Redirect } from "react-router-dom";
-
+import io from "socket.io-client";
 // MUI Components
 import {
 	CssBaseline,
@@ -146,6 +146,8 @@ const Layout = (props) => {
 	};
 
 	// Notifications
+	const SERVER = "https://digi-mart-server.herokuapp.com";
+	var socket = io(SERVER);
 	const [isShowNotificationsMenu, setIsShowNotificationsMenu] =
 		useState(false);
 	const [notifications, setNotifications] = useState([]);
@@ -154,6 +156,7 @@ const Layout = (props) => {
 	const [unReadNotificationsLength, setUnReadNotificationsLength] = useState(
 		notificationsAlreadyReceived.length
 	);
+
 	//for drop down of notifications
 	const handleShowNotificationsMenuOpen = (event) => {
 		setIsShowNotificationsMenu(event.currentTarget);
@@ -227,19 +230,44 @@ const Layout = (props) => {
 	};
 
 	const getNotifications = async () => {
-		await api
-			.get("/seller/myNotifications", {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			.then(function (res) {
-				setNotifications((prevState) => [
-					...prevState,
-					...res.data.data.myNotifications,
-				]);
-			})
-			.catch((error) => {
-				console.log("error in getting data of notifications", error);
+		// await api
+		// 	.get("/seller/myNotifications", {
+		// 		headers: { Authorization: `Bearer ${token}` },
+		// 	})
+		// 	.then(function (res) {
+		// 		setNotifications((prevState) => [
+		// 			...prevState,
+		// 			...res.data.data.myNotifications,
+		// 		]);
+		// 	})
+		// 	.catch((error) => {
+		// 		console.log("error in getting data of notifications", error);
+		// });
+
+		const currentUser = store.data ? store.data.data : null;
+		if (currentUser) {
+			//setting notification if for the user
+			socket.on("new notification", (data) => {
+				if (data) {
+					//for admin i.e owner change sellerId to adminId
+					if (data.sellerId === currentUser._id) {
+						for (const item of notificationsAlreadyReceived) {
+							notificationIds.push(item._id);
+						}
+						if (!notificationIds.includes(data._id)) {
+							notificationsAlreadyReceived.push(data);
+							setUnReadNotificationsLength(
+								notificationsAlreadyReceived.length
+							);
+							setNotifications((prevState) => [
+								...prevState,
+								data,
+							]);
+						}
+					}
+				}
 			});
+		}
 	};
 
 	useEffect(() => {
@@ -286,14 +314,14 @@ const Layout = (props) => {
 									/>
 								}
 							/>
-							<IconButton>
+							{/* <IconButton>
 								<Badge badgeContent={3} color="primary">
 									<MailIcon
 										fontSize="small"
 										className="badgeIcons"
 									/>
 								</Badge>
-							</IconButton>
+							</IconButton> */}
 
 							<IconButton
 								onClick={handleShowNotificationsMenuOpen}
@@ -309,14 +337,6 @@ const Layout = (props) => {
 								</Badge>
 							</IconButton>
 
-							{/* <IconButton>
-								<Badge badgeContent={9} color="primary">
-									<NotificationsIcon
-										fontSize="small"
-										className="badgeIcons"
-									/>
-								</Badge>
-							</IconButton> */}
 							<IconButton
 								edge="end"
 								aria-haspopup="true"
@@ -914,7 +934,6 @@ const Layout = (props) => {
 						style={{
 							width: 380,
 						}}
-						// onClick={() => goToRouteOfNotification(item.type)}
 						key={index}
 					>
 						<MenuItem
@@ -922,6 +941,8 @@ const Layout = (props) => {
 								display: "flex",
 								flexDirection: "column",
 								borderBottom: "0.2px solid #e5e5e5",
+								textAlign: "justify",
+								fontSize: 14,
 							}}
 						>
 							<div
@@ -943,7 +964,7 @@ const Layout = (props) => {
 								style={{
 									marginTop: 3,
 									fontSize: 13,
-									color: "black",
+									color: "grey",
 									fontStyle: "italic",
 								}}
 							>
