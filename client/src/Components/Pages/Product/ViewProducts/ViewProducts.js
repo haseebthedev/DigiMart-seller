@@ -397,24 +397,24 @@ export default function ViewProducts() {
 		}
 
 		// warranty
-		var warrantyFormat =
-			/[0-9]+\s[\bday\b|\bdays\b|\byear\b|\byears\b|\bmonth\b|\bmonths\b|\bweek\b|\bweeks\b]+/;
-		if (productDetails.warranty.match(warrantyFormat)) {
-			errors.warrantyError = "";
-		} else {
-			hasError = true;
-			errors.warrantyError = "Entered Warranty is invalid.";
-		}
+		// var warrantyFormat =
+		// 	/[0-9]+\s[\bday\b|\bdays\b|\byear\b|\byears\b|\bmonth\b|\bmonths\b|\bweek\b|\bweeks\b]+/;
+		// if (productDetails.warranty.match(warrantyFormat)) {
+		// 	errors.warrantyError = "";
+		// } else {
+		// 	hasError = true;
+		// 	errors.warrantyError = "Entered Warranty is invalid.";
+		// }
 
 		// weight
-		var weightFormat =
-			/[0-9]+\s[\bgram\b|\bgrams\b|\bkilogram\b|\bkilograms\b|\bmiligram\b|\bmiligrams\b]+/;
-		if (productDetails.weight.match(weightFormat)) {
-			errors.weightError = "";
-		} else {
-			hasError = true;
-			errors.weightError = "Entered Weight Amount is invalid.";
-		}
+		// var weightFormat =
+		// 	/[0-9]+\s[\bgram\b|\bgrams\b|\bkilogram\b|\bkilograms\b|\bmiligram\b|\bmiligrams\b]+/;
+		// if (productDetails.weight.match(weightFormat)) {
+		// 	errors.weightError = "";
+		// } else {
+		// 	hasError = true;
+		// 	errors.weightError = "Entered Weight Amount is invalid.";
+		// }
 
 		if (productDetails.isOnSale === true) {
 			// discountFormat
@@ -607,6 +607,9 @@ export default function ViewProducts() {
 				await api
 					.post("/seller/store/product", IPdata[i], {
 						headers: { Authorization: `Bearer ${token}` },
+					})
+					.then((res) => {
+						console.log(res);
 					})
 					.catch((error) => {
 						hasError = true;

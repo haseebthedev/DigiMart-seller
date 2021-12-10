@@ -221,6 +221,10 @@ export default function BuyVendorProduct() {
 						open: true,
 						message: "SUCCESS: " + JSON.stringify(res.data.message),
 					});
+
+					setTimeout(() => {
+						window.location.reload();
+					}, 1000);
 				})
 				.catch((error) => {
 					setSnackBar({

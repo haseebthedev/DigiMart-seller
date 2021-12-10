@@ -372,7 +372,7 @@ const VendorAnalytics = () => {
 								variant="h5"
 								style={{ fontWeight: "bold" }}
 							>
-								Top Performing Products
+								Top Reviewed Products
 							</Typography>
 						}
 						data={topReviewedProducts}

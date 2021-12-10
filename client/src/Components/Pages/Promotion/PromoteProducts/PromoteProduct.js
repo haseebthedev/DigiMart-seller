@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "date-fns";
-import axios from "axios";
 import clsx from "clsx";
 import {
 	Button,
@@ -37,6 +36,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import promotion from "../../../../assets/images/promotion.svg";
 import ImageNotAvailable from "../../../../assets/images/imgNotAvailable.jpg";
 import { useUserContext } from "../../../../context/UserContext";
+import { Link } from "react-router-dom";
 import useStyles from "./styles";
 
 export default function PromoteProduct(props) {
@@ -1143,13 +1143,20 @@ export default function PromoteProduct(props) {
 											</Button>
 										</Grid>
 										<Grid item xs={12} sm={6} md={6} lg={6}>
-											<Button
-												variant="contained"
-												fullWidth
-												style={{ marginTop: 9 }}
+											<Link
+												to="/seller/Promotion/scheduled-promotions"
+												style={{
+													textDecoration: "none",
+												}}
 											>
-												SCHEDULE PROMOTIONS
-											</Button>
+												<Button
+													variant="contained"
+													fullWidth
+													style={{ marginTop: 9 }}
+												>
+													SCHEDULE PROMOTIONS
+												</Button>
+											</Link>
 										</Grid>
 									</Grid>
 								</form>

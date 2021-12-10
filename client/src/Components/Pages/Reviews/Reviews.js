@@ -69,11 +69,8 @@ export default function Reviews() {
 		var hasError = false;
 
 		// Message Response
-		var responseFormat = /^\w(\w(\.{1}|\s{1})?)+\w$/;
-		if (
-			vendorResponse.response.match(responseFormat) &&
-			vendorResponse.response.length > 1
-		) {
+		// var responseFormat = /^\w(\w(\.{1}|\s{1})?)+\w$/;
+		if (vendorResponse.response.length > 1) {
 			errors.responseError = "";
 		} else {
 			hasError = true;

@@ -5,13 +5,13 @@ import MaterialTable from "material-table";
 import { Grid, Paper, Typography } from "@material-ui/core";
 
 // icons
+import StarsIcon from "@material-ui/icons/Stars";
 import FeaturedVideoIcon from "@material-ui/icons/FeaturedVideo";
 import LocalAtmIcon from "@material-ui/icons/LocalAtm";
 import WhatshotIcon from "@material-ui/icons/Whatshot";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import ImgNotAvailable from "../../../assets/images/imgNotAvailable.jpg";
 import Chart from "react-apexcharts";
-import CompleteRegister from "../../CompleteRegister/CompleteRegister";
 import { useUserContext } from "../../../context/UserContext";
 import useStyles from "./styles";
 
@@ -24,10 +24,6 @@ const BusinessAnalytics = () => {
 	const token = store.data.token;
 	const { isDarkModeEnabled } = store.data.data;
 
-	const [showCompleteRegis, setCompleteRegis] = useState(
-		store.data.data.isStoreRegistered
-	);
-
 	const [StatsCount, setStatsCount] = useState({
 		stock: 0,
 		investment: 0,
@@ -37,6 +33,14 @@ const BusinessAnalytics = () => {
 	const [salesData, setSalesData] = useState([]);
 	const [categoryData, setCategoryData] = useState([]);
 	const [topReviewedProducts, settopReviewedProducts] = useState([]);
+	const [topSellingProducts, settopSellingProducts] = useState([]);
+	const [orderCount, setorderCount] = useState({
+		totalDeliveredOrdersCount: 0,
+		totalCancelledOrdersCount: 0,
+		totalReturnedOrdersCount: 0,
+		totalActiveOrdersCount: 0,
+		totalPendingOrdersCount: 0,
+	});
 
 	var SalesStats = {
 		series: [
@@ -205,6 +209,12 @@ const BusinessAnalytics = () => {
 				// Top reviewed products
 				settopReviewedProducts(result.topReviewedProductsAndAvgRating);
 
+				// Top selling products
+				settopSellingProducts(result.topSellingProducts);
+
+				// Order status
+				setorderCount(result.allCounts);
+
 				// PieChart
 				var AllCounts = res.data.data.allCounts;
 				delete AllCounts.todayDeliveredOrdersCount;
@@ -246,6 +256,29 @@ const BusinessAnalytics = () => {
 		}
 		return <div>{res}</div>;
 	}
+
+	const topSellingProductscolumns = [
+		{
+			title: "#",
+			field: "tableData.id",
+			render: (row) => <div>{row.tableData.id + 1}</div>,
+		},
+		{
+			title: "Name",
+			field: "productName",
+			render: (row) => <div>{row._id.productName}</div>,
+		},
+		{
+			title: "Quantity",
+			field: "totalQuantity",
+			render: (row) => <div>{row.totalQuantity}</div>,
+		},
+		{
+			title: "Orders",
+			field: "totalOrders",
+			render: (row) => <div>{row.totalOrders}</div>,
+		},
+	];
 
 	const columns = [
 		{
@@ -309,11 +342,7 @@ const BusinessAnalytics = () => {
 		},
 	];
 
-	let result = !showCompleteRegis ? (
-		<Paper className={classes.Paper}>
-			<CompleteRegister setCompleteRegis={setCompleteRegis} />
-		</Paper>
-	) : (
+	return (
 		<div>
 			<Grid
 				container
@@ -354,7 +383,41 @@ const BusinessAnalytics = () => {
 					/>
 				</Grid>
 			</Grid>
+
 			<Grid container spacing={4}>
+				{/* <Grid
+					container
+					spacing={4}
+					justify="space-between"
+					style={{ marginBottom: 16 }}
+				>
+					<Grid item xs={12} md={3}>
+						<CountCard
+							title="DELIVERED ORDERS"
+							count={"# " + orderCount.totalDeliveredOrdersCount}
+						/>
+					</Grid>
+
+					<Grid item xs={12} md={3}>
+						<CountCard
+							title="RETURNED ORDERS"
+							count={"# " + orderCount.totalReturnedOrdersCount}
+						/>
+					</Grid>
+					<Grid item xs={12} md={3}>
+						<CountCard
+							title="ACTIVE ORDERS"
+							count={"# " + orderCount.totalActiveOrdersCount}
+						/>
+					</Grid>
+					<Grid item xs={12} md={3}>
+						<CountCard
+							title="PENDING ORDERS"
+							count={"# " + orderCount.totalPendingOrdersCount}
+						/>
+					</Grid>
+				</Grid> */}
+
 				<Grid item xs={12} md={8}>
 					<Paper style={{ padding: 16 }}>
 						<Chart
@@ -363,6 +426,7 @@ const BusinessAnalytics = () => {
 							type="area"
 						/>
 					</Paper>
+
 					<MaterialTable
 						style={{ marginTop: 30 }}
 						title={
@@ -370,7 +434,7 @@ const BusinessAnalytics = () => {
 								variant="h5"
 								style={{ fontWeight: "bold" }}
 							>
-								Top Performing Products
+								Top Reviewed Products
 							</Typography>
 						}
 						data={topReviewedProducts}
@@ -407,12 +471,34 @@ const BusinessAnalytics = () => {
 							style={{ height: 345 }}
 						/>
 					</Paper>
+					<MaterialTable
+						style={{ marginTop: 30 }}
+						title={
+							<Typography
+								variant="h5"
+								style={{ fontWeight: "bold" }}
+							>
+								Top Selling Products
+							</Typography>
+						}
+						data={topSellingProducts}
+						columns={topSellingProductscolumns}
+						options={{
+							actionsColumnIndex: -1,
+							headerStyle: {
+								backgroundColor: Pal.palette.primary.main,
+								color: "#fff",
+								fontWeight: "bold",
+							},
+							exportButton: false,
+							search: false,
+							paging: false,
+						}}
+					/>
 				</Grid>
 			</Grid>
 		</div>
 	);
-
-	return result;
 };
 
 export default BusinessAnalytics;
