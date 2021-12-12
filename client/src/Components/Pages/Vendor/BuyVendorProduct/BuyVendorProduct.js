@@ -166,9 +166,9 @@ export default function BuyVendorProduct() {
 			productDetails;
 		let newProduct = productDetails;
 
-		let discountPrice =
-			SellerProductPrice -
-			SellerProductPrice * (discountPercentage / 100);
+		// let discountPrice =
+		// 	SellerProductPrice -
+		// 	SellerProductPrice * (discountPercentage / 100);
 
 		const vendorProductId = newProduct["_id"];
 
@@ -196,7 +196,7 @@ export default function BuyVendorProduct() {
 				SellerProductPrice !== "" ? SellerProductPrice : salePrice,
 			stockAvailable: BuyingStock,
 			storeId: "611a3788a097252998d7ab46",
-			discountPrice: discountPrice,
+			discountPrice: null,
 		};
 
 		if (BuyingStock <= stockAvailable) {
@@ -209,12 +209,6 @@ export default function BuyVendorProduct() {
 					}
 				)
 				.then((res) => {
-					// setSnackBar({
-					// 	...snackBarstate,
-					// 	type: "success",
-					// 	message: "Product has been added successfully!",
-					// 	open: true,
-					// });
 					setSnackBar({
 						...snackBarstate,
 						type: "success",

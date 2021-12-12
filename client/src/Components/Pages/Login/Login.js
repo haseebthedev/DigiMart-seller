@@ -10,6 +10,7 @@ import {
 	Grid,
 	Typography,
 	InputLabel,
+	CircularProgress,
 } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -171,7 +172,8 @@ const Login = () => {
 							onClick={handleLoginVendor}
 							disabled={isLoading}
 						>
-							Sign In
+							{isLoading && <CircularProgress size={22} />}
+							{!isLoading && "Sign In"}
 						</Button>
 						<Grid container justify="space-between">
 							<Grid item>
