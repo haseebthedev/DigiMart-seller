@@ -365,21 +365,40 @@ export default function AddProduct() {
 		var hasError = InputValidation();
 
 		if (hasError === false) {
-			let pWarranty = warranty + " " + warrantySpan;
+			let pWarranty =
+				warrantySpan == "none" ? "N/A" : warranty + " " + warrantySpan;
 			let pWeight = weight + " " + weightUnits;
 
-			let pDimensions =
-				dimensions.length +
-				"" +
-				dimensions.unit +
-				" " +
-				dimensions.width +
-				"" +
-				dimensions.unit +
-				" " +
-				dimensions.height +
-				"" +
-				dimensions.unit;
+			var pDimensions = "";
+			if (dimensions.unit !== "none") {
+				pDimensions =
+					dimensions.length +
+					"" +
+					dimensions.unit +
+					" " +
+					dimensions.width +
+					"" +
+					dimensions.unit +
+					" " +
+					dimensions.height +
+					"" +
+					dimensions.unit;
+			} else {
+				pDimensions = "N/A";
+			}
+
+			// let pDimensions =
+			// 	dimensions.length +
+			// 	"" +
+			// 	dimensions.unit +
+			// 	" " +
+			// 	dimensions.width +
+			// 	"" +
+			// 	dimensions.unit +
+			// 	" " +
+			// 	dimensions.height +
+			// 	"" +
+			// 	dimensions.unit;
 
 			api.post(
 				"/seller/store/product",

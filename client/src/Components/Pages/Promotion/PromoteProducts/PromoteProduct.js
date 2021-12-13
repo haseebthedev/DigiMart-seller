@@ -446,6 +446,16 @@ export default function PromoteProduct(props) {
 		// eslint-disable-next-line
 	}, []);
 
+	function trimProdName(name) {
+		let res = "";
+		if (name.length > 14) {
+			res = name.toString().substring(0, 13) + "...";
+		} else {
+			res = name;
+		}
+		return res;
+	}
+
 	const addProductForPromotion = async () => {
 		var {
 			isUrlAlreadyCreated,
@@ -1255,17 +1265,25 @@ export default function PromoteProduct(props) {
 													/>
 													<CardContent
 														style={{
-															padding: 4,
+															padding: 6,
 														}}
+														align="center"
 													>
 														<Typography
-															variant="body1"
 															style={{
 																marginTop: 4,
+																color: Pal
+																	.palette
+																	.primary
+																	.main,
+																fontWeight:
+																	"bold",
 															}}
 															gutterBottom
 														>
-															{prod.name}
+															{trimProdName(
+																prod.name
+															)}
 														</Typography>
 														<Typography
 															variant="caption"
@@ -1280,6 +1298,17 @@ export default function PromoteProduct(props) {
 														>
 															{prod.category}
 														</Typography>
+														<Typography
+															style={{
+																marginTop: 8,
+																fontSize: 12,
+															}}
+														>
+															Stock:{" "}
+															{
+																prod.stockAvailable
+															}
+														</Typography>
 													</CardContent>
 
 													<CardActions
@@ -1288,13 +1317,6 @@ export default function PromoteProduct(props) {
 																"center",
 														}}
 													>
-														<Button
-															size="small"
-															color="primary"
-															variant="outlined"
-														>
-															VIEW
-														</Button>
 														<Button
 															size="small"
 															color="primary"

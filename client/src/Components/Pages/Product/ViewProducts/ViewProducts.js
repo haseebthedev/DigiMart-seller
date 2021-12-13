@@ -1005,7 +1005,19 @@ export default function ViewProducts() {
 										</MenuItem>
 										<MenuItem value="Red">Red</MenuItem>
 										<MenuItem value="Green">Green</MenuItem>
+										<MenuItem value="Orange">
+											Orange
+										</MenuItem>
 										<MenuItem value="Black">Black</MenuItem>
+										<MenuItem value="Blue">Blue</MenuItem>
+										<MenuItem value="Yellow">
+											Yellow
+										</MenuItem>
+										<MenuItem value="Grey">Grey</MenuItem>
+										<MenuItem value="Silver">
+											Silver
+										</MenuItem>
+										<MenuItem value="White">White</MenuItem>
 										<MenuItem value="Purple">
 											Purple
 										</MenuItem>
