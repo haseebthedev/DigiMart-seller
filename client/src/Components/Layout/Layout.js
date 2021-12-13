@@ -230,19 +230,19 @@ const Layout = (props) => {
 	};
 
 	const getNotifications = async () => {
-		// await api
-		// 	.get("/seller/myNotifications", {
-		// 		headers: { Authorization: `Bearer ${token}` },
-		// 	})
-		// 	.then(function (res) {
-		// 		setNotifications((prevState) => [
-		// 			...prevState,
-		// 			...res.data.data.myNotifications,
-		// 		]);
-		// 	})
-		// 	.catch((error) => {
-		// 		console.log("error in getting data of notifications", error);
-		// });
+		await api
+			.get("/seller/myNotifications", {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			.then(function (res) {
+				setNotifications((prevState) => [
+					...prevState,
+					...res.data.data.myNotifications,
+				]);
+			})
+			.catch((error) => {
+				console.log("error in getting data of notifications", error);
+			});
 
 		const currentUser = store.data ? store.data.data : null;
 		if (currentUser) {
