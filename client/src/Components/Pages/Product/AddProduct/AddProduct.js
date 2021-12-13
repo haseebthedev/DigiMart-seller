@@ -240,8 +240,8 @@ export default function AddProduct() {
 		var hasError = false;
 
 		// name
-		var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
-		if (productDetails.name.match(nameFormat)) {
+		// var nameFormat = /^[0-9A-Za-z\s_+()'#@&-]+$/;
+		if (productDetails.name.length > 2) {
 			errors.nameError = "";
 		} else {
 			hasError = true;
