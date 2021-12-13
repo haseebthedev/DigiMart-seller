@@ -329,14 +329,14 @@ export default function ViewProducts() {
 		}
 
 		// description
-		var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
-		if (productDetails.description.match(descFormat)) {
-			errors.descriptionError = "";
-		} else {
-			hasError = true;
-			errors.descriptionError =
-				"Description contains several characters that aren't allowed!";
-		}
+		// var descFormat = /^[A-Za-z0-9.,'!()#&+-\s]+$/;
+		// if (productDetails.description.match(descFormat)) {
+		// 	errors.descriptionError = "";
+		// } else {
+		// 	hasError = true;
+		// 	errors.descriptionError =
+		// 		"Description contains several characters that aren't allowed!";
+		// }
 
 		// Product category
 		if (productDetails.category.length === 0) {
