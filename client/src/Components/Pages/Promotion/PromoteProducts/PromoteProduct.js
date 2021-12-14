@@ -473,9 +473,9 @@ export default function PromoteProduct(props) {
 		var promotionMessage = "";
 
 		if (ProvideDiscount === false) {
-			promotionMessage = `Buy exciting '${category}' from ${city}. Get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+			promotionMessage = `Buy exciting '${category}' from ${city}. Get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${longUrl}`;
 		} else {
-			promotionMessage = `Buy exciting '${category}' from ${city}. Enter our Promo Code '${promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${shortUrl}`;
+			promotionMessage = `Buy exciting '${category}' from ${city}. Enter our Promo Code '${promoCode}' to get Amazing discounts on your favourite Products. Click below link to place your Order Now!\n${longUrl}`;
 		}
 
 		var dataToSend = {
