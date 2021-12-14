@@ -94,7 +94,7 @@ const VendorAnalytics = () => {
 				mode: isDarkModeEnabled === true ? "dark" : "light",
 			},
 			title: {
-				text: "Category-Wise Sales",
+				text: "Category-Wise Orders",
 				align: "center",
 				style: {
 					fontSize: "20px",
@@ -308,6 +308,15 @@ const VendorAnalytics = () => {
 			hidden: false,
 			export: true,
 			render: ({ product }) => <div>{product.stockAvailable}</div>,
+		},
+		{
+			title: "Rating",
+			field: "avgRating",
+			hidden: false,
+			export: true,
+			render: (rowData) => (
+				<div>{rowData.avgRating ? rowData.avgRating : "-"}</div>
+			),
 		},
 	];
 

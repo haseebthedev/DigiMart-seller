@@ -98,7 +98,7 @@ const BusinessAnalytics = () => {
 				mode: isDarkModeEnabled === true ? "dark" : "light",
 			},
 			title: {
-				text: "Category-Wise Sales",
+				text: "Category-Wise Orders",
 				align: "center",
 				style: {
 					fontSize: "20px",
@@ -269,12 +269,12 @@ const BusinessAnalytics = () => {
 			render: (row) => <div>{row._id.productName}</div>,
 		},
 		{
-			title: "Quantity",
+			title: "Total Quantity",
 			field: "totalQuantity",
 			render: (row) => <div>{row.totalQuantity}</div>,
 		},
 		{
-			title: "Orders",
+			title: "# of Orders",
 			field: "totalOrders",
 			render: (row) => <div>{row.totalOrders}</div>,
 		},
@@ -339,6 +339,15 @@ const BusinessAnalytics = () => {
 			hidden: false,
 			export: true,
 			render: ({ product }) => <div>{product.stockAvailable}</div>,
+		},
+		{
+			title: "Rating",
+			field: "avgRating",
+			hidden: false,
+			export: true,
+			render: (rowData) => (
+				<div>{rowData.avgRating ? rowData.avgRating : "-"}</div>
+			),
 		},
 	];
 
@@ -450,26 +459,7 @@ const BusinessAnalytics = () => {
 							paging: false,
 						}}
 					/>
-				</Grid>
-				<Grid item xs={12} md={4}>
-					<Paper style={{ padding: 16 }}>
-						<Chart
-							options={CategoryWiseStats.options}
-							series={CategoryWiseStats.series}
-							type="polarArea"
-							height="100%"
-							style={{ height: 395 }}
-						/>
-					</Paper>
-					<Paper style={{ padding: 16, marginTop: 30 }}>
-						<Chart
-							options={barChart.options}
-							series={barChart.series}
-							type="bar"
-							height="100%"
-							style={{ height: 345 }}
-						/>
-					</Paper>
+
 					<MaterialTable
 						style={{ marginTop: 30 }}
 						title={
@@ -494,6 +484,26 @@ const BusinessAnalytics = () => {
 							paging: false,
 						}}
 					/>
+				</Grid>
+				<Grid item xs={12} md={4}>
+					<Paper style={{ padding: 16 }}>
+						<Chart
+							options={CategoryWiseStats.options}
+							series={CategoryWiseStats.series}
+							type="polarArea"
+							height="100%"
+							style={{ height: 395 }}
+						/>
+					</Paper>
+					<Paper style={{ padding: 16, marginTop: 30 }}>
+						<Chart
+							options={barChart.options}
+							series={barChart.series}
+							type="bar"
+							height="100%"
+							style={{ height: 345 }}
+						/>
+					</Paper>
 				</Grid>
 			</Grid>
 		</div>

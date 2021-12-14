@@ -252,7 +252,6 @@ export default function Orders() {
 			})
 			.then((res) => {
 				setOrderdetails(res.data.data.orders);
-				console.log(res.data.data.orders);
 			})
 			.catch((error) => console.log(error));
 	};
