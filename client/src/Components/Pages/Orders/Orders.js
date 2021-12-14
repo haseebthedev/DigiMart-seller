@@ -567,14 +567,20 @@ export default function Orders() {
 													<div>
 														<Typography>
 															Price:{" "}
-															{prod.salePrice}
+															{prod.discountedPrice
+																? prod.discountedPrice
+																: prod.salePrice}
 														</Typography>
-														<Typography>
+														{console.log(
+															"prod",
+															prod[0]
+														)}
+														{/* <Typography>
 															Discount:{" "}
-															{
-																prod.discountedPrice
+															{prod.totalPrice -
+																prod.subTotalPrice}{" "}
 															}
-														</Typography>
+														</Typography> */}
 													</div>
 												</Grid>
 											</Grid>
