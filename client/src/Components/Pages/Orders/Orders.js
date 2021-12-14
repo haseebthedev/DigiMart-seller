@@ -319,7 +319,9 @@ export default function Orders() {
 		{
 			title: "Amount",
 			field: "totalPrice",
-			render: ({ totalPrice }) => <div>{"Rs. " + totalPrice}</div>,
+			render: ({ totalPrice }) => (
+				<div>{"Rs. " + Math.floor(totalPrice)}</div>
+			),
 		},
 		{
 			title: "Date",
@@ -568,13 +570,14 @@ export default function Orders() {
 														<Typography>
 															Price:{" "}
 															{prod.discountedPrice
-																? prod.discountedPrice
-																: prod.salePrice}
+																? Math.floor(
+																		prod.discountedPrice
+																  )
+																: Math.floor(
+																		prod.salePrice
+																  )}
 														</Typography>
-														{console.log(
-															"prod",
-															prod[0]
-														)}
+
 														{/* <Typography>
 															Discount:{" "}
 															{prod.totalPrice -
@@ -614,16 +617,20 @@ export default function Orders() {
 									</Grid>
 									<Grid item xs={6} align="right">
 										<Typography>
-											SubTotal: {rowData.subTotalPrice}
+											SubTotal:{" "}
+											{Math.floor(rowData.subTotalPrice)}
 										</Typography>
 										<Typography>
 											Total Discount:{" "}
 											{rowData.totalDiscount
-												? rowData.totalDiscount
+												? Math.floor(
+														rowData.totalDiscount
+												  )
 												: 0}
 										</Typography>
 										<Typography>
-											Shipping Cost: {rowData.shippingFee}
+											Shipping Cost:{" "}
+											{Math.floor(rowData.shippingFee)}
 										</Typography>
 										<Typography
 											style={{
@@ -632,7 +639,8 @@ export default function Orders() {
 												fontSize: 16,
 											}}
 										>
-											Total Price: {rowData.totalPrice}
+											Total Price:{" "}
+											{Math.floor(rowData.totalPrice)}
 										</Typography>
 									</Grid>
 								</Grid>

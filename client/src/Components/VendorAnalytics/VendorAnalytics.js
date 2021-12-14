@@ -190,15 +190,15 @@ const VendorAnalytics = () => {
 					setStatsCount({
 						...StatsCount,
 						stock: totalStock,
-						investment: totalPurchasePrice,
-						revenue: revenue,
-						profit: profit,
+						investment: Math.floor(totalPurchasePrice),
+						revenue: Math.floor(revenue),
+						profit: Math.floor(profit),
 					});
 				} else {
 					setStatsCount({
 						...StatsCount,
 						stock: totalStock,
-						investment: totalPurchasePrice,
+						investment: Math.floor(totalPurchasePrice),
 						revenue: 0,
 						profit: 0,
 					});

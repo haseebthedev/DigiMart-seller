@@ -118,7 +118,7 @@ export default function RequestWithdraw() {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 			.then((res) => {
-				setPendingPayment(res.data.data.pendingPayment);
+				setPendingPayment(Math.floor(res.data.data.pendingPayment));
 			})
 			.catch((error) => {
 				setSnackBar({
@@ -281,7 +281,10 @@ export default function RequestWithdraw() {
 									disableElevation
 									style={{ width: 300, marginTop: 20 }}
 									onClick={requestPaymentWithdraw}
-									disabled={paymentData.length === 0}
+									disabled={
+										paymentData.length === 0 ||
+										accountNumber.length === 0
+									}
 								>
 									Request Withdrawal
 								</Button>

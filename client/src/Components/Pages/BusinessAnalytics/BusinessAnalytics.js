@@ -192,15 +192,15 @@ const BusinessAnalytics = () => {
 					setStatsCount({
 						...StatsCount,
 						stock: totalStock,
-						investment: totalPurchasePrice,
-						revenue: revenue,
-						profit: profit,
+						investment: Math.floor(totalPurchasePrice),
+						revenue: Math.floor(revenue),
+						profit: Math.floor(profit),
 					});
 				} else {
 					setStatsCount({
 						...StatsCount,
 						stock: totalStock,
-						investment: totalPurchasePrice,
+						investment: Math.floor(totalPurchasePrice),
 						revenue: 0,
 						profit: 0,
 					});
@@ -383,41 +383,40 @@ const BusinessAnalytics = () => {
 					/>
 				</Grid>
 			</Grid>
+			<Grid
+				container
+				spacing={4}
+				justify="space-between"
+				style={{ marginBottom: 16 }}
+			>
+				<Grid item xs={12} md={3}>
+					<CountCard
+						title="DELIVERED ORDERS"
+						count={"# " + orderCount.totalDeliveredOrdersCount}
+					/>
+				</Grid>
+
+				<Grid item xs={12} md={3}>
+					<CountCard
+						title="RETURNED ORDERS"
+						count={"# " + orderCount.totalReturnedOrdersCount}
+					/>
+				</Grid>
+				<Grid item xs={12} md={3}>
+					<CountCard
+						title="ACTIVE ORDERS"
+						count={"# " + orderCount.totalActiveOrdersCount}
+					/>
+				</Grid>
+				<Grid item xs={12} md={3}>
+					<CountCard
+						title="PENDING ORDERS"
+						count={"# " + orderCount.totalPendingOrdersCount}
+					/>
+				</Grid>
+			</Grid>
 
 			<Grid container spacing={4}>
-				{/* <Grid
-					container
-					spacing={4}
-					justify="space-between"
-					style={{ marginBottom: 16 }}
-				>
-					<Grid item xs={12} md={3}>
-						<CountCard
-							title="DELIVERED ORDERS"
-							count={"# " + orderCount.totalDeliveredOrdersCount}
-						/>
-					</Grid>
-
-					<Grid item xs={12} md={3}>
-						<CountCard
-							title="RETURNED ORDERS"
-							count={"# " + orderCount.totalReturnedOrdersCount}
-						/>
-					</Grid>
-					<Grid item xs={12} md={3}>
-						<CountCard
-							title="ACTIVE ORDERS"
-							count={"# " + orderCount.totalActiveOrdersCount}
-						/>
-					</Grid>
-					<Grid item xs={12} md={3}>
-						<CountCard
-							title="PENDING ORDERS"
-							count={"# " + orderCount.totalPendingOrdersCount}
-						/>
-					</Grid>
-				</Grid> */}
-
 				<Grid item xs={12} md={8}>
 					<Paper style={{ padding: 16 }}>
 						<Chart

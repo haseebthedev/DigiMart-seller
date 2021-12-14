@@ -87,6 +87,7 @@ export default function ViewAllPayments() {
 			title: "Amount",
 			field: "amount",
 			width: 150,
+			render: ({ amount }) => <div>{Math.round(amount)}</div>,
 		},
 		// {
 		// 	title: "Currency",
