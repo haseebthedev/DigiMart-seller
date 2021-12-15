@@ -171,8 +171,7 @@ const Chat = () => {
 					}
 				}
 			});
-			// setConversations([...conversations]);
-			if (conversations.length > 0) setConversations([...conversations]);
+			setConversations([...conversations]);
 			// Scroll to Bottom of Chat
 			var myDiv = document.querySelector("#user-messages");
 			if (myDiv) myDiv.scrollTop = myDiv.scrollHeight;
@@ -331,14 +330,7 @@ const Chat = () => {
 				data.chatInitiatorId === userId ||
 				data.chatRecieverId === userId
 			) {
-				// setConversations(data.recentConversations);
-				api.get(`/seller/chat/conversations/seller-to-buyer`, {
-					headers: { Authorization: `Bearer ${token}` },
-				})
-					.then((res) => {
-						setConversations(res.data.recentConversation);
-					})
-					.catch((error) => console.log(error));
+				setConversations(data.recentConversations);
 			}
 		});
 		// eslint-disable-next-line
