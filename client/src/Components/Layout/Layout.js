@@ -146,7 +146,7 @@ const Layout = (props) => {
 	};
 
 	// Notifications
-	const SERVER = "https://digi-mart-server.herokuapp.com";
+	const SERVER = "https://digimart-server.onrender.com";
 	var socket = io(SERVER);
 	const [isShowNotificationsMenu, setIsShowNotificationsMenu] =
 		useState(false);

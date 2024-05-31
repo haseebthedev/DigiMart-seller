@@ -42,7 +42,7 @@ import { useUserContext } from "../../../context/UserContext";
 
 // socket io
 import io from "socket.io-client";
-const SERVER = "https://digi-mart-server.herokuapp.com";
+const SERVER = "https://digimart-server.onrender.com";
 
 const Chat = () => {
 	const classes = useStyles();
