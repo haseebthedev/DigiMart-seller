@@ -89,8 +89,8 @@ const Login = () => {
 
 				return loginUser(
 					dispatch,
-					res.data.data.seller,
-					res.data.data.token
+					res?.data?.data?.seller,
+					res?.data?.data?.token
 				);
 			})
 			.catch((error) => {
@@ -98,7 +98,7 @@ const Login = () => {
 					...snackBarstate,
 					message:
 						"ERROR: " +
-						JSON.stringify(error.response.data.error.message),
+						JSON.stringify(error?.response?.data?.error?.message),
 					type: "error",
 					open: true,
 				});
